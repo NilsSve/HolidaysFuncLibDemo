@@ -29,8 +29,7 @@ End_Object
 
 Use cDataBaseFunctions.pkg
 
-Use cMyApplication.pkg
-Object oApplication is a cMyApplication
+Object oApplication is a cApplication
     Set peHelpType to htHtmlHelp
     Set pbEnterKeyAsTabKey to True
     Set pbPreserveEnvironment to True
@@ -38,6 +37,7 @@ Object oApplication is a cMyApplication
     Set psProduct to "Holidays and Other Special Dates Library"
     Set psVersion to (String(piVersionMajor(phoVersionInfo(Self))) + "." + String(piVersionMinor(phoVersionInfo(Self))))
 
+    Property String psGridRowBackgroundColor
     // Check that the 'correct' collating.cfg is used when the program is
     // started. The data in the database was entered with an english (standard)
     // collating sequence. If another df_collate.cfg is encountered at runtime,

@@ -19,11 +19,6 @@
 			<libraryID>Lib4</libraryID>
 		</library>
 		<library>
-			<libraryPath>..\Libraries\DUF\DUF24.0.sws</libraryPath>
-			<libraryTimeStamp>2025-01-18T12:52:17</libraryTimeStamp>
-			<libraryID>Lib5</libraryID>
-		</library>
-		<library>
 			<libraryPath>..\Libraries\vwin32fh\StudioLibrary\vWin32fh-Library-DF24.0.sws</libraryPath>
 			<libraryTimeStamp>2025-01-17T14:55:51</libraryTimeStamp>
 			<libraryID>Lib6</libraryID>
@@ -1174,20 +1169,6 @@
 			<package>cComSWXMap.pkg</package>
 			<groupName>ActiveX</groupName>
 			<libraryID>Lib2</libraryID>
-		</class>
-		<class>
-			<className>cMapComponent</className>
-			<image>ControlCOM.ico</image>
-			<package>cMapComponent.pkg</package>
-			<groupName>Map Component</groupName>
-			<libraryID>Lib5</libraryID>
-		</class>
-		<class>
-			<className>cComSWXMap</className>
-			<image>ControlCOM.ico</image>
-			<package>cComSWXMap.pkg</package>
-			<groupName>ActiveX</groupName>
-			<libraryID>Lib5</libraryID>
 		</class>
 	</classes>
 </classList>
