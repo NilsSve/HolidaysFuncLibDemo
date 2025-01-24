@@ -1,0 +1,550 @@
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" href="Classes.css">
+</HEAD>
+<BODY>
+Created 2014-11-07 16:29:34  by <b>Nils G. Svedmyr</b> on <b>NILS-W540</b> [<a href="#Ref_Headerinfo"> Header and license information </a>]<br>
+<hr>
+<h2>Class List</h1> <a> </a>
+<ul>
+<li><a href="#Ref_cNationalHolidays">cNationalHolidays</a></li>
+<li><a href="#Ref_cCalendarHolidays">cCalendarHolidays</a></li>
+</ul>
+<hr>
+<a name="Ref_cNationalHolidays"><h2>Class cNationalHolidays</h1></a>
+<b>Source:</b> CALENDARHOLIDAYS.PKG<br><b>Baseclass:</b> cObject<br><br><br>
+<hr>
+<a name="Ref_cCalendarHolidays"><h2>Class cCalendarHolidays</h1></a>
+<b>Source:</b> CALENDARHOLIDAYS.PKG<br><b>Baseclass:</b> cObject<br><br><br>
+<h3>Functions</h3>
+<ul>
+<li><a href="#Ref_cCalendarHolidays_YearFromDate">YearFromDate</a></li>
+<li><a href="#Ref_cCalendarHolidays_EasterDay">EasterDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_AshWednesday">AshWednesday</a></li>
+<li><a href="#Ref_cCalendarHolidays_PalmSunday">PalmSunday</a></li>
+<li><a href="#Ref_cCalendarHolidays_MaundyThursday">MaundyThursday</a></li>
+<li><a href="#Ref_cCalendarHolidays_GoodFriday">GoodFriday</a></li>
+<li><a href="#Ref_cCalendarHolidays_HolySaturday">HolySaturday</a></li>
+<li><a href="#Ref_cCalendarHolidays_EasterMonday">EasterMonday</a></li>
+<li><a href="#Ref_cCalendarHolidays_AscensionDay">AscensionDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_WhitSunday">WhitSunday</a></li>
+<li><a href="#Ref_cCalendarHolidays_Pentecost">Pentecost</a></li>
+<li><a href="#Ref_cCalendarHolidays_WhitMonday">WhitMonday</a></li>
+<li><a href="#Ref_cCalendarHolidays_MLKDay">MLKDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_PresidentsDay">PresidentsDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_MayBankDay">MayBankDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_ExtraBankHoliday">ExtraBankHoliday</a></li>
+<li><a href="#Ref_cCalendarHolidays_LateSummerBankDay">LateSummerBankDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_MemorialDay">MemorialDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_FathersDay">FathersDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_LaborDay">LaborDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_FeastOfChristTheKing">FeastOfChristTheKing</a></li>
+<li><a href="#Ref_cCalendarHolidays_Advent1">Advent1</a></li>
+<li><a href="#Ref_cCalendarHolidays_Advent2">Advent2</a></li>
+<li><a href="#Ref_cCalendarHolidays_Advent3">Advent3</a></li>
+<li><a href="#Ref_cCalendarHolidays_Advent4">Advent4</a></li>
+<li><a href="#Ref_cCalendarHolidays_MidsummerDay">MidsummerDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_MidsummerEve">MidsummerEve</a></li>
+<li><a href="#Ref_cCalendarHolidays_IndependenceDay">IndependenceDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_ColumbusDay">ColumbusDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_Thanksgiving">Thanksgiving</a></li>
+<li><a href="#Ref_cCalendarHolidays_BlackFriday">BlackFriday</a></li>
+<li><a href="#Ref_cCalendarHolidays_AllSaintsDay">AllSaintsDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_AllSaintsDayEve">AllSaintsDayEve</a></li>
+<li><a href="#Ref_cCalendarHolidays_Epiphany">Epiphany</a></li>
+<li><a href="#Ref_cCalendarHolidays_EpiphanyEve">EpiphanyEve</a></li>
+<li><a href="#Ref_cCalendarHolidays_GroundHogDay">GroundHogDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_ValentinesDay">ValentinesDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_SaintPatricksDay">SaintPatricksDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_AprilFoolsDay">AprilFoolsDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_FlagDay">FlagDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_PatriotsDay">PatriotsDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_ConstitutionDay">ConstitutionDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_LeifEriksonDay">LeifEriksonDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_ValborgsEve">ValborgsEve</a></li>
+<li><a href="#Ref_cCalendarHolidays_Halloween">Halloween</a></li>
+<li><a href="#Ref_cCalendarHolidays_VeteransDay">VeteransDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_EUSummerTimeStart">EUSummerTimeStart</a></li>
+<li><a href="#Ref_cCalendarHolidays_EUSummerTimeEnd">EUSummerTimeEnd</a></li>
+<li><a href="#Ref_cCalendarHolidays_ChristmasEve">ChristmasEve</a></li>
+<li><a href="#Ref_cCalendarHolidays_ChristmasDay">ChristmasDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_SecondDayChristmas">SecondDayChristmas</a></li>
+<li><a href="#Ref_cCalendarHolidays_NewYearsEve">NewYearsEve</a></li>
+<li><a href="#Ref_cCalendarHolidays_NewYearsDay">NewYearsDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_NewYearHoliday">NewYearHoliday</a></li>
+<li><a href="#Ref_cCalendarHolidays_IslamicCalendar">IslamicCalendar</a></li>
+<li><a href="#Ref_cCalendarHolidays_AgongBirthDay">AgongBirthDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_MalaysiaDay">MalaysiaDay</a></li>
+<li><a href="#Ref_cCalendarHolidays_SultanKeday">SultanKeday</a></li>
+<li><a href="#Ref_cCalendarHolidays_PenangGovernorBirthday">PenangGovernorBirthday</a></li>
+<li><a href="#Ref_cCalendarHolidays_MalaccaGovernorBirthday">MalaccaGovernorBirthday</a></li>
+</ul>
+<a name="Ref_cCalendarHolidays_YearFromDate"><B>YearFromDate  Date dDate Returns Integer - Function </B></a><div></div>
+ Amended to use built-in date functions<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_EasterDay"><B>EasterDay  Integer iYear Returns Date - Function </B></a><div></div>
+ *************************** Function: Easter Day **************************<div></div>
+ *<div></div>
+ * The EasterDay function calculates the Easter Sunday and is a major function that forms the basis for<div></div>
+ * calculating several other movable holidays; PalmSunday, HolyThursday, HolyFriday, HolySaturday,<div></div>
+ * EasterMonday, AscensionThursday and Pentecost.<div></div>
+ *<div></div>
+ * The Date of Easter Day was defined by the Council of Nicaea in AD 325 as the Sunday after the first full moon<div></div>
+ * which falls on or after the Spring Equinox. The Equinox is assumed to always fall on 21st March, so the<div></div>
+ * calculation reduces to determining the Date of the full moon and the Date of the following Sunday. The algorithm<div></div>
+ * used here was introduced around the year 532 by Dionysius Exiguus.<div></div>
+ *<div></div>
+ * Under the Julian Calendar a simple 19-year cycle is used to track the phases of the Moon. Under the<div></div>
+ * Gregorian Calendar (devised by Clavius and Lilius, and introduced by Pope Gregory XIII in October 1582.),<div></div>
+ * two correction factors were added to make the cycle more accurate.<div></div>
+*<div></div>
+ Function: EasterDay (Easter Sunday)<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The Easter Sunday date, according to the Gregorian calendar (for years after C_FirstGregorianYear)<div></div>
+           or the Julian calendar (for years before C_FirstGregorianYear) as a Date variable.<div></div>
+ * Adopted from a C-algorithm by Simon Kershaw.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_AshWednesday"><B>AshWednesday  Integer iYear Returns Date - Function </B></a><div></div>
+ Ash Wednesday, in the Western Christian calendar, is the first day of Lent and occurs forty-six days<div></div>
+ (forty days not counting Sundays) before Easter. It is a moveable fast, falling on a different Date<div></div>
+ each year because it is dependent on the Date of Easter. It can occur as early as the 4th of February<div></div>
+ (5th of February on leap years) or as late as the 10th of March.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_PalmSunday"><B>PalmSunday  Integer iYear Returns Date - Function </B></a><div></div>
+ Palm Sunday is a Christian moveable feast which always falls on the Sunday before Easter Sunday (Easter Day).<div></div>
+ Note: This is _not_ a national holiday, but merely put here for consistency.<div></div>
+ Or are there countries where this is a holiday?<div></div>
+ Function: PalmSunday<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The Palm Sunday, according to the Gregorian calendar (for years after 1752)<div></div>
+           or the Julian calendar (for years before 1753) as a Date variable.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_MaundyThursday"><B>MaundyThursday  Integer iYear Returns Date - Function </B></a><div></div>
+ Maundy Thursday, also known as Holy Thursday, Great and Holy Thursday, and Thursday of Mysteries.<div></div>
+ HoMaundyly Thursday is a holiday in Denmark and Norway.<div></div>
+ Function: MaundyThursday<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The Maundy Thursday, according to the Gregorian calendar (for years after 1752)<div></div>
+           or the Julian calendar (for years before 1753) as a Date variable.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_GoodFriday"><B>GoodFriday  Integer iYear Returns Date - Function </B></a><div></div>
+ Good Friday, also called Holy Friday, Black Friday, or Great Friday.<div></div>
+ In most Christian countries it's a national holiday.<div></div>
+ In the US it is not a govermental holiday at federal level; individual states and municipalities may observe the holiday.<div></div>
+ Function: GoodFriday<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The Good Friday, according to the Gregorian calendar (for years after 1752)<div></div>
+           or the Julian calendar (for years before 1753) as a Date variable.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_HolySaturday"><B>HolySaturday  Integer iYear Returns Date - Function </B></a><div></div>
+ Holy Saturday, is the day after Good Friday and day before Easter Day.<div></div>
+ Note: This is _not_ a national holiday, but merely put here for consistency.<div></div>
+ Function: HolySaturday<div></div>
+  Params:  A 4-digit year as an integer variable.<div></div>
+  Returns: The Holy Saturday, according to the Gregorian calendar (for years after 1752)<div></div>
+           or the Julian calendar (for years before 1753) as a Date variable.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_EasterMonday"><B>EasterMonday  Integer iYear Returns Date - Function </B></a><div></div>
+ Easter Monday is the day after Easter Sunday and is celebrated as a holiday in some largely Christian cultures,<div></div>
+ especially Roman Catholic cultures.<div></div>
+ Function: EasterMonday<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The Easter Monday, according to the Gregorian calendar (for years after 1752)<div></div>
+           or the Julian calendar (for years before 1753) as a Date variable.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_AscensionDay"><B>AscensionDay  Integer iYear Returns Date - Function </B></a><div></div>
+ Ascension Day is the Christian celebration of Christ's ascension to heaven.<div></div>
+ It is celebrated 40 days after Easter Sunday on a Thursday.<div></div>
+ In some countries (e.g. Austria, Belgium, Croatia, Denmark, Finland, France, Germany, Iceland,<div></div>
+ Indonesia, the Netherlands, Norway, Sweden, Switzerland and Vanuatu) it is a public holiday; Germany<div></div>
+ also holds its Father's Day on the same date.<div></div>
+ Function: AscensionDay<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The date of Ascension (always a Thursday), according to the Gregorian calendar (for years<div></div>
+           after 1752) or the Julian calendar (for years before 1753) as a Date variable.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_WhitSunday"><B>WhitSunday  Integer iYear Returns Date - Function </B></a><div></div>
+ Whit Sunday or Pentecost is one of the prominent feasts in the Christian liturgical year.<div></div>
+ It is celebrated 7 weeks (49 days) after Easter Sunday - hence its name.<div></div>
+ Pentecost is a public holiday in many European countries including Austria, Belgium, Cyprus,<div></div>
+ Denmark, Estonia, France, Spain, Germany, Hungary, Luxemburg, The Netherlands, Norway, Poland,<div></div>
+ Romania, and (most parts of) Switzerland. In Sweden it is no longer (as of 2005) a holiday,<div></div>
+ while Italy is discussing whether to re-establish it.<div></div>
+ Function: WhitSunday<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The date of Whit Sunday, according to the Gregorian calendar (for years<div></div>
+           after 1752) or the Julian calendar (for years before 1753) as a Date variable.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_Pentecost"><B>Pentecost  Integer iYear Returns Date - Function </B></a><div></div>
+ Same as WhitSunday above.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_WhitMonday"><B>WhitMonday  Integer iYear Returns Date - Function </B></a><div></div>
+ Whit Monday or Day after Pentecost (Whit Sunday).<div></div>
+ It is a public holiday in many European countries including Austria, Belgium,<div></div>
+ Denmark, France, Germany, Hungary, Luxemburg, The Netherlands, Norway and Switzerland.<div></div>
+ Function: WhitMonday<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The date of Whit Monday  , according to the Gregorian calendar (for years<div></div>
+           after 1752) or the Julian calendar (for years before 1753) as a Date variable.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_MLKDay"><B>MLKDay  Integer iYear Returns Date - Function </B></a><div></div>
+ Martin Luther King's Day is the third Monday in January.<div></div>
+ Holiday in the US.<div></div>
+ Function: PresidentsDay<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The date, according to the Gregorian calendar.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_PresidentsDay"><B>PresidentsDay  Integer iYear Returns Date - Function </B></a><div></div>
+ President's Day is the third Monday in February.<div></div>
+ Holiday in the US.<div></div>
+ Function: PresidentsDay<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The date, according to the Gregorian calendar.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_MayBankDay"><B>MayBankDay  Integer iYear Returns Date - Function </B></a><div></div>
+ May Day Bank Holiday.<div></div>
+ Brittish holiday on the first Monday in May.<div></div>
+ In the year 2012 this date is moved to June 4 to mark the Queen's<div></div>
+ diamond jubilee and an extra bank holiday added on June 5.<div></div>
+ Function: MayBankDay<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The date, according to the Gregorian calendar.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_ExtraBankHoliday"><B>ExtraBankHoliday  Integer iYear Returns Date - Function </B></a><div></div>
+ In the year 2012 the MayBankDay date is moved to June 4 to mark the Queen's<div></div>
+ diamond jubilee and an extra bank holiday is added on June 5.<div></div>
+ Function: ExtraBankHoliday<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The date, according to the Gregorian calendar.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_LateSummerBankDay"><B>LateSummerBankDay  Integer iYear Returns Date - Function </B></a><div></div>
+ Late Summer Bank Holiday.<div></div>
+ Brittish holiday on the last Monday in August.<div></div>
+ Function: LateSummerBankDay<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The date, according to the Gregorian calendar.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_MemorialDay"><B>MemorialDay  Integer iYear Returns Date - Function </B></a><div></div>
+ Memorial Day is the last Monday in May.<div></div>
+ Holiday in the US.<div></div>
+ Function: MemorialDay<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The date, according to the Gregorian calendar.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_FathersDay"><B>FathersDay  Integer iYear String sOfficial_Short Returns Date - Function </B></a><div></div>
+ Father's Day is mostly the second Sunday in June, but it differs for many countries.<div></div>
+ No holiday.<div></div>
+ Function: FathersDay<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+           A 2 character short-code for the country<div></div>
+  Returns: The date, according to the Gregorian calendar.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_LaborDay"><B>LaborDay  Integer iYear String sOfficial_Short Returns Date - Function </B></a><div></div>
+ LaborDay always falls on the 1st of May and is also known as the International Workers Day or May Day.<div></div>
+ In the US it falls on the first Monday of September.<div></div>
+ *** Are there countries that uses yet another date?<div></div>
+ Function: LaborDay<div></div>
+   Params:  A 4-digit year as an integer variable<div></div>
+   Returns: A date variable<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_FeastOfChristTheKing"><B>FeastOfChristTheKing  Integer iYear Returns Date - Function </B></a><div></div>
+ Feast of Christ the King the last holy Sunday in the western liturgical calendar. Falls on a Sunday 20-26 November.<div></div>
+ FeastChristKing - Param; iYear Returns Date<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_Advent1"><B>Advent1  Integer iYear Returns Date - Function </B></a><div></div>
+ 1:st Sunday after FeastChristKing. Falls between november 27 and december 3.<div></div>
+ Four Sundays before ChristmasDay.<div></div>
+ Advent1 - Param; iYear Returns Date<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_Advent2"><B>Advent2  Integer iYear Returns Date - Function </B></a><div></div>
+ Advent2 - Param; iYear Returns Date<div></div>
+ Falls a week after 1:st Advent<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_Advent3"><B>Advent3  Integer iYear Returns Date - Function </B></a><div></div>
+ Advent3 - Param; iYear Returns Date<div></div>
+ Falls two weeks after 1:st Advent<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_Advent4"><B>Advent4  Integer iYear Returns Date - Function </B></a><div></div>
+ Advent4 - Param; iYear Returns Date<div></div>
+ Falls three weeks after 1:st Advent (last Sunday before ChristmasDay, can ultimately fall on Christmas Eve)<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_MidsummerDay"><B>MidsummerDay  Integer iYear String sOfficial_Short Returns Date - Function </B></a><div></div>
+ Midsummer day in Sweden is the Saturday that falls between 20-26th of June.<div></div>
+ Holiday in Sweden. In Norway, Denmark, Estonia and Lithuania the Midsummer day always falls on the 24th of June.<div></div>
+ In Norway and Denmark it is called SanktHans.<div></div>
+ Function: MidsummerDay<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+           A 2-character string ISO Official_Short ISO_Short, accorging to this list:<div></div>
+           http://www.iso.org/iso/english_Official_Short_names_and_ISO_Short_elements.<div></div>
+  Returns: The date of MidsummerDay, according to the Gregorian calendar.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_MidsummerEve"><B>MidsummerEve  Integer iYear String sOfficial_Short Returns Date - Function </B></a><div></div>
+ Midsummer eve is the Friday that falls between 19-25th of June.<div></div>
+ "Half a Holiday" in Sweden.<div></div>
+ Function: MidsummerEve<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+           A 2-character string ISO Official_Short ISO_Short, accorging to this list:<div></div>
+           http://www.iso.org/iso/english_Official_Short_names_and_ISO_Short_elements.<div></div>
+  Returns: The date of MidsummerEve, according to the Gregorian calendar.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_IndependenceDay"><B>IndependenceDay  Integer iYear Returns Date - Function </B></a><div></div>
+ Independence Day always falls on the 4th of July - which is always returned by the NationalDay<div></div>
+ function when the "US" Official_Short ISO_Short is passed. The difference to this function is that it takes<div></div>
+ into account if 4th of July falls on a Saturday or Sunday - in case it is adjusted - and returns<div></div>
+ the day off work.<div></div>
+ Holiday in the US.<div></div>
+ Function: IndependenceDay<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The date, according to the Gregorian calendar.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_ColumbusDay"><B>ColumbusDay  Integer iYear Returns Date - Function </B></a><div></div>
+ Columbus Day falls on the second Monday of October.<div></div>
+ Holiday in the US.<div></div>
+ Function: ColumbusDay<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The date, according to the Gregorian calendar.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_Thanksgiving"><B>Thanksgiving  Integer iYear String sOfficial_Short Returns Date - Function </B></a><div></div>
+ Thanksgiving Day falls on the fourth Thursday of November in the US - and on Columbus day in Canada.<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+           A 2-character string ISO Official_Short ISO_Short, accorging to this list:<div></div>
+           http://www.iso.org/iso/english_Official_Short_names_and_ISO_Short_elements,<div></div>
+           or see the included "Nations" data-table.<div></div>
+  Returns: The date of Thanksgiving for US or Canada<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_BlackFriday"><B>BlackFriday  Integer iYear Returns Date - Function </B></a><div></div>
+ "Black Friday" falls on the day after Thanksgiving Day and traditionally is the beginning<div></div>
+ of the Christmas shopping season. Especially popular in the United States, the event is spreading to<div></div>
+ other nations such as Canada and Australia. Black Friday is not actually a holiday, but many employers give their<div></div>
+ employees the day off, increasing the number of potential shoppers.<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The date of Thanksgiving + one day = "Black Friday"<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_AllSaintsDay"><B>AllSaintsDay  Integer iYear String sOfficial_Short Returns Date - Function </B></a><div></div>
+ All Saints Day is a feast celebrated on November 1 in Western Christianity, and on the first Sunday<div></div>
+ after Pentecost in Eastern Christianity in honour of all the saints, known and unknown.<div></div>
+ In Sweden it is a moving holiday and is the Saturday that falls between 31st of October and 6th of November.<div></div>
+ See also the Halloween function.<div></div>
+ Function: AllSaintsDay<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+           A 2-character string ISO Official_Short ISO_Short, accorging to this list:<div></div>
+           http://www.iso.org/iso/english_Official_Short_names_and_ISO_Short_elements.<div></div>
+  Returns: The date of All Saints Day, according to the Gregorian calendar.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_AllSaintsDayEve"><B>AllSaintsDayEve  Integer iYear String sOfficial_Short Returns Date - Function </B></a><div></div>
+ The day before AllSaintsDay.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_Epiphany"><B>Epiphany  Integer iYear Returns Date - Function </B></a><div></div>
+ Epiphany is twelve days after Christmas Day and always falls on January 6.<div></div>
+ Function: Epiphany<div></div>
+   Params:  A 4-digit year as an integer variable<div></div>
+   Returns: A date variable<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_EpiphanyEve"><B>EpiphanyEve  Integer iYear Returns Date - Function </B></a><div></div>
+ Epiphany eve is eleven days after Christmas Day and always falls on January 5.<div></div>
+ Function: Epiphany<div></div>
+   Params:  A 4-digit year as an integer variable<div></div>
+   Returns: A date variable<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_GroundHogDay"><B>GroundHogDay  Integer iYear Returns Date - Function </B></a><div></div>
+ GroundHogDay always falls on February 2.<div></div>
+ Function: GroundHogDay<div></div>
+   Params:  A 4-digit year as an integer variable<div></div>
+   Returns: A date variable<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_ValentinesDay"><B>ValentinesDay  Integer iYear Returns Date - Function </B></a><div></div>
+ ValentinesDay always falls on February 14.<div></div>
+ Function: ValentinesDay<div></div>
+   Params:  A 4-digit year as an integer variable<div></div>
+   Returns: A date variable<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_SaintPatricksDay"><B>SaintPatricksDay  Integer iYear Returns Date - Function </B></a><div></div>
+ SaintPatricksDay always falls on March 17.<div></div>
+ Function: SaintPatricksDay<div></div>
+   Params:  A 4-digit year as an integer variable<div></div>
+   Returns: A date variable<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_AprilFoolsDay"><B>AprilFoolsDay  Integer iYear Returns Date - Function </B></a><div></div>
+ AprilFoolsDay always falls on April 1.<div></div>
+ Function: AprilFoolsDay<div></div>
+   Params:  A 4-digit year as an integer variable<div></div>
+   Returns: A date variable<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_FlagDay"><B>FlagDay  Integer iYear Returns Date - Function </B></a><div></div>
+ FlagDay always falls on the June 14. Commemorates the adoption of the flag of the United States, in 1777.<div></div>
+ Function: FlagDay<div></div>
+   Params:  A 4-digit year as an integer variable<div></div>
+   Returns: A date variable<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_PatriotsDay"><B>PatriotsDay  Integer iYear Returns Date - Function </B></a><div></div>
+ PatriotsDay falls on the September 11.<div></div>
+ Function: PatriotsDay<div></div>
+   Params:  A 4-digit year as an integer variable<div></div>
+   Returns: A date variable<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_ConstitutionDay"><B>ConstitutionDay  Integer iYear Returns Date - Function </B></a><div></div>
+ ConstitutionDay falls on September 17.<div></div>
+ Function: ConstitutionDay<div></div>
+   Params:  A 4-digit year as an integer variable<div></div>
+   Returns: A date variable<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_LeifEriksonDay"><B>LeifEriksonDay  Integer iYear Returns Date - Function </B></a><div></div>
+ LeifEriksonDay falls on October 9.<div></div>
+ Function: LeifEriksonDay<div></div>
+   Params:  A 4-digit year as an integer variable<div></div>
+   Returns: A date variable<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_ValborgsEve"><B>ValborgsEve  Integer iYear Returns Date - Function </B></a><div></div>
+ ValborgsEve is the last day of April.<div></div>
+ Function: ValborgsEve<div></div>
+   Params:  A 4-digit year as an integer variable<div></div>
+   Returns: A date variable<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_Halloween"><B>Halloween  Integer iYear Returns Date - Function </B></a><div></div>
+ Halloween is not to be confused with All Saints Day. Halloween always falls on October 31.<div></div>
+ Halloween is originally the Celtic New Years Eve, and<div></div>
+ All Saints Day is a Christian holiday in honour of all Saints.<div></div>
+ Public Holiday in the USA (not national holiday).<div></div>
+ Function: Halloween<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The date of All Saints Day, according to the Gregorian calendar.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_VeteransDay"><B>VeteransDay  Integer iYear Returns Date - Function </B></a><div></div>
+ Public Holiday in the USA (not national holiday).<div></div>
+ Function: VeteransDay<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The date of Veterans Day, according to the Gregorian calendar.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_EUSummerTimeStart"><B>EUSummerTimeStart  Integer iYear Returns Date - Function </B></a><div></div>
+ Start of EU (European) Summer Time - last Sunday in March (at 1am)<div></div>
+*<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_EUSummerTimeEnd"><B>EUSummerTimeEnd  Integer iYear Returns Date - Function </B></a><div></div>
+ End of EU (European) Summer Time - last Sunday in October (at 1am)<div></div>
+*<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_ChristmasEve"><B>ChristmasEve  Integer iYear Returns Date - Function </B></a><div></div>
+ ChristmasEve - Always falls on 24th of December.<div></div>
+ Function: ChristmasEve<div></div>
+   Params:  A 4-digit year as an integer variable<div></div>
+   Returns: A date variable<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_ChristmasDay"><B>ChristmasDay  Integer iYear Returns Date - Function </B></a><div></div>
+ ChristmasDay - Always falls on 25th of December.<div></div>
+ Function: ChristmasEve<div></div>
+   Params:  A 4-digit year as an integer variable<div></div>
+   Returns: A date variable<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_SecondDayChristmas"><B>SecondDayChristmas  Integer iYear Returns Date - Function </B></a><div></div>
+ SecondDayChristmas - Always falls on 26th of December.<div></div>
+ Function: SecondDayChristmas<div></div>
+   Params:  A 4-digit year as an integer variable<div></div>
+   Returns: A date variable<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_NewYearsEve"><B>NewYearsEve  Integer iYear Returns Date - Function </B></a><div></div>
+ NewYearsEve - Always falls on December 31.<div></div>
+ Function: NewYearsEve<div></div>
+   Params:  A 4-digit year as an integer variable<div></div>
+   Returns: A date variable<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_NewYearsDay"><B>NewYearsDay  Integer iYear Returns Date - Function </B></a><div></div>
+ NewYearsDay - Always falls on January 1.<div></div>
+ Function: NewYearsDay<div></div>
+   Params:  A 4-digit year as an integer variable<div></div>
+   Returns: A date variable<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_NewYearHoliday"><B>NewYearHoliday  Integer iYear Returns Date - Function </B></a><div></div>
+ NewYearHoliday - Always falls on January 2. Scottish holiday.<div></div>
+ Function: NewYearHoliday<div></div>
+   Params:  A 4-digit year as an integer variable<div></div>
+   Returns: A date variable<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_IslamicCalendar"><B>IslamicCalendar  Date dDate Returns stLunar - Function </B></a><div></div>
+ Kuwaiti Algorithm<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_AgongBirthDay"><B>AgongBirthDay  Integer iYear Returns Date - Function </B></a><div></div>
+ Agong's Birthday is the first Saturday in June<div></div>
+ Function: fAgongBirthDay<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The date, according to the Gregorian calendar.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_MalaysiaDay"><B>MalaysiaDay  Integer iYear Returns Date - Function </B></a><div></div>
+ Malaysia day always falls on the 16th of September<div></div>
+ Function: MalaysiaDay<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The date, according to the Gregorian calendar.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_SultanKeday"><B>SultanKeday  Integer iYear Returns Date - Function </B></a><div></div>
+ Sultan of Kedah's Birthday is third Sunday in January<div></div>
+ Function: SultanKedah<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The date, according to the Gregorian calendar.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_PenangGovernorBirthday"><B>PenangGovernorBirthday  Integer iYear Returns Date - Function </B></a><div></div>
+ Penang Governor's Birthday is the Second Saturday in July<div></div>
+ Function: PenangGovernorBirthday<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The date, according to the Gregorian calendar.<div></div>
+<br>
+<a name="Ref_cCalendarHolidays_MalaccaGovernorBirthday"><B>MalaccaGovernorBirthday  Integer iYear Returns Date - Function </B></a><div></div>
+ Malacca Governor's Birthday is the Second Saturday in July<div></div>
+ Function: MalaccaGovernorBirthday<div></div>
+  Params:  A 4-digit year as an integer variable<div></div>
+  Returns: The date, according to the Gregorian calendar.<div></div>
+<br>
+<hr><a name="Ref_Headerinfo"> <h2>Header and license information</h2></a>
+****************************************************************************<div></div>
+ $Module type: Class Package<div></div>
+ $Module name: CalendarHolidays.pkg<div></div>
+ $Author     : Nils G. Svedmyr, RDC Tools International. nils.svedmyr@rdctools.com<div></div>
+ Created     : 2009-07-27 @ 12:53<div></div>
+*<div></div>
+ Description : To calculate dates for holidays for a given year.<div></div>
+*<div></div>
+ List of holiday Functions:<div></div>
+*<div></div>
+              *** Moving Holidays: ***<div></div>
+*<div></div>
+              AshWednesday       - Param; iYear Returns Date // 46 days before Easter Day<div></div>
+              PalmSunday         - Param; iYear Returns Date // Sunday before Easter Day<div></div>
+              MaundyThursday     - Param; iYear Returns Date // Thursday before Easter Day<div></div>
+              GoodFriday         - Param; iYear Returns Date // Friday before Easter Day<div></div>
+              HolySaturday       - Param; iYear Returns Date // Saturday before Easter Day<div></div>
+              EasterDay          - Param; iYear Returns Date // * Easter Day *<div></div>
+              EasterMonday       - Param; iYear Returns Date // Monday after Easter Day<div></div>
+              AscensionDay       - Param; iYear Returns Date // 40 days after Easter Day<div></div>
+              WhitSunday         - Param; iYear Returns Date // 49 days (7-weeks) after Easter Day<div></div>
+              WhitMonday         - Param; iYear Returns Date // 50 days after Easter Day<div></div>
+*<div></div>
+              MLKDay             - Param; iYear Returns Date // Martin Luther King's Day, third Monday in January<div></div>
+              PresidentsDay      - Param; iYear Returns Date // President's Day, third Monday in February<div></div>
+              MayBankDay         - Param; iYear Returns Date // May Bank Day, first Monday in May<div></div>
+              LateSummerBankDay  - Param; iYear Returns Date // Late Summer Bank Day, last Monday in August<div></div>
+              MemorialDay        - Param; iYear Returns Date // Memorial Day, (Spring Bank Holiday in the UK) last Monday in May.<div></div>
+              IndependenceDay    - Param; iYear Returns Date // Independence Day, around the 4th of July.<div></div>
+                Note:              Independence Day always falls on the 4th of July - which is always returned by the NationalDay<div></div>
+                                   function when the "US" Official_Short ISO_Short is passed. The difference to this function is that it takes<div></div>
+                                   into account if 4th of July falls on a Saturday or Sunday - in case it is adjusted - and returns<div></div>
+                                   the day off work.<div></div>
+*<div></div>
+              ColumbusDay        - Param; iYear Returns Date                 // Falls on the second Monday of October.<div></div>
+              BlackFriday        - Param; iYear                              // Falls on the day after Thanksgiving Day and is not a holiday. See also explanation above the function.<div></div>
+              Thanksgiving       - Param; iYear sOfficial_Short Returns Date // Falls on the fourth Thursday of November in the US - and on Columbus day in Canada.<div></div>
+*<div></div>
+              MidsummerDay       - Param; iYear sOfficial_Short Returns Date // Saturday that falls between 20-26th of June<div></div>
+              MidsummerEve       - Param; iYear sOfficial_Short Returns Date // The day before MidsummerDay<div></div>
+              AllSaintsDay       - Param; iYear sOfficial_Short Returns Date // November 1 in Western Christianity, first Sunday after Pentecost in Eastern Christianity<div></div>
+              AllSaintsDayEve    - Param; iYear sOfficial_Short Returns Date // The day before AllSaintsDay<div></div>
+              FathersDay         - Param; iYear sOfficial_Short Returns Date // Father's Day, mostly on the second Sunday in September, but it differs depending on the country.<div></div>
+              LaborDay           - Param; iYear sOfficial_Short Returns Date // May 1 - also known as May Day in most countries. However, in the US it is the first Monday in September.<div></div>
+*<div></div>
+              FeastOfChristTheKing - Param; iYear Returns Date  // Feast of Christ the King the last holy Sunday in the western liturgical calendar. Falls on a Sunday 20-26 November.<div></div>
+              Advent1            - Param; iYear Returns Date  // 1:st Sunday after FeastChristKing. Falls between november 27 and december 3. Four Sundays before ChristmasDay.<div></div>
+              Advent2            - Param; iYear Returns Date  // Falls a week after 1:st Advent<div></div>
+              Advent3            - Param; iYear Returns Date  // Falls two weeks after 1:st Advent<div></div>
+              Advent4            - Param; iYear Returns Date  // Falls three weeks after 1:st Advent (last Sunday before ChristmasDay, can ultimately fall on Christmas Eve)<div></div>
+*<div></div>
+              EUSummerTimeStart  - Param; iYear Returns Date  // European Summer Time starts<div></div>
+              EUSummerTimeEnd    - Param; iYear Returns Date  // European Summer Time ends.<div></div>
+</BODY>
+</HTML>

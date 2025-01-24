@@ -1,0 +1,830 @@
+﻿//****************************************************************************
+// $Module type: Package file
+// $Module name: MothersDay.pkg
+// $Author     : Nils Svedmyr, RDC Tools International. nils.svedmyr@rdctools.com
+// Created     : 2010-05-11 @ 09:13
+//
+// Description : Function to return the Mother's Day for the passed year and
+//               ISO official 2-character country code.
+//               The 2-character Official_Short ISO_Short, is an ISO ISO_Short accorging to this list:
+//               https://www.iso.org/obp/ui/#search/code/ 
+//               and has been used for the function below.
+//
+//               This package is part of the CalendarHolidays "package" but put in its own
+//               file due to the size.
+//
+// $Rev History:
+//    2010-05-11  Module header created
+//    2010-12-14  Cleaning up.
+//****************************************************************************
+
+{Published=True} 
+{ Description = """
+  Returns the date of Mother's Day for the passed year and Official_Short ISO_Short.
+  Returns the 1st of January year 1000 - if Official_Short ISO_Short doesn't exist.
+  """ }
+Function MothersDay Integer iYear String sOfficial_Short Returns Date
+    Date dReturn
+    String sDate
+
+    Move (Uppercase(sOfficial_Short)) to sOfficial_Short
+
+    // Adjust if "UK" mistacingly was used as the Official_Short ISO_Short for Great Britain - as apposed to "GB".
+    If (sOfficial_Short = "UK") Begin
+        Move "GB" to sOfficial_Short
+    End
+
+    Case Begin
+            // *** A ***
+        Case (sOfficial_Short = "AF") // Afghanistan
+            Move "0308" to sDate // Month and day number.
+            Case Break
+        Case (sOfficial_Short = "AX") // Aaland Islands (Between Finland and Sweden)
+            Move "0709" to sDate
+            Case Break
+        Case (sOfficial_Short = "AL") // Albania
+            Move "0508" to sDate
+            Case Break
+        Case (sOfficial_Short = "DZ") // Algeria
+            Get LastSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "AS") // American Samoa
+            Move "0417" to sDate
+            Case Break
+        Case (sOfficial_Short = "AD") // Andorra
+            Move "0908" to sDate
+            Case Break
+        Case (sOfficial_Short = "AO") // Angola
+            Move "1111" to sDate
+            Case Break
+        Case (sOfficial_Short = "AI") // Anguilla
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "AG") // Antigua and Barbuda
+            Move "1101" to sDate
+            Case Break
+        Case (sOfficial_Short = "AR") // Argentina
+            Get ThirdSundayOctober iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "AM") // Armenia
+            Move "0407" to sDate
+            Case Break
+        Case (sOfficial_Short = "AW") // Aruba
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "AU") // Australia
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "AT") // Austria
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "AZ") // Azerbaijan
+            Move "0308" to sDate
+            Case Break
+
+            // *** B ***
+        Case (sOfficial_Short = "BS") // Bahamas
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "BH") // Bahrain
+            Move "0321" to sDate
+            Case Break
+        Case (sOfficial_Short = "BD") // Bangladesh
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "BB") // Barbados
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "BY") // Belarus
+            Move "0308" to sDate
+            Case Break
+        Case (sOfficial_Short = "BE") // Belgium
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "BZ") // Belize
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "BJ") // Benin
+            Move "0801" to sDate
+            Case Break
+        Case (sOfficial_Short = "BM") // Bermuda
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "BT") // Bhutan
+            Move "1217" to sDate
+            Case Break
+        Case (sOfficial_Short = "BO") // Bolivia, Plurinational State Of
+            Move "0527" to sDate
+            Case Break
+        Case (sOfficial_Short = "BA") // Bosnia and Herzegovinia
+            Move "0308" to sDate
+            Case Break
+        Case (sOfficial_Short = "BW") // Botswana
+            Move "0930" to sDate
+            Case Break
+        Case (sOfficial_Short = "BR") // Brazil
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "BN") // Brunei Darussalam
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "BG") // Bulgaria
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "BF") // Burkina Faso
+            Move "0804" to sDate
+            Case Break
+        Case (sOfficial_Short = "BI") // Burundi
+            Move "0701" to sDate
+            Case Break
+
+            // *** C ***
+        Case (sOfficial_Short = "KH") // Cambodia
+            Move "1109" to sDate
+            Case Break
+        Case (sOfficial_Short = "CM") // Cameroon
+            Move "0520" to sDate
+            Case Break
+        Case (sOfficial_Short = "CA") // Canada
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "CV") // Cap Verde
+            Move "0912" to sDate
+            Case Break
+        Case (sOfficial_Short = "KY") // Cayman Islands
+            Get UKNationalDay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "CF") // Central African Republic
+            Move "1201" to sDate
+            Case Break
+        Case (sOfficial_Short = "TD") // Chad
+            Move "0811" to sDate
+            Case Break
+        Case (sOfficial_Short = "CL") // Chile
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "CN") // China
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "CX") // Christmas Islands
+            Move "0126" to sDate
+            Case Break
+        Case (sOfficial_Short = "CC") // Cocos (Keeling) Islands
+            Move "0126" to sDate
+            Case Break
+        Case (sOfficial_Short = "CO") // Columbia
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "KM") // Comoros
+            Move "0706" to sDate
+            Case Break
+        Case (sOfficial_Short = "CG") // Congo
+            Move "0630" to sDate
+            Case Break
+        Case (sOfficial_Short = "CD") // Congo, The Democratic Republic Of
+            Move "0630" to sDate
+            Case Break
+        Case (sOfficial_Short = "CK") // Cook Islands
+            Move "0804" to sDate
+            Case Break
+        Case (sOfficial_Short = "CR") // Costa Rica
+            Move "0815" to sDate
+            Case Break
+        Case (sOfficial_Short = "CI") // Côte d'Ivoire
+            Move "0807" to sDate
+            Case Break
+        Case (sOfficial_Short = "HR") // Croatia
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "CU") // Cuba
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "CY") // Cyprus
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "CZ") // Czeck Republic
+            Get SecondSundayMay iYear to sDate
+            Case Break
+
+            // *** D ***
+        Case (sOfficial_Short = "DK") // Denmark
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "DJ") // Djibouti
+            Move "0527" to sDate
+            Case Break
+        Case (sOfficial_Short = "DM") // Dominica
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "DO") // Dominican Republic
+            Get LastSundayMay iYear to sDate
+            Case Break
+
+            // *** E ***
+        Case (sOfficial_Short = "EC") // Ecuador
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "  EG") // Egypt
+            Move "0321" to sDate
+            Case Break
+        Case (sOfficial_Short = "SV") // El Salvador
+            Move "0510" to sDate
+            Case Break
+        Case (sOfficial_Short = "GQ") // Equatorial Guinea
+            Move "1012" to sDate
+            Case Break
+        Case (sOfficial_Short = "ER") // Eritrea
+            Move "0524" to sDate
+            Case Break
+        Case (sOfficial_Short = "EE") // Estonia
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "ET") // Ethiopia
+            Get SecondSundayMay iYear to sDate
+            Case Break
+
+            // *** F ***
+        Case (sOfficial_Short = "FK") // Falklands Islands (Malvinas)
+            Move "0614" to sDate
+            Case Break
+        Case (sOfficial_Short = "FO") // Faroe Islands
+            Move "0729" to sDate
+            Case Break
+        Case (sOfficial_Short = "FJ") // Fiji
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "FI") // Finland
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "FR") // France
+            Get LastSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "GF") // French Guyana
+            Move "0714" to sDate
+            Case Break
+        Case (sOfficial_Short = "PF") // French Polynesia
+            Move "0714" to sDate
+            Case Break
+        Case (sOfficial_Short = "TF") // French Southern Territories
+            Move "0714" to sDate
+            Case Break
+
+            // *** G ***
+        Case (sOfficial_Short = "GA") // Gabon
+            Move "0817" to sDate
+            Case Break
+        Case (sOfficial_Short = "GM") // Gambia
+            Move "0218" to sDate
+            Case Break
+        Case (sOfficial_Short = "GE") // Georgia
+            Move "0303" to sDate
+            Case Break
+        Case (sOfficial_Short = "DE") // Germany
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "GH") // Ghana
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "GI") // Gibraltar
+            Move "0910" to sDate
+            Case Break
+        Case (sOfficial_Short = "GR") // Greece
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "GL") // Greenland
+            Move "0621" to sDate
+            Case Break
+        Case (sOfficial_Short = "GD") // Grenada
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "GP") // Guadeloupe
+            Move "0714" to sDate
+            Case Break
+        Case (sOfficial_Short = "GU") // Guam
+            Move "0721" to sDate
+            Case Break
+        Case (sOfficial_Short = "GT") // Guatemala
+            Move "0510" to sDate
+            Case Break
+        Case (sOfficial_Short = "GG") // Guernsey
+            Move "0509" to sDate
+            Case Break
+        Case (sOfficial_Short = "GN") // Guinea
+            Move "0403" to sDate
+            Case Break
+        Case (sOfficial_Short = "GW") // Guinea-Bissau
+            Move "0924" to sDate
+            Case Break
+        Case (sOfficial_Short = "GY") // Guyana
+            Move "0223" to sDate
+            Case Break
+
+            // *** H ***
+        Case (sOfficial_Short = "HT") // Haiti
+            Get LastSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "HM") // Heard Island and McDonald Islands
+            Move "0126" to sDate
+            Case Break
+        Case (sOfficial_Short = "VA") // Holy See (Vatican City State)
+            Move "0419" to sDate
+            Case Break
+        Case (sOfficial_Short = "HN") // Honduras
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "HK") // Hong Kong
+            Get FirstSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "HU") // Hungary
+            Get FirstSundayMay iYear to sDate
+            Case Break
+
+            // *** I ***
+        Case (sOfficial_Short = "IS") // Iceland
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "IN") // India
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "ID") // Indonesia
+            Move "1222" to sDate
+            Case Break
+        Case (sOfficial_Short = "IR") // Iran, Islamic Republic Of
+            Move "" to sDate
+            Case Break
+        Case (sOfficial_Short = "IQ") // Iraq
+            Move "0321" to sDate
+            Case Break
+        Case (sOfficial_Short = "IE") // Ireland
+            Get FourthSundayLent iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "IM") // Isle Of Man
+            Move "0705" to sDate
+            Case Break
+        Case (sOfficial_Short = "IL") // Israel
+            Move "" to sDate
+            Case Break
+        Case (sOfficial_Short = "IT") // Italy
+            Get SecondSundayMay iYear to sDate
+            Case Break
+
+            // *** J ***
+        Case (sOfficial_Short = "JM") // Jamaica
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "JP") // Japan
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "JE") // Jersey
+            Move "0509" to sDate
+            Case Break
+        Case (sOfficial_Short = "JO") // Jordan
+            Move "0321" to sDate
+            Case Break
+
+            // *** K ***
+        Case (sOfficial_Short = "KZ") // Kazakhstan
+            Move "0308" to sDate
+            Case Break
+        Case (sOfficial_Short = "KE") // Kenya
+            Get LastSundayJune iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "KI") // Kiribati
+            Move "0712" to sDate
+            Case Break
+        Case (sOfficial_Short = "KP") // Korea, Democratic Republic Of (North Korea)
+            Move "0908" to sDate
+            Case Break
+        Case (sOfficial_Short = "KR") // Korea, Republic Of (South Korea)
+            Move "0508" to sDate
+            Case Break
+        Case (sOfficial_Short = "KW") // Kuwait
+            Move "0321" to sDate
+            Case Break
+        Case (sOfficial_Short = "KG") // Kyrgyzstan
+            Move "0831" to sDate
+            Case Break
+
+            // *** L ***
+        Case (sOfficial_Short = "LA") // Lao People's Democratic Republic (Laos)
+            Move "0308" to sDate
+            Case Break
+        Case (sOfficial_Short = "LV") // Latvia
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "LB") // Lebanon
+            Move "0321" to sDate
+            Case Break
+        Case (sOfficial_Short = "LS") // Lesotho
+            Move "1004" to sDate
+            Case Break
+        Case (sOfficial_Short = "LR") // Liberia
+            Move "0726" to sDate
+            Case Break
+        Case (sOfficial_Short = "LY") // Libyan Arab Jamahiriya
+            Move "0321" to sDate
+            Case Break
+        Case (sOfficial_Short = "LI") // Liechtenstein
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "LT") // Lithuania
+            Get FirstSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "LU") // Luxembourg
+            Get SecondSundayJune iYear to sDate
+            Case Break
+
+            // *** M ***
+        Case (sOfficial_Short = "MO") // Macao
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "MK") // Macedonia, The Former Yugoslav Republic Of
+            Move "0308" to sDate
+            Case Break
+        Case (sOfficial_Short = "MG") // Madagascar
+            Move "0626" to sDate
+            Case Break
+        Case (sOfficial_Short = "MW") // Malawi
+            Get SecondMondayOctober iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "MY") // Malaysia
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "MV") // Maldives
+            Move "0726" to sDate
+            Case Break
+        Case (sOfficial_Short = "ML") // Mali
+            Move "0922" to sDate
+            Case Break
+        Case (sOfficial_Short = "MT") // Malta
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "MH") // Marshall Islands
+            Move "0501" to sDate
+            Case Break
+        Case (sOfficial_Short = "MQ") // Martinique
+            Move "0714" to sDate
+            Case Break
+        Case (sOfficial_Short = "MR") // Mauritania
+            Move "1128" to sDate
+            Case Break
+        Case (sOfficial_Short = "MU") // Mauritius
+            Get LastSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "YT") // Mayotte
+            Move "0714" to sDate
+            Case Break
+        Case (sOfficial_Short = "MX") // Mexico
+            Move "0510" to sDate
+            Case Break
+        Case (sOfficial_Short = "FM") // Micronesia, Federated States Of
+            Move "0510" to sDate
+            Case Break
+        Case (sOfficial_Short = "MD") // Moldovia, Republic Of
+            Move "0308" to sDate
+            Case Break
+        Case (sOfficial_Short = "MC") // Monaco
+            Move "1119" to sDate
+            Case Break
+        Case (sOfficial_Short = "MN") // Mongolia
+            Move "0601" to sDate
+            Case Break
+        Case (sOfficial_Short = "ME") // Montenegro
+            Move "0308" to sDate
+            Case Break
+        Case (sOfficial_Short = "MS") // Montserrat
+            Get UKNationalDay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "MA") // Morocco
+            Get LastSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "MZ") // Mozambique
+            Get FirstSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "MM") // Myanmar (Burma)
+            Get SecondSundayMay iYear to sDate
+            Case Break
+
+            // *** N ***
+        Case (sOfficial_Short = "NA") // Namibia
+            Move "0321" to sDate
+            Case Break
+        Case (sOfficial_Short = "NR") // Nauru
+            Move "0131" to sDate
+            Case Break
+        Case (sOfficial_Short = "NP") // Nepal
+            Move "" to sDate
+            Case Break
+        Case (sOfficial_Short = "NL") // Netherlands
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "AN") // Netherlands Antilles
+            Move "0430" to sDate
+            Case Break
+        Case (sOfficial_Short = "NC") // New Caledonia
+            Move "0714" to sDate
+            Case Break
+        Case (sOfficial_Short = "NZ") // New Zealand
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "NI") // Nicaragua
+            Move "0530" to sDate
+            Case Break
+        Case (sOfficial_Short = "NE") // Niger
+            Move "1218" to sDate
+            Case Break
+        Case (sOfficial_Short = "NG") // Nigeria
+            Get FourthSundayLent iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "NU") // Niue
+            Move "0206" to sDate
+            Case Break
+        Case (sOfficial_Short = "NF") // Norfolk Islands
+            Move "0608" to sDate
+            Case Break
+        Case (sOfficial_Short = "MP") // Northern Mariana Islands
+            Move "0108" to sDate
+            Case Break
+        Case (sOfficial_Short = "NO") // Norway
+            Get NorwayMothersDay iYear to sDate
+            Case Break
+
+            // *** O ***
+        Case (sOfficial_Short = "OM") // Oman
+            Move "0321" to sDate
+            Case Break
+
+        Case (sOfficial_Short = "PK") // Pakistan
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "PW") // Palau
+            Move "0709" to sDate
+            Case Break
+        Case (sOfficial_Short = "PS") // Palestinian Territory, Occupied
+            Move "0321" to sDate
+            Case Break
+        Case (sOfficial_Short = "PA") // Panama
+            Move "1208" to sDate
+            Case Break
+        Case (sOfficial_Short = "PG") // Papua New Guinea
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "PY") // Paraguay
+            Move "0515" to sDate
+            Case Break
+        Case (sOfficial_Short = "PE") // Peru
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "PH") // Philippines
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "PN") // Pitcairn
+            Move "0123" to sDate
+            Case Break
+        Case (sOfficial_Short = "PL") // Poland
+            Move "0526" to sDate
+            Case Break
+        Case (sOfficial_Short = "PT") // Portugal
+            Get FirstSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "PR") // Puerto Rico
+            Get SecondSundayMay iYear to sDate
+            Case Break
+
+            // *** Q ***
+        Case (sOfficial_Short = "QA") // Quatar
+            Move "0903" to sDate
+            Case Break
+
+            // *** R ***
+        Case (sOfficial_Short = "RE") // Réunion
+            Move "0714" to sDate
+            Case Break
+        Case (sOfficial_Short = "RO") // Romania
+            Move "0308" to sDate
+            Case Break
+        Case (sOfficial_Short = "RU") // Russian Federation
+            Get LastSundayNovember iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "RW") // Rwanda
+            Move "0701" to sDate
+            Case Break
+
+            // *** S ***
+        Case (sOfficial_Short = "BL") // Saint Barthélemy
+            Move "0824" to sDate
+            Case Break
+        Case (sOfficial_Short = "SH") // Saint Helena
+            Get UKNationalDay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "KN") // Saint Kitts and Nevis
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "LC") // Saint Lucia
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "MF") // Saint Martin
+            Move "0712" to sDate
+            Case Break
+        Case (sOfficial_Short = "PM") // Saint Pierre and Miquolon
+            Move "0714" to sDate
+            Case Break
+        Case (sOfficial_Short = "VC") // Saint Vincent and Grenadines
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "WS") // Samoa
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "SM") // San Marino
+            Move "0903" to sDate
+            Case Break
+        Case (sOfficial_Short = "ST") // Sao Tome and Principe
+            Move "0712" to sDate
+            Case Break
+        Case (sOfficial_Short = "SA") // Saudi Arabia
+            Move "0321" to sDate
+            Case Break
+        Case (sOfficial_Short = "SN") // Senegal
+            Move "0404" to sDate
+            Case Break
+        Case (sOfficial_Short = "RS") // Serbia
+            Move "0308" to sDate
+            Case Break
+        Case (sOfficial_Short = "SC") // Seychelles
+            Move "0618" to sDate
+            Case Break
+        Case (sOfficial_Short = "SL") // Sierra Leone
+            Move "0427" to sDate
+            Case Break
+        Case (sOfficial_Short = "SG") // Singapore
+            Get SecondSundayMay iYear   to sDate
+            Case Break
+        Case (sOfficial_Short = "SK") // Slovakia
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "SI") // Slovenia
+            Move "0325" to sDate
+            Case Break
+        Case (sOfficial_Short = "SB") // Solomon Islands
+            Move "0707" to sDate
+            Case Break
+        Case (sOfficial_Short = "SO") // Somalia
+            Move "0701" to sDate
+            Case Break
+        Case (sOfficial_Short = "ZA") // South Africa
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "GS") // South Georgia and the South Sandwich Islands
+            Move "0614" to sDate
+            Case Break
+        Case (sOfficial_Short = "ES") // Spain
+            Get FirstSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "LK") // Sri Lanka
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "SD") // Sudan
+            Move "0321" to sDate
+            Case Break
+        Case (sOfficial_Short = "SR") // Suriname
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "SJ") // Svalbard and Jan Mayen
+            Move "0517" to sDate
+            Case Break
+        Case (sOfficial_Short = "SZ") // Swaziland
+            Move "0906" to sDate
+            Case Break
+        Case (sOfficial_Short = "SE") // Sweden
+            Get LastSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "CH") // Switzerland
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "SY") // Syrian Arabic Republic
+            Move "0321" to sDate
+            Case Break
+
+            // *** T ***
+        Case (sOfficial_Short = "TW") // Taiwan, Province Of China
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "TJ") // Tajikistan
+            Move "0909" to sDate
+            Case Break
+        Case (sOfficial_Short = "TZ") // Tanzania, United Republic Of
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "TH") // Thailand
+            Move "0812" to sDate
+            Case Break
+        Case (sOfficial_Short = "TL") // Timor-Leste
+            Move "1128" to sDate
+            Case Break
+        Case (sOfficial_Short = "TG") // Togo
+            Move "0427" to sDate
+            Case Break
+        Case (sOfficial_Short = "TK") // Tokelau
+            Move "0206" to sDate
+            Case Break
+        Case (sOfficial_Short = "TO") // Tonga
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "TT") // Trinidad and Tobago
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "TN") // Tunisia
+            Get LastSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "TR") // Turkey
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "TM") // Turkmenistan
+            Move "1027" to sDate
+            Case Break
+        Case (sOfficial_Short = "TC") // Turks and Caicas Islands
+            Move "0830" to sDate
+            Case Break
+        Case (sOfficial_Short = "TV") // Tuvalu
+            Move "1001" to sDate
+            Case Break
+
+            // *** U ***
+        Case (sOfficial_Short = "UG") // Uganda
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "UA") // Ukraine
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "AE") // United Arab Emirates
+            Move "0321" to sDate
+            Case Break
+        Case (sOfficial_Short = "GB") // United Kingdom
+            Get FourthSundayLent iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "US") // USA
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "UM") // United States Minor Outlying Islands
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "UY") // Uruguay
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "UZ") // Uzbekistan
+            Move "0901" to sDate
+            Case Break
+
+            // *** V ***
+        Case (sOfficial_Short = "VU") // Vanuatu
+            Move "0730" to sDate
+            Case Break
+        Case (sOfficial_Short = "VE") // Venezuela, Bolivarian Republic Of
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "VN") // Vietnam
+            Move "0308" to sDate
+            Case Break
+        Case (sOfficial_Short = "VG") // Virgin Islands, British
+            Move "0701" to sDate
+            Case Break
+        Case (sOfficial_Short = "VI") // Virgin Islands, U.S.
+            Move "0331" to sDate
+            Case Break
+
+            // *** W ***
+        Case (sOfficial_Short = "WF") // Wallis and Futuna
+            Move "0714" to sDate
+            Case Break
+        Case (sOfficial_Short = "EH") // Western Sahara
+            Move "0227" to sDate
+            Case Break
+
+            // *** Y ***
+        Case (sOfficial_Short = "YE") // Yemen
+            Move "0321" to sDate
+            Case Break
+
+            // *** Z ***
+        Case (sOfficial_Short = "ZM") // Zambia
+            Get SecondSundayMay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "ZW") // Zimbabwe
+            Get SecondSundayMay iYear to sDate
+            Case Break
+
+        Case Else
+            Move 1000   to iYear
+            Move "0101" to sDate
+
+    Case End
+
+    If (Length(sDate) = 4) Begin
+        Get DateSetDate of ghoCalendarHolidays iYear (Left(sDate,2)) (Mid(sDate,2,3)) to dReturn
+    End
+    Else Begin
+        Move sDate to dReturn
+    End
+
+    Function_Return dReturn
+End_Function

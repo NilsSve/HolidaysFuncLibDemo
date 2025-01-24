@@ -1,0 +1,57 @@
+body
+{
+  font-family: Verdana, Arial, Helvetica;
+  background-color: #FFFFCC;
+  color: #666633;
+}
+
+a:link
+{
+  color: #3399FF
+}
+
+a:visited
+{
+  color: #3366CC
+}
+
+a:active
+{
+  color: #FF9900
+}
+
+h1
+{
+  font-family: 'Times New Roman', Times;
+  color: #999933;
+}
+
+h2
+{
+  font-family: 'Times New Roman', Times;
+  color: #CC9900
+}
+
+h3
+{
+  font-family: 'Times New Roman', Times;
+  color: #006699
+}
+
+h4
+{
+  font-family: 'Times New Roman', Times;
+  color: #999900
+}
+
+h5
+{
+  font-family: 'Times New Roman', Times;
+  color: #FF9900
+}
+
+h6
+{
+  font-family: 'Times New Roman', Times;
+  color: #3366CC
+}

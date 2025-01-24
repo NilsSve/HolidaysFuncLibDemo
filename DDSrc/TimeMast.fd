@@ -1,0 +1,11 @@
+#REPLACE FILE154 TimeMast
+#REPLACE TimeMast.Recnum |FN154,0
+#REPLACE TimeMast.Type |FS154,1
+#REPLACE TimeMast.Code |FS154,2
+#REPLACE TimeMast.Description |FS154,3
+#REPLACE TimeMast.Col4Ascii |FS154,4
+#REPLACE TimeMast.Col5Ascii |FS154,5
+#REPLACE TimeMast.Col6Ascii |FS154,6
+#REPLACE TimeMast.Col7Num |FN154,7
+#REPLACE TimeMast.Col8Num |FN154,8
+#REPLACE TimeMast.Col9Num |FN154,9

@@ -1,0 +1,99 @@
+﻿Use DataDict.pkg
+Use WindowsMonthAndDayNames.pkg
+
+Open Nations
+Open Holidays
+Open Continen
+
+Register_Object Nations_sl
+
+Register_Object Currency_sl
+
+Class cNationsDataDictionary is a DataDictionary
+
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Main_file to Nations.File_Number
+
+        Set Add_Server_File to Continen.File_Number
+
+        Set Add_Client_File to Holidays.File_Number
+
+        Set Foreign_Field_Option DD_KEYFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_KEYFIELD DD_FINDREQ to True
+        Set Foreign_Field_Option DD_INDEXFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_INDEXFIELD DD_SKIPFOUND to True
+        Set Foreign_Field_Option DD_DEFAULT DD_DISPLAYONLY to True
+        Set Foreign_Field_Option DD_DEFAULT DD_SKIPFOUND to True
+
+        Set Key_Field_State Field Nations.ISO_Short to True
+        Set Field_Option Field Nations.ISO_Short DD_CAPSLOCK to True
+        Set Field_Option Field Nations.ISO_Short DD_AUTOFIND to True
+        Set Field_Prompt_Object Field Nations.ISO_Short to Nations_sl
+        Set Field_Entry_msg Field Nations.ISO_Short to Default_ISO_Short
+        Set Status_Help Field Nations.ISO_Short to "The ISO (International Organization for Standardization) 2-character country code"
+
+        Set Field_Prompt_Object Field Nations.Official_Short to Nations_sl
+        Set Status_Help Field Nations.Official_Short to "The ISO (International Organization for Standardization) name of the country (Short version)"
+
+        Set Status_Help Field Nations.Official_Long to "The ISO (International Organization for Standardization) name of the country (Long version)"
+
+        Set Field_Option Field Nations.ISO_Code DD_ZERO_SUPPRESS to True
+        Set Status_Help Field Nations.ISO_Code to "The ISO (International Organization for Standardization) numeric country code"
+
+        Set Status_Help Field Nations.ISO_Long to "The ISO (International Organization for Standardization) 3-character country code"
+        Set Field_Option Field Nations.ISO_Long DD_CAPSLOCK to True
+        Set Field_Prompt_Object Field Nations.ISO_Long to Nations_sl
+
+        Set Field_Option Field Nations.UN_Code DD_ZERO_SUPPRESS to True
+        Set Status_Help Field Nations.UN_Code to "The UN (United Nations) Numeric Country Code"
+
+        Set Field_Prompt_Object Field Nations.Capital_City to Nations_sl
+        Set Status_Help Field Nations.Capital_City to "The country's capital city"
+
+        Set Status_Help Field Nations.ISO_Currency to "The ISO (International Organization for Standardization) Currency Code"
+        Set Field_Option Field Nations.ISO_Currency DD_CAPSLOCK to True
+        Set Field_Prompt_Object Field Nations.ISO_Currency to Currency_sl
+
+        Set Status_Help Field Nations.ISO_CurrTxt to "The ISO Currency Name"
+
+        Set Status_Help Field Nations.ISO_CurrNum to "The ISO (International Organization for Standardization) Currency Number"
+
+        Set Status_Help Field Nations.Internet_TLD to "The Internet Top Level Domain Code (TLD)"
+        Set Field_Prompt_Object Field Nations.Internet_TLD to Nations_sl
+
+        Set Status_Help Field Nations.IntCallCode to "The International Calling Code (also called IDD or ISD codes)"
+
+        Set Status_Help Field Nations.Area to "Area (Square kilometers)"
+        Set Field_Mask_Type Field Nations.Area to Mask_Numeric_Window
+        Set Field_Mask Field Nations.Area to "###,###,###,###"
+
+        Set Field_Mask_Type Field Nations.Population to Mask_Numeric_Window
+        Set Field_Mask Field Nations.Population to "###,###,###,###"
+
+    End_Procedure
+
+    // Display the record for the users country code as the default:
+    Procedure Default_ISO_Short Integer iField String sISO_Long
+        Integer iChanged
+
+        Get Field_Changed_State iField to iChanged
+        If (iChanged = 0 and sISO_Long = "") Begin
+            Get WindowsLocaleValue LOCALE_SABBREVCTRYNAME 3 to sISO_Long
+            Move sISO_Long to Nations.ISO_Long
+            Find EQ Nations.ISO_Long
+            // If not found, clear and display official short as the default value.
+            If (Found = False) Begin
+                Send Request_Clear
+                Set Field_Default_Value iField to sISO_Long
+            End
+        End
+    End_Procedure
+
+End_Class
+
+#IFDEF Is$WebApp
+#ELSE
+Use Currency.sl
+Use Nations.sl
+#ENDIF

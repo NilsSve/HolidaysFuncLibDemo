@@ -1,0 +1,34 @@
+Use DataDict.pkg
+
+Open Continen
+Open Nations
+
+Register_Object Continent_sl
+
+Class cContinenDataDictionary is a DataDictionary
+
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Main_file to Continen.File_Number
+
+        Set Add_Client_File to Nations.File_Number
+
+        Set Foreign_Field_Option DD_KEYFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_KEYFIELD DD_FINDREQ to True
+        Set Foreign_Field_Option DD_INDEXFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_DEFAULT DD_DISPLAYONLY to True
+
+        Set Field_Prompt_Object Field Continen.ID to Continent_sl
+
+        Set Field_Label_Long Field Continen.Name to "Continent Name"
+        Set Field_Prompt_Object Field Continen.Name to Continent_sl
+        Set Field_Class_Name Field Continen.Name to "dbComboForm"
+
+    End_Procedure
+
+End_Class
+
+#IFDEF Is$WebApp
+#ELSE
+Use Continent.sl
+#ENDIF

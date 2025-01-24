@@ -1,0 +1,448 @@
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" href="Classes.css">
+</HEAD>
+<BODY>
+Created 2014-11-02 12:49:51  by <b>Nils G. Svedmyr</b> on <b>NILS-W540</b> [<a href="#Ref_Headerinfo"> Header and license information </a>]<br>
+<hr>
+<h2>Class List</h1> <a> </a>
+<ul>
+<li><a href="#Ref_DelegateArray">DelegateArray</a></li>
+<li><a href="#Ref_cCodeComponent">cCodeComponent</a></li>
+<li><a href="#Ref_cFunctionComponent">cFunctionComponent</a></li>
+<li><a href="#Ref_cProcedureComponent">cProcedureComponent</a></li>
+<li><a href="#Ref_cPropertyComponent">cPropertyComponent</a></li>
+<li><a href="#Ref_cCodeComponentList">cCodeComponentList</a></li>
+<li><a href="#Ref_cProcedureList">cProcedureList</a></li>
+<li><a href="#Ref_cFunctionList">cFunctionList</a></li>
+<li><a href="#Ref_cPropertyList">cPropertyList</a></li>
+<li><a href="#Ref_cClassComponent">cClassComponent</a></li>
+<li><a href="#Ref_cClassList">cClassList</a></li>
+<li><a href="#Ref_cCodeSpy">cCodeSpy</a></li>
+<li><a href="#Ref_cSortSet">cSortSet</a></li>
+<li><a href="#Ref_cClassGrouper">cClassGrouper</a></li>
+<li><a href="#Ref_cFileClassList">cFileClassList</a></li>
+<li><a href="#Ref_cMultiFileCodeSpy">cMultiFileCodeSpy</a></li>
+</ul>
+<hr>
+<a name="Ref_DelegateArray"><h2>Class DelegateArray</h1></a>
+<b>Source:</b> CODESPY.PKG<br><b>Baseclass:</b> Array<br><br><br>
+<hr>
+<a name="Ref_cCodeComponent"><h2>Class cCodeComponent</h1></a>
+<b>Source:</b> CODESPY.PKG<br><b>Baseclass:</b> <a href="CodeSpy.htm#Ref_DelegateArray">DelegateArray</a><br><br><br>
+ Is the base class for all source components<div></div>
+ Can be Class, Procedure, Property, Function<div></div>
+ Used for subclassing.<div></div>
+<h3>Procedures</h3>
+<ul>
+<li><a href="#Ref_cCodeComponent_DestroyObject">DestroyObject</a></li>
+<li><a href="#Ref_cCodeComponent_ParseString">ParseString</a></li>
+<li><a href="#Ref_cCodeComponent_AddParameter">AddParameter</a></li>
+<li><a href="#Ref_cCodeComponent_AddComment">AddComment</a></li>
+</ul>
+<h3>Functions</h3>
+<ul>
+<li><a href="#Ref_cCodeComponent_ConvertEmailEntries">ConvertEmailEntries</a></li>
+</ul>
+<a name="Ref_cCodeComponent_DestroyObject"><B>DestroyObject  - Procedure </B></a><div></div>
+ Destroys the object and the embedded objects.<div></div>
+<br>
+<a name="Ref_cCodeComponent_ParseString"><B>ParseString  String sLine - Procedure </B></a><div></div>
+ Seperates a String in all by blanks seperated Stringparts<div></div>
+<br>
+<a name="Ref_cCodeComponent_AddParameter"><B>AddParameter  String sP - Procedure </B></a><div></div>
+ Adds a parameter to the parameter list of<div></div>
+ the Element ( function, procedure )<div></div>
+<br>
+<a name="Ref_cCodeComponent_AddComment"><B>AddComment  String sLine - Procedure </B></a><div></div>
+ Adds a comment line...<div></div>
+<br>
+<a name="Ref_cCodeComponent_ConvertEmailEntries"><B>ConvertEmailEntries  String sLine Returns String - Function </B></a><div></div>
+ An emailaddress between < .. > is detected it is changed to a real<div></div>
+ html mailto ref. (only one per line!)<div></div>
+<br>
+<hr>
+<a name="Ref_cFunctionComponent"><h2>Class cFunctionComponent</h1></a>
+<b>Source:</b> CODESPY.PKG<br><b>Baseclass:</b> <a href="CodeSpy.htm#Ref_cCodeComponent">cCodeComponent</a><br><br><br>
+<hr>
+<a name="Ref_cProcedureComponent"><h2>Class cProcedureComponent</h1></a>
+<b>Source:</b> CODESPY.PKG<br><b>Baseclass:</b> <a href="CodeSpy.htm#Ref_cCodeComponent">cCodeComponent</a><br><br><br>
+<hr>
+<a name="Ref_cPropertyComponent"><h2>Class cPropertyComponent</h1></a>
+<b>Source:</b> CODESPY.PKG<br><b>Baseclass:</b> <a href="CodeSpy.htm#Ref_cCodeComponent">cCodeComponent</a><br><br><br>
+<hr>
+<a name="Ref_cCodeComponentList"><h2>Class cCodeComponentList</h1></a>
+<b>Source:</b> CODESPY.PKG<br><b>Baseclass:</b> Array<br><br><br>
+ List of cCodeComponent Objects...<div></div>
+<h3>Procedures</h3>
+<ul>
+<li><a href="#Ref_cCodeComponentList_DestroyObject">DestroyObject</a></li>
+<li><a href="#Ref_cCodeComponentList_DoDeleteLastElement">DoDeleteLastElement</a></li>
+<li><a href="#Ref_cCodeComponentList_DoCheckPublic">DoCheckPublic</a></li>
+<li><a href="#Ref_cCodeComponentList_ReadComments">ReadComments</a></li>
+<li><a href="#Ref_cCodeComponentList_OnParsing">OnParsing</a></li>
+</ul>
+<h3>Functions</h3>
+<ul>
+<li><a href="#Ref_cCodeComponentList_CreateElement">CreateElement</a></li>
+<li><a href="#Ref_cCodeComponentList_CheckTagLeft">CheckTagLeft</a></li>
+<li><a href="#Ref_cCodeComponentList_ParseLine">ParseLine</a></li>
+</ul>
+<a name="Ref_cCodeComponentList_DestroyObject"><B>DestroyObject  - Procedure </B></a><div></div>
+ Sends a DestroyObject to all objects in the list.<div></div>
+ And finally sends a Detroy_Object to itself.<div></div>
+<br>
+<a name="Ref_cCodeComponentList_DoDeleteLastElement"><B>DoDeleteLastElement  - Procedure </B></a><div></div>
+ Deletes the last item.<div></div>
+<br>
+<a name="Ref_cCodeComponentList_DoCheckPublic"><B>DoCheckPublic  String sStr - Procedure </B></a><div></div>
+ Checks if there is a public statement in the comment.<div></div>
+<br>
+<a name="Ref_cCodeComponentList_ReadComments"><B>ReadComments  Integer hoID String sLineE - Procedure </B></a><div></div>
+ Searches upwards for Lines with "//" on the left side<div></div>
+ and read this comments into the given ComponentID<div></div>
+<br>
+<a name="Ref_cCodeComponentList_OnParsing"><B>OnParsing  String sLine Integer hoID - Procedure </B></a><div></div>
+ For later overwrite...<div></div>
+<br>
+<a name="Ref_cCodeComponentList_CreateElement"><B>CreateElement  Returns Integer - Function </B></a><div></div>
+ Creates an element of the object list...<div></div>
+<br>
+<a name="Ref_cCodeComponentList_CheckTagLeft"><B>CheckTagLeft  String sLine String sTag Returns Integer - Function </B></a><div></div>
+ Checks if a Tag occurs on the left...<div></div>
+<br>
+<a name="Ref_cCodeComponentList_ParseLine"><B>ParseLine  String sLine Returns Integer - Function </B></a><div></div>
+ Tries to run a given line (for known tags)<div></div>
+ Returns true if known or false if not<div></div>
+<br>
+<hr>
+<a name="Ref_cProcedureList"><h2>Class cProcedureList</h1></a>
+<b>Source:</b> CODESPY.PKG<br><b>Baseclass:</b> <a href="CodeSpy.htm#Ref_cCodeComponentList">cCodeComponentList</a><br><br><br>
+ Containes a list of Procedures<div></div>
+<h3>Procedures</h3>
+<ul>
+<li><a href="#Ref_cProcedureList_OnStartTag">OnStartTag</a></li>
+</ul>
+<h3>Functions</h3>
+<ul>
+<li><a href="#Ref_cProcedureList_CreateElement">CreateElement</a></li>
+</ul>
+<a name="Ref_cProcedureList_OnStartTag"><B>OnStartTag  String sLine Integer hoID - Procedure </B></a><div></div>
+ Fills in the start tag informations<div></div>
+<br>
+<a name="Ref_cProcedureList_CreateElement"><B>CreateElement  Returns Integer - Function </B></a><div></div>
+ Creates an element of the object list...<div></div>
+<br>
+<hr>
+<a name="Ref_cFunctionList"><h2>Class cFunctionList</h1></a>
+<b>Source:</b> CODESPY.PKG<br><b>Baseclass:</b> <a href="CodeSpy.htm#Ref_cCodeComponentList">cCodeComponentList</a><br><br><br>
+ Containes a list of Functions<div></div>
+<h3>Procedures</h3>
+<ul>
+<li><a href="#Ref_cFunctionList_OnStartTag">OnStartTag</a></li>
+</ul>
+<h3>Functions</h3>
+<ul>
+<li><a href="#Ref_cFunctionList_CreateElement">CreateElement</a></li>
+</ul>
+<a name="Ref_cFunctionList_OnStartTag"><B>OnStartTag  String sLine Integer hoID - Procedure </B></a><div></div>
+ Fills in the start tag informations<div></div>
+<br>
+<a name="Ref_cFunctionList_CreateElement"><B>CreateElement  Returns Integer - Function </B></a><div></div>
+ Creates an element of the object list...<div></div>
+<br>
+<hr>
+<a name="Ref_cPropertyList"><h2>Class cPropertyList</h1></a>
+<b>Source:</b> CODESPY.PKG<br><b>Baseclass:</b> <a href="CodeSpy.htm#Ref_cCodeComponentList">cCodeComponentList</a><br><br><br>
+ Containes a list of properties<div></div>
+<h3>Procedures</h3>
+<ul>
+<li><a href="#Ref_cPropertyList_OnStartTag">OnStartTag</a></li>
+</ul>
+<h3>Functions</h3>
+<ul>
+<li><a href="#Ref_cPropertyList_CreateElement">CreateElement</a></li>
+</ul>
+<a name="Ref_cPropertyList_OnStartTag"><B>OnStartTag  String sLine Integer hoID - Procedure </B></a><div></div>
+ Fills in the start tag informations<div></div>
+<br>
+<a name="Ref_cPropertyList_CreateElement"><B>CreateElement  Returns Integer - Function </B></a><div></div>
+ Creates an element of the object list...<div></div>
+<br>
+<hr>
+<a name="Ref_cClassComponent"><h2>Class cClassComponent</h1></a>
+<b>Source:</b> CODESPY.PKG<br><b>Baseclass:</b> <a href="CodeSpy.htm#Ref_cCodeComponent">cCodeComponent</a><br><br><br>
+ Containes all Information, Procedures, Functions and Properties of a Class<div></div>
+<h3>Procedures</h3>
+<ul>
+<li><a href="#Ref_cClassComponent_DestroyObject">DestroyObject</a></li>
+<li><a href="#Ref_cClassComponent_ResolveClassNames">ResolveClassNames</a></li>
+<li><a href="#Ref_cClassComponent_AddBaseClass">AddBaseClass</a></li>
+</ul>
+<h3>Functions</h3>
+<ul>
+<li><a href="#Ref_cClassComponent_ClassName">ClassName</a></li>
+<li><a href="#Ref_cClassComponent_BaseClassValueHTML">BaseClassValueHTML</a></li>
+</ul>
+<a name="Ref_cClassComponent_DestroyObject"><B>DestroyObject  - Procedure </B></a><div></div>
+ Destroys the object and all children.<div></div>
+<br>
+<a name="Ref_cClassComponent_ResolveClassNames"><B>ResolveClassNames  Integer hoID - Procedure </B></a><div></div>
+ Tries to get links to the BaseClasses<div></div>
+ The given object_id is a cFileClassList object, which is able to resolve a class.<div></div>
+ If already parsed!<div></div>
+<br>
+<a name="Ref_cClassComponent_AddBaseClass"><B>AddBaseClass  String sClassName - Procedure </B></a><div></div>
+ Adds a base class<div></div>
+ first is the real base_class all further calls<div></div>
+ are done because of IMPORT_CLASS_PROTOCOL commands.<div></div>
+<br>
+<a name="Ref_cClassComponent_ClassName"><B>ClassName  Returns String - Function </B></a><div></div>
+ For an easier access to the classname for the subelements,<div></div>
+ like procedures, functions, properties.<div></div>
+<br>
+<a name="Ref_cClassComponent_BaseClassValueHTML"><B>BaseClassValueHTML  Integer iNr Returns String - Function </B></a><div></div>
+ Checks if a link to a class is known and the it creates a ref=<div></div>
+ if not only the classname is returned.<div></div>
+<br>
+<hr>
+<a name="Ref_cClassList"><h2>Class cClassList</h1></a>
+<b>Source:</b> CODESPY.PKG<br><b>Baseclass:</b> <a href="CodeSpy.htm#Ref_cCodeComponentList">cCodeComponentList</a><br><br><br>
+ Containes a list of Classes<div></div>
+<h3>Procedures</h3>
+<ul>
+<li><a href="#Ref_cClassList_OnStartTag">OnStartTag</a></li>
+<li><a href="#Ref_cClassList_OnParsing">OnParsing</a></li>
+</ul>
+<h3>Functions</h3>
+<ul>
+<li><a href="#Ref_cClassList_CreateElement">CreateElement</a></li>
+</ul>
+<a name="Ref_cClassList_OnStartTag"><B>OnStartTag  String sLine Integer hoID - Procedure </B></a><div></div>
+ Fills in the start tag informations<div></div>
+<br>
+<a name="Ref_cClassList_OnParsing"><B>OnParsing  String sLine Integer hoID - Procedure </B></a><div></div>
+ Is called for all lines between "Class" end "End_Class"<div></div>
+ and every line is tried to be parsed either by ProcedueList, FunctionList<div></div>
+ or PropertyList.<div></div>
+ Parses subcomponents<div></div>
+<br>
+<a name="Ref_cClassList_CreateElement"><B>CreateElement  Returns Integer - Function </B></a><div></div>
+ Creates an element of the object list...<div></div>
+<br>
+<hr>
+<a name="Ref_cCodeSpy"><h2>Class cCodeSpy</h1></a>
+<b>Source:</b> CODESPY.PKG<br><b>Baseclass:</b> Array<br><br><br>
+ Reads all Classes and their subcomponets.<div></div>
+ First I had the idea to read all packeges into one of these objects<div></div>
+ to get (one file) and a complete class list, but I think such a large html<div></div>
+ file would be rather slow to load. So I'd prefer to create one object (means one file)<div></div>
+ for one read source file.<div></div>
+<h3>Procedures</h3>
+<ul>
+<li><a href="#Ref_cCodeSpy_DestroyObject">DestroyObject</a></li>
+<li><a href="#Ref_cCodeSpy_RegisterAllClasses">RegisterAllClasses</a></li>
+<li><a href="#Ref_cCodeSpy_BuffInput">BuffInput</a></li>
+<li><a href="#Ref_cCodeSpy_WriteHeaderHTML">WriteHeaderHTML</a></li>
+<li><a href="#Ref_cCodeSpy_WriteHTML">WriteHTML</a></li>
+<li><a href="#Ref_cCodeSpy_FillBuffer">FillBuffer</a></li>
+<li><a href="#Ref_cCodeSpy_ParseSourceFile">ParseSourceFile</a></li>
+<li><a href="#Ref_cCodeSpy_ParseBuffer">ParseBuffer</a></li>
+</ul>
+<h3>Functions</h3>
+<ul>
+<li><a href="#Ref_cCodeSpy_BuffNextLine">BuffNextLine</a></li>
+<li><a href="#Ref_cCodeSpy_BuffPreviousLine">BuffPreviousLine</a></li>
+<li><a href="#Ref_cCodeSpy_ParseLine">ParseLine</a></li>
+</ul>
+<a name="Ref_cCodeSpy_DestroyObject"><B>DestroyObject  - Procedure </B></a><div></div>
+ Clears all entries.<div></div>
+<br>
+<a name="Ref_cCodeSpy_RegisterAllClasses"><B>RegisterAllClasses  - Procedure </B></a><div></div>
+ Registers all Classes in the embedded list.<div></div>
+<br>
+<a name="Ref_cCodeSpy_BuffInput"><B>BuffInput  - Procedure </B></a><div></div>
+ Starts to read the data out of the buffer.<div></div>
+ Resets BuffCurrentLine and SEQEOF.<div></div>
+ Which I also use during this kind of virtual reading.<div></div>
+<br>
+<a name="Ref_cCodeSpy_WriteHeaderHTML"><B>WriteHeaderHTML  - Procedure </B></a><div></div>
+ Write's the header of the created htmlfile.<div></div>
+<br>
+<a name="Ref_cCodeSpy_WriteHTML"><B>WriteHTML  String sFile - Procedure </B></a><div></div>
+ Writes the class-list to a file (HTML formated)<div></div>
+<br>
+<a name="Ref_cCodeSpy_FillBuffer"><B>FillBuffer  String sFile - Procedure </B></a><div></div>
+ Reads a source file into the buffer.<div></div>
+<br>
+<a name="Ref_cCodeSpy_ParseSourceFile"><B>ParseSourceFile  String sFile - Procedure </B></a><div></div>
+ Loads a file and parses it.<div></div>
+<br>
+<a name="Ref_cCodeSpy_ParseBuffer"><B>ParseBuffer  - Procedure </B></a><div></div>
+ Parses the buffer, in which the source file was read before and creates the class-list.<div></div>
+<br>
+<a name="Ref_cCodeSpy_BuffNextLine"><B>BuffNextLine  Returns String - Function </B></a><div></div>
+ Retrieves the next line of the buffer.<div></div>
+<br>
+<a name="Ref_cCodeSpy_BuffPreviousLine"><B>BuffPreviousLine  Returns String - Function </B></a><div></div>
+ Retrieves the previous line of the buffer.<div></div>
+<br>
+<a name="Ref_cCodeSpy_ParseLine"><B>ParseLine  String sLine Returns Integer - Function </B></a><div></div>
+ Parses lines outside of classes.<div></div>
+ At the moment are only "Use" statements scanned.<div></div>
+<br>
+<hr>
+<a name="Ref_cSortSet"><h2>Class cSortSet</h1></a>
+<b>Source:</b> CODESPY.PKG<br><b>Baseclass:</b> Set<br><br><br>
+<h3>Procedures</h3>
+<ul>
+<li><a href="#Ref_cSortSet_AddAdditionalObject">AddAdditionalObject</a></li>
+<li><a href="#Ref_cSortSet_SwitchItems">SwitchItems</a></li>
+<li><a href="#Ref_cSortSet_DoInit">DoInit</a></li>
+</ul>
+<h3>Functions</h3>
+<ul>
+<li><a href="#Ref_cSortSet_NeedToSwitch">NeedToSwitch</a></li>
+</ul>
+<a name="Ref_cSortSet_AddAdditionalObject"><B>AddAdditionalObject  Integer hoID - Procedure </B></a><div></div>
+ Adds an addtional object.<div></div>
+<br>
+<a name="Ref_cSortSet_SwitchItems"><B>SwitchItems  Integer iItem - Procedure </B></a><div></div>
+ Switches Item iNr and Item (iNr+1)<div></div>
+ Items in additional objects are also switched.<div></div>
+<br>
+<a name="Ref_cSortSet_DoInit"><B>DoInit  - Procedure </B></a><div></div>
+ Resets the object.<div></div>
+<br>
+<a name="Ref_cSortSet_NeedToSwitch"><B>NeedToSwitch  Integer iItem Returns Integer - Function </B></a><div></div>
+ Checks if switching is neccessary.<div></div>
+<br>
+<hr>
+<a name="Ref_cClassGrouper"><h2>Class cClassGrouper</h1></a>
+<b>Source:</b> CODESPY.PKG<br><b>Baseclass:</b> <a href="CodeSpy.htm#Ref_cCodeComponentList">cCodeComponentList</a><br><br><br>
+ Use this as an simple object list.<div></div>
+<h3>Procedures</h3>
+<ul>
+<li><a href="#Ref_cClassGrouper_AddEntry">AddEntry</a></li>
+</ul>
+<a name="Ref_cClassGrouper_AddEntry"><B>AddEntry  String sGRP String sClass - Procedure </B></a><div></div>
+ Adds an Entry to the (a) group.<div></div>
+<br>
+<hr>
+<a name="Ref_cFileClassList"><h2>Class cFileClassList</h1></a>
+<b>Source:</b> CODESPY.PKG<br><b>Baseclass:</b> Array<br><br><br>
+ To link to classes which aren't in the same HTML file its neccessary to<div></div>
+ hold a class list where all class name and the fitting html files are in.<div></div>
+<h3>Properties</h3>
+<ul>
+<li><a href="#Ref_cFileClassList_psFileName">psFileName</a></li>
+<li><a href="#Ref_cFileClassList_psDirectory">psDirectory</a></li>
+</ul>
+<h3>Procedures</h3>
+<ul>
+<li><a href="#Ref_cFileClassList_WriteHTML">WriteHTML</a></li>
+<li><a href="#Ref_cFileClassList_EnumClasses">EnumClasses</a></li>
+<li><a href="#Ref_cFileClassList_DoInit">DoInit</a></li>
+<li><a href="#Ref_cFileClassList_ReadClasses">ReadClasses</a></li>
+<li><a href="#Ref_cFileClassList_WriteClasses">WriteClasses</a></li>
+<li><a href="#Ref_cFileClassList_RegisterClass">RegisterClass</a></li>
+</ul>
+<h3>Functions</h3>
+<ul>
+<li><a href="#Ref_cFileClassList_PathFileName">PathFileName</a></li>
+<li><a href="#Ref_cFileClassList_ResolveClassNr">ResolveClassNr</a></li>
+<li><a href="#Ref_cFileClassList_ResolveClass">ResolveClass</a></li>
+</ul>
+<a name="Ref_cFileClassList_psFileName"><B>psFileName - Property </B></a><div></div>
+Reads and writes to this file<div></div>
+<br>
+<a name="Ref_cFileClassList_psDirectory"><B>psDirectory - Property </B></a><div></div>
+in this dir.<div></div>
+<br>
+<a name="Ref_cFileClassList_WriteHTML"><B>WriteHTML  - Procedure </B></a><div></div>
+ Saves the Classlist into HTML format for easier access.<div></div>
+ Writes the classreference.lst & Classreference.htm to disk.<div></div>
+<br>
+<a name="Ref_cFileClassList_EnumClasses"><B>EnumClasses  Integer iMsg Integer hoDest - Procedure </B></a><div></div>
+ Sends a given Msg for every class entry.<div></div>
+<br>
+<a name="Ref_cFileClassList_DoInit"><B>DoInit  - Procedure </B></a><div></div>
+ Destroys the object and its children.<div></div>
+<br>
+<a name="Ref_cFileClassList_ReadClasses"><B>ReadClasses  - Procedure </B></a><div></div>
+ Reads all classes and their source files into the object<div></div>
+ out of psFileName.<div></div>
+<br>
+<a name="Ref_cFileClassList_WriteClasses"><B>WriteClasses  - Procedure </B></a><div></div>
+ Writes all stores classes and their infos into<div></div>
+ psFileName.<div></div>
+<br>
+<a name="Ref_cFileClassList_RegisterClass"><B>RegisterClass  String sClass String sSource String sRest - Procedure </B></a><div></div>
+ Creates an entry to the class list and checks before<div></div>
+ if an entry for this class already exists, if so<div></div>
+ only the SourceFile is changed for the old entry.<div></div>
+<br>
+<a name="Ref_cFileClassList_PathFileName"><B>PathFileName  Returns String - Function </B></a><div></div>
+ Creates the full file path.<div></div>
+<br>
+<a name="Ref_cFileClassList_ResolveClassNr"><B>ResolveClassNr  Integer iNr Returns String - Function </B></a><div></div>
+ Tries to resolve a class no. (Internal use)<div></div>
+<br>
+<a name="Ref_cFileClassList_ResolveClass"><B>ResolveClass  String sClass Returns String - Function </B></a><div></div>
+ Tries to resolve a class name.<div></div>
+<br>
+<hr>
+<a name="Ref_cMultiFileCodeSpy"><h2>Class cMultiFileCodeSpy</h1></a>
+<b>Source:</b> CODESPY.PKG<br><b>Baseclass:</b> Array<br><br><br>
+ This class creates a cCopySpy object for every file it should parse.<div></div>
+ So it is a simple object list with a special interface.<div></div>
+ This is done to allow to scan for dependencies. ("Use PackageFile.pkg")<div></div>
+ So during every scan a detected "Use" statement will cause a "Delegate send RunParseFile ..."<div></div>
+ to parse that Use'd file too.<div></div>
+<h3>Properties</h3>
+<ul>
+<li><a href="#Ref_cMultiFileCodeSpy_psDirectoryInt">psDirectoryInt</a></li>
+</ul>
+<h3>Procedures</h3>
+<ul>
+<li><a href="#Ref_cMultiFileCodeSpy_RunParseFile">RunParseFile</a></li>
+<li><a href="#Ref_cMultiFileCodeSpy_WriteHTML">WriteHTML</a></li>
+</ul>
+<a name="Ref_cMultiFileCodeSpy_psDirectoryInt"><B>psDirectoryInt - Property </B></a><div></div>
+The Outputdirectory<div></div>
+<br>
+<a name="Ref_cMultiFileCodeSpy_RunParseFile"><B>RunParseFile  String sFile - Procedure </B></a><div></div>
+ Creates a cCodeSpy object and parses the given<div></div>
+ file in it.<div></div>
+<br>
+<a name="Ref_cMultiFileCodeSpy_WriteHTML"><B>WriteHTML  - Procedure </B></a><div></div>
+ Writes the classreference.lst & Classreference.htm to disk.<div></div>
+<br>
+<hr><a name="Ref_Headerinfo"> <h2>Header and license information</h2></a>
+*****************************************************************************************<div></div>
+ Created 2000 Michael Kurz<div></div>
+*<div></div>
+ $FileName    : CodeSpy<div></div>
+ $ProjectName : Analyse VDF code (class definitions)<div></div>
+ $Author      : Michael Kurz <A href="mailto:MichaelKurz@gmx.at">MichaelKurz@gmx.at</a><div></div>
+ $Created     : 12-08-2000 @ 00:10<div></div>
+*<div></div>
+ This code can be used in any apllication for free, but must not be sold in any way.<div></div>
+ The code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;<div></div>
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.<div></div>
+ This is free software; you can redistribute it and/or modify it under the terms of the<div></div>
+ GNU Lesser General Public License.<div></div>
+ License: LGPLv3 - GNU LESSER GENERAL PUBLIC LICENSE Version 3 - http://www.gnu.org/licenses/lgpl.txt<div></div>
+*<div></div>
+ Contents:<div></div>
+      Build a structure of all classes and their Properties, Functions and Procedures<div></div>
+*<div></div>
+TH-RevisionStart<div></div>
+ 22.10.2001 12:01  Removed clearing of the Additional Mk SERVER Objects<div></div>
+ 26.9.2014         Major rewrite of the user interface by Nils G. Svedmyr. nils.svedmyr@rdctools.com<div></div>
+                   Also replaced most of the lecasy code with more contemporary DataFlex code.<div></div>
+*<div></div>
+TH-RevisionEnd<div></div>
+*****************************************************************************************<div></div>
+</BODY>
+</HTML>

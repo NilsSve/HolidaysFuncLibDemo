@@ -1,0 +1,339 @@
+﻿//****************************************************************************
+// $Module type: Package
+// $Module name: BrittishHolidays.pkg
+// $Author     : Peter Crook, Ancilla Software
+// Created     : 17/ 2/2001
+//
+// Description : Function that returns the name of UK notable dates from a date variable.
+//
+// Caveat      : All dates are subject to change and regional and institutional variations.
+//               Up-to-date details of bank holidays can be found at:
+//               http://www.direct.gov.uk/en/Governmentcitizensandrights/LivingintheUK/DG_073741
+//               There is a lot of information about holidays in various countries (as well as
+//               other calendar stuff) at TimeAndDate.com
+//
+// Note        : To create a similar package for another country, copy the function below and
+//               simply change the name and wordings and possibly also what should constitute the holidays
+//               for your country. All the underlying holiday functions can be found in CalendarHolidays.pkg
+//               The IsHoliday function is used by the Holidays.vw sample view; the oCreateDates_bp business process.
+//
+// $Rev History:
+//    2011-02-03 BritishHolidays.pkg Module header created
+//    2011-02-10 Revised and renamed by PDC, Ancilla Software.
+//               The ByRef variable has been changed to an integer with the following significance:
+//               1  Bank holiday in England and Wales
+//               2  Bank holiday in Scotland
+//               4  Bank holiday in Northern Ireland
+//               Combinations of the above might be returned (e.g. 3 for date that is a bank holiday in only England, Wales and Scotland).
+//               Thus the returned value will be 'True' if the date is a bank holiday anywhere in the UK.
+//
+//    2025-01-23 Revised and moved all helper functions to the common CalendarHolidays.pkg. (NS)
+//
+//****************************************************************************
+//
+Use CalendarHolidays.pkg
+
+Object oBrittishHolidays is a cNationalHolidays
+
+    // A 2-character string ISO Official_Short ISO_Short, accorging to the list:
+    // https://www.iso.org/obp/ui/#search/code/
+    Set psOfficial_Short to "GB"
+    Set psCountryName to "United Kingdom of Great Britain and Northern Ireland (the)"
+
+    //***************************************************************************
+    // Main function
+    //
+    // Returns the name of UK 'notable dates' for a date variable.
+    //
+    // Function takes two parameters;
+    // A 4-year date variable and an integer as a ByRef variable.
+    //
+    // Returns: A string with the 'holidayname' as text AND it changes the integer ByRef
+    // variable if the returned holiday is a Bank Holiday.
+    //
+    Function IsHoliday Date dInDate Integer ByRef iBankHoliday Returns String
+        Integer iYear
+        String sHolidayName sOfficial_Short
+        Date dHolidayDate dBankHolidayDate 
+
+        Move "" to sHolidayName
+        Move 0 to iBankHoliday
+        Get psOfficial_Short to sOfficial_Short
+        Move (DateGetYear(dInDate)) to iYear
+
+        // *** Holidays that occur in only one year ***
+
+        // **************************************************
+        // Special holidays for 2011
+        //
+        If (DateGetYear(dInDate) = 2011) Begin
+            // Royal Wedding - 29th April
+            //
+            If (DateGetDay(dInDate) = 29 and DateGetMonth(dInDate) = 4) Begin
+                Move 8 to iBankHoliday
+                Function_Return "Royal Wedding (UK)"
+            End
+        End
+
+        // **************************************************
+        // Special holidays for 2012
+        //
+        If (DateGetYear(dInDate) = 2012) Begin
+
+            // Queen's Diamond Jubilee - 5th June.
+            //
+            If (DateGetDay(dInDate) = 5 and DateGetMonth(dInDate) = 6) Begin
+                Move 8 to iBankHoliday
+                Function_Return "Queen's Diamond Jubilee (UK)"
+            End
+        End
+
+        // *** Bank holidays ***
+
+        // New Year's Day - 1st January.  But if that is a Saturday or Sunday the
+        // bank holiday will be on the following Monday
+        //
+        Get NewYearsDay   of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get NewYearsDayBH of ghoCalendarHolidays iYear sOfficial_Short to dBankHolidayDate
+        If (dInDate = dHolidayDate) Begin
+            Move (If(dHolidayDate = dBankHolidayDate,8,0)) to iBankHoliday
+            Function_Return ("New Year's Day" * If(dHolidayDate = dBankHolidayDate,"(UK)",""))
+        End
+        Else If (dInDate = dBankHolidayDate) Begin
+            Move 8 to iBankHoliday
+            Function_Return "New Year's Holiday (UK)"
+        End
+
+        // The Scot's get an extra day at New Year on 2nd January.
+        // But if that is a Saturday or Sunday it will be the following Monday or
+        // Tuesday (i.e. the day after the New Year's Day bank holiday).
+        //
+        Get ScotishNewYearHoliday of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        If (dInDate = dHolidayDate) Begin
+            Move 2 to iBankHoliday
+            Function_Return "New Year's Holiday (Scotland)"
+        End
+
+        // St. Patrick's Day (Northern Ireland) - 17th March or following Monday if at weekend.
+        //
+        Get SaintPatricksDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate       // 17th March
+        Get StPatricksDayBH  of ghoCalendarHolidays iYear sOfficial_Short to dBankHolidayDate
+        If (dInDate = dHolidayDate) Begin
+            Move (If(dHolidayDate = dBankHolidayDate,4,0)) to iBankHoliday
+            Function_Return ("St. Patrick's Day" * If(dHolidayDate = dBankHolidayDate,"(NI)",""))
+        End
+        Else If (dInDate = dBankHolidayDate) Begin
+            Move 4 to iBankHoliday
+            Function_Return "St. Patrick's Day Holiday (NI)"
+        End
+
+        // Easter Monday - the day after Easter Day which itself is the first Sunday after the
+        // first full moon after the vernal equinox. Not a bank holiday in Scotland.
+        //
+        Get EasterMonday of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        If (dInDate = dHolidayDate) Begin
+            Move 5 to iBankHoliday
+            Function_Return "Easter Monday (not Scotland)"
+        End
+
+        // Early May Bank Holiday - 1st Monday in May
+        //
+        Get EarlyMayBH of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        If (dInDate = dHolidayDate) Begin
+            Move 8 to iBankHoliday
+            Function_Return "Early May Bank Holiday (UK)"
+        End
+
+        // Spring Bank Holiday - last Monday in May
+        //
+        Get EarlyMayBH of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        If (dInDate = dHolidayDate) Begin
+            Move 8 to iBankHoliday
+            Function_Return "Spring Bank Holiday (UK)"
+        End
+
+        // Summer Bank Holiday (1st Monday in August in Scotland, last Monday in England and Northern Ireland)
+        //
+        Get SummerBHScot of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        If (dInDate = dHolidayDate) Begin
+            Move 2 to iBankHoliday
+            Function_Return "Summer Bank Holiday (Scotland)"
+        End
+        Get SummerBHEngNI of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        If (dInDate = dHolidayDate) Begin
+            Move 5 to iBankHoliday
+            Function_Return "Summer Bank Holiday (England, Wales and NI)"
+        End
+
+        // Battle of the Boyne Day celebrated by Protestants in Northern Ireland - 12th July
+        //
+        Get BattleOfTheBoyne   of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate    // 12th July
+        Get BattleOfTheBoyneBH of ghoCalendarHolidays iYear sOfficial_Short to dBankHolidayDate
+        If (dInDate = dHolidayDate) Begin
+            Move (If(dHolidayDate = dBankHolidayDate,4,0)) to iBankHoliday
+            Function_Return ("Battle of the Boyne" * If(dHolidayDate = dBankHolidayDate,"(NI)",""))
+        End
+        Else If (dInDate = dBankHolidayDate) Begin
+            Move 4 to iBankHoliday
+            Function_Return "Battle of the Boyne (NI)"
+        End
+
+        // St. Andrew's Day (Scotland) - 30th November
+        //
+        Get StAndrewsDay   of ghoCalendarHolidays iYear sOfficial_Short   to dHolidayDate
+        Get StAndrewsDayBH of ghoCalendarHolidays iYear sOfficial_Short to dBankHolidayDate
+        If (dInDate = dHolidayDate) Begin
+            Move (If(dHolidayDate = dBankHolidayDate,2,0)) to iBankHoliday
+            Function_Return ("St. Andrew's Day" * If(dHolidayDate = dBankHolidayDate,"(Scotland)",""))
+        End
+        Else If (dInDate = dBankHolidayDate) Begin
+            Move 2 to iBankHoliday
+            Function_Return "St. Andrew's Day (Scotland)"
+        End
+
+        // Christmas Day - 25th December.  But if that is a Saturday or Sunday the
+        // bank holiday will be on the following Monday
+        //
+        Get ChristmasDay   of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get ChristmasDayBH of ghoCalendarHolidays iYear sOfficial_Short to dBankHolidayDate
+        If (dInDate = dHolidayDate) Begin
+            Move (If(dHolidayDate = dBankHolidayDate,8,0)) to iBankHoliday
+            Function_Return ("Christmas Day" * If(dHolidayDate = dBankHolidayDate,"(UK)",""))
+        End
+        Else If (dInDate = dBankHolidayDate) Begin
+            Move 8 to iBankHoliday
+            Function_Return "Christmas Day Holiday (UK)"
+        End
+
+        // Boxing Day - 26th December.
+        // But if that is a Saturday or Sunday it will be the following Monday or
+        // Tuesday (i.e. the day after the Christmas Day bank holiday).
+        //
+        Get SecondDayChristmas of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get BoxingDayBH        of ghoCalendarHolidays iYear sOfficial_Short to dBankHolidayDate
+        If (dInDate = dHolidayDate) Begin
+            Move (If(dHolidayDate = dBankHolidayDate,8,0)) to iBankHoliday
+            Function_Return ("Boxing Day" * If(dHolidayDate = dBankHolidayDate,"(UK)",""))
+        End
+        Else If (dInDate = dBankHolidayDate) Begin
+            Move 8 to iBankHoliday
+            Function_Return "Boxing Day Holiday (UK)"
+        End
+
+        // *** Other notable dates ***
+
+        // Twelfth Night - 5th January (take your decorations down today!)
+        //
+        Get Epiphany of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        If (dInDate = (dHolidayDate - 1)) Begin
+            Move 0 to iBankHoliday
+            Function_Return "Twelfth Night"
+        End
+
+        // Valentines Day - 14th February
+        //
+        Get ValentinesDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        If (dInDate = dHolidayDate) Begin
+            Move 0 to iBankHoliday
+            Function_Return "Valentine's Day"
+        End
+
+        // Burns Night, when the Scots celebrate the birth in 1759 of their 'National Poet' Robert Burns.
+        // Note for pendants: it does seem to be Burns Night (no possessive) even though it's celebrating
+        // Robert Burns's birth.
+        //
+        If (DateGetDay(dInDate) = 25 and DateGetMonth(dInDate) = 1) Begin
+            Move 0 to iBankHoliday
+            Function_Return "Burns Night"
+        End
+
+        // St. David's Day, celebrated in Wales - 1st March
+        //
+        If (DateGetDay(dInDate) = 1 and DateGetMonth(dInDate) = 3) Begin
+            Move 0 to iBankHoliday
+            Function_Return "St. David's Day"
+        End
+
+        // Start of European (British) Summer Time - last Sunday in March (at 1am)
+        //
+        Get EUSummerTimeStart of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        If (dInDate = dHolidayDate) Begin
+            Move 0 to iBankHoliday
+            Function_Return "British Summer Time starts"
+        End
+
+        // St.George's Day, not widely celebrated in England - 23rd April
+        //
+        If (DateGetDay(dInDate) = 23 and DateGetMonth(dInDate) = 4) Begin
+            Move 0 to iBankHoliday
+            Function_Return "St. George's Day"
+        End
+
+        // Easter Day - the first Sunday on or after the first full moon after the vernal equinox.
+        //
+        Get EasterDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        If (dInDate = dHolidayDate) Begin
+            Move 0 to iBankHoliday
+            Function_Return "Easter Day"
+        End
+
+        // End of European (British) Summer Time - last Sunday in October (at 1am)
+        //
+        Get EUSummerTimeEnd of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        If (dInDate = dHolidayDate) Begin
+            Move 0 to iBankHoliday
+            Function_Return "British Summer Time ends"
+        End
+
+        // Halloween - 31st October (watch out for the witches!)
+        //
+        Get Halloween of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        If (dInDate = dHolidayDate) Begin
+            Move 0 to iBankHoliday
+            Function_Return "Halloween"
+        End
+
+        // Remembrance Sunday - the first Sunday after Remmebrance Day, 11th November
+        Get RemembranceSunday of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        If (dInDate = dHolidayDate) Begin
+            Move 0 to iBankHoliday
+            Function_Return "Remembrance Sunday"
+        End
+
+        // *** Movable holidays ***
+        // Dates that depend on the date of Easter Day.
+
+        // Shrove Tuesday, Pancake Day - the day before Ash Wednesday
+        //
+        Get AshWednesday of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        If (dInDate = dHolidayDate - 1) Begin
+            Move 0 to iBankHoliday
+            Function_Return "Shrove Tuesday (Pancake Day)"
+        End
+
+        Get GoodFriday of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        If (dInDate = dHolidayDate) Begin
+            Move 8 to iBankHoliday
+            Function_Return "Good Friday (UK)"
+        End
+
+        // This day needs to be _after_ the WhitSunday.
+        // So when WhitSunday falls on the last Sunday in May,
+        // only the WhitSunday will get generated. Else the
+        // Mother's Day would show up at that day.
+        Get MothersDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        If (dInDate = dHolidayDate) Begin
+            Move 0 to iBankHoliday
+            Function_Return "Mothers' Day"
+        End
+
+        Get FathersDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        If (dInDate = dHolidayDate) Begin
+            Move 0 to iBankHoliday
+            Function_Return "Fathers' Day"
+        End
+
+        Function_Return sHolidayName
+    End_Function
+
+End_Object

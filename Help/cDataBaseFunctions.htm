@@ -1,0 +1,106 @@
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" href="Classes.css">
+</HEAD>
+<BODY>
+Created 2014-11-07 16:29:34  by <b>Nils G. Svedmyr</b> on <b>NILS-W540</b> [<a href="#Ref_Headerinfo"> Header and license information </a>]<br>
+<hr>
+<h2>Class List</h1> <a> </a>
+<ul>
+<li><a href="#Ref_cDatabaseFunctions">cDatabaseFunctions</a></li>
+</ul>
+<hr>
+<a name="Ref_cDatabaseFunctions"><h2>Class cDatabaseFunctions</h1></a>
+<b>Source:</b> CDATABASEFUNCTIONS.PKG<br><b>Baseclass:</b> cObject<br><br><br>
+ Important: Only use _ONE_ instance of this object - it is using a global handle: ghoDatabaseFunctions<div></div>
+<h3>Properties</h3>
+<ul>
+<li><a href="#Ref_cDatabaseFunctions_psAviFile">psAviFile</a></li>
+</ul>
+<h3>Procedures</h3>
+<ul>
+<li><a href="#Ref_cDatabaseFunctions_DoReindex">DoReindex</a></li>
+<li><a href="#Ref_cDatabaseFunctions_DoRepair">DoRepair</a></li>
+<li><a href="#Ref_cDatabaseFunctions_DoBackupData">DoBackupData</a></li>
+<li><a href="#Ref_cDatabaseFunctions_DoRestoreData">DoRestoreData</a></li>
+<li><a href="#Ref_cDatabaseFunctions_SubReindexAllFiles">SubReindexAllFiles</a></li>
+<li><a href="#Ref_cDatabaseFunctions_SubRepairAllFiles">SubRepairAllFiles</a></li>
+<li><a href="#Ref_cDatabaseFunctions_DoOpenAllFiles">DoOpenAllFiles</a></li>
+<li><a href="#Ref_cDatabaseFunctions_DoSetAllMasterAndAlias">DoSetAllMasterAndAlias</a></li>
+</ul>
+<h3>Functions</h3>
+<ul>
+<li><a href="#Ref_cDatabaseFunctions_IndexString">IndexString</a></li>
+<li><a href="#Ref_cDatabaseFunctions_AllMasterAndAliasFiles">AllMasterAndAliasFiles</a></li>
+<li><a href="#Ref_cDatabaseFunctions_IsFileMasterAlias">IsFileMasterAlias</a></li>
+<li><a href="#Ref_cDatabaseFunctions_RepairNeeded">RepairNeeded</a></li>
+<li><a href="#Ref_cDatabaseFunctions_RepairDataFlexTable">RepairDataFlexTable</a></li>
+</ul>
+<a name="Ref_cDatabaseFunctions_psAviFile"><B>psAviFile - Property </B></a><div></div>
+dbwork.avi"<div></div>
+<br>
+<a name="Ref_cDatabaseFunctions_DoReindex"><B>DoReindex  - Procedure </B></a><div></div>
+ Reindex all files.<div></div>
+<br>
+<a name="Ref_cDatabaseFunctions_DoRepair"><B>DoRepair  - Procedure </B></a><div></div>
+ Repair & reindex all files.<div></div>
+<br>
+<a name="Ref_cDatabaseFunctions_DoBackupData"><B>DoBackupData  - Procedure </B></a><div></div>
+ Backs up all data tables to sub-folder of the Data folder.<div></div>
+<br>
+<a name="Ref_cDatabaseFunctions_DoRestoreData"><B>DoRestoreData  - Procedure </B></a><div></div>
+ Restores all data tables from sub-folder of the Data folder.<div></div>
+<br>
+<a name="Ref_cDatabaseFunctions_SubReindexAllFiles"><B>SubReindexAllFiles  Integer[] iFileIsMaster Integer[] iFileIsAlias - Procedure </B></a><div></div>
+ Re-index all tables in the filelist.<div></div>
+<br>
+<a name="Ref_cDatabaseFunctions_SubRepairAllFiles"><B>SubRepairAllFiles  Integer[] iFileIsMaster Integer[] iFileIsAlias - Procedure </B></a><div></div>
+ Checks if any of the DataFlex data-files needs to be repaired.<div></div>
+ After the header has been repaired - also do a re-index.<div></div>
+<br>
+<a name="Ref_cDatabaseFunctions_DoOpenAllFiles"><B>DoOpenAllFiles  Integer[] iFileIsMaster Integer[] iFileIsAlias - Procedure </B></a><div></div>
+ Message will open all files in filelist and set all master & alias attributes correctly.<div></div>
+ Takes two params:<div></div>
+   An array with all master tables<div></div>
+   An array with all alias tables<div></div>
+<br>
+<a name="Ref_cDatabaseFunctions_DoSetAllMasterAndAlias"><B>DoSetAllMasterAndAlias  - Procedure </B></a><div></div>
+ Stub message<div></div>
+<br>
+<a name="Ref_cDatabaseFunctions_IndexString"><B>IndexString  Integer iTableNum Returns String - Function </B></a><div></div>
+ Determine the available indexes of a table.<div></div>
+*<div></div>
+ Arguments:<div></div>
+   Integer iTableNum - The number of the table<div></div>
+*<div></div>
+ Returns:<div></div>
+   String - The string to be used in the sort command if you want<div></div>
+   to re-index all indexes of the table<div></div>
+<br>
+<a name="Ref_cDatabaseFunctions_AllMasterAndAliasFiles"><B>AllMasterAndAliasFiles  Integer[] ByRef iFileIsMaster Returns Integer[] - Function </B></a><div></div>
+ Helper function.<div></div>
+ Returns _two_ arrays.<div></div>
+ Returns all files that are Master files in array ByRef iFileIsMaster<div></div>
+ Also returns all files that are Alias files in a second array.<div></div>
+ IMPORTANT: All master & alias files _must_ have been included into<div></div>
+            the DoSetAllMasterAndAlias message above.<div></div>
+<br>
+<a name="Ref_cDatabaseFunctions_IsFileMasterAlias"><B>IsFileMasterAlias  Handle hTable Integer[] iFileIsMaster Integer[] iFileIsAlias Returns Integer - Function </B></a><div></div>
+ Helper function<div></div>
+ Takes two params:<div></div>
+   1. An array with all master table numbers<div></div>
+   2. An array with all alias table numbers<div></div>
+ Returns:<div></div>
+  DF_FILE_ALIAS_DEFAULT if no master or alias<div></div>
+  DF_FILE_IS_MASTER if master<div></div>
+  DF_FILE_IS_ALIAS if alias<div></div>
+<br>
+<a name="Ref_cDatabaseFunctions_RepairNeeded"><B>RepairNeeded  Integer hTable String sTableName Returns String - Function </B></a><div></div>
+ Is a repair of the data-header necessary?<div></div>
+<br>
+<a name="Ref_cDatabaseFunctions_RepairDataFlexTable"><B>RepairDataFlexTable  String sTableName Returns Boolean - Function </B></a><div></div>
+ Repair and reindex the named DataFlex data-table:<div></div>
+<br>
+<hr><a name="Ref_Headerinfo"> <h2>Header and license information</h2></a>
+</BODY>
+</HTML>

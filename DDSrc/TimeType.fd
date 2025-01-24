@@ -1,0 +1,5 @@
+#REPLACE FILE153 TimeType
+#REPLACE TimeType.Recnum |FN153,0
+#REPLACE TimeType.Type |FS153,1
+#REPLACE TimeType.Description |FS153,2
+#REPLACE TimeType.Comment |FS153,3

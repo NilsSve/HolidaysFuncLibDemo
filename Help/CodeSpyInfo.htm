@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" href="Classes.css">
+<title>CodeSpy Help - DataFlex Class Documenter</title>
+</head>
+
+<h1>CodeSpy Help</h1>
+<br>
+<i><p>Created by Michael Kurz, January 2000 </i><a href="mailto:MichaelKurz@gmx.at"><i>MichaelKurz@gmx.at</a> - Updatet by Nils G. Svedmyr, September 2014 </i><a HREF="mailto:support@rdctools.com"><i>support@rdctools.com</i></a></p>
+
+<P>CodeSpy scans files for class definitions. It recognizes properties, funtions, procedures, baseclass and imported class definitions. You should comment your code well because the comment lines before eg. a function are added as an explanation into the created html files.</P>
+
+<i><p><b>How to use the program:</b></p>
+<OL>
+
+</i><li>Select a workspace .sws file and enter the source files you would like to scan for classes.<br>
+Use the Browse button to select one or more files. You can also drag and drop files from Windows Explorer onto the grid.</li>
+
+<li>Specify the target directory where the created html files should be written. By default the workspace Help folder is suggested.<br>
+For every scanned source file one html file with the same name is generated, but with a .htm extension.<br>
+The CodeSpy About files and the selected stylesheet file will be copied to the target directory by the program automatically. </li>
+
+<li>If you’d like to scan dependencies, activate it with the checkbox. If activated, every file that is included in a scanned file is also scanned. (Of course it need to be reachable via the DF path.) </li>
+
+<li>Then press the Generate HTML Documentation button to start generating html files.<br>
+<b>The main html page will always be named ClassReference.htm.</b> The format is based on the selected stylesheet from the stylesheet comboform. You can easily change nearly everything by changing a stylesheet, or add new ones and they will get picked up by the stylesheet comboform. </li>
+
+<li>Every class that is parsed is also added to a special class list file. You can inspect and change its contents on the &quot;Maintain Classes&quot; tabpage. This is because CodeSpy tries to create links between the files it has created.<br>
+<br>
+<i>Example:</i><br>
+// File cFile1.Pkg -&gt; cFile1.Htm<br>
+Class cBase is an Array <br>
+End_Class<br>
+<br>
+// File cFile2.Pkg -&gt; cFile2.Htm<br>
+Class cNew is a cBase<br>
+End_Class<br>
+<br>
+Then the base class entry in cFile.htm should be a html link to cFile1.htm<BR>
+If the cFile2.pkg is scanned before cFile1.pkg it could be necessary to scan a second time to get all links between the files. Because at the 1<SUP>st</SUP> scan &quot;cBase&quot; isn’t in the Class list when cFile2.pkg is scanned before cFile1.pkg.<BR>
+<br>
+Another feature is that you can add group names to the entries, so all classes are grouped by the name which is entered. You may also edit the class list manually.</li></ol>
+</BODY>
+</HTML>

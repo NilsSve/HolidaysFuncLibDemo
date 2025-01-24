@@ -1,0 +1,1288 @@
+//An_Calendar.pkg/////////////////////////////////////////////////////////////
+//
+//  Defines the class cCalendarDisplay that displays a calendar.
+//
+//----------------------------------------------------------------------------
+//  Based on code that was posted on the VDF newsgroup and further developed
+//  by Ancilla Software, a trading name of Peter Crook, The Banks, Belle Hill,
+//  Kingsbridge, TQ7 1NJ, United Kingdom.
+//  AncillaSoftware@yahoo.co.uk
+//  Not to be used or distributed without the above attribution.
+//----------------------------------------------------------------------------
+//
+//  Usage:
+//  ~~~~~
+//  The classes defined here provide the basic function of displaying dates
+//  in a grid format.  Right-clicking on a date will invoke a menu enabling
+//  the Date to be copied to the clipboard in a vatiety of formats.
+//  It uses only 'basic' VDF classes (i.e. no CodeJock controls) so should
+//  work with older versions of VDF although it has been developed and
+//  tested using VDF 16.0.
+//
+//  To extend the functionality of the class (e.g. to display tasks
+//  associated with a particular date) augment the methods:
+//
+//  Procedure OnDateDisplay Handle hoCell Date dDate
+//      Sent after the date dDate has been displayed in cell hoCell.
+//  Procedure OnOtherDateDisplay Handle hoCell Date dDate
+//      Sent after displaying a date not in the currently displayed month.
+//  Procedure OnDateSetFocus Handle hoCell Date dDate
+//      Sent when a date cell is about to receive the focus.  You could
+//      augment this to change the colour if the date is significant.
+//  Procedure OnEnterKey Date dDate
+//      Sent when the Enter key is pressed; dDate is the date shown in the
+//      cell that has the focus.
+//  Procedure OnDateClick Date dDate
+//  Procedure OnDateDblClick Date dDate
+//  Procedure OnDateRClick Date dDate
+//      The default action is to display a menu for copying the date to the
+//      clipboard in various formats.
+//  Procedure OnDateRDblClick Date dDate
+//
+//  Procedure Refresh
+//      Re-displays all the dates in the grid without changing the
+//      SelectedDate.
+//
+//
+//  Public Properties:
+//  =================
+//
+//  Property String psTypeface
+//      The typeface for all text - the default is "Segoe UI" as used by
+//      the CodeJock controls.
+//  Property Integer piFontSize
+//      The font size for all text - the default is 14 0 which translates to
+//      8 point.
+//
+//  Property Integer piDayCellColor
+//      The colour for unfocussed day cells.  The default is clWindow.
+//
+//  Property Date SelectedDate
+//      The currently active date - the one that is highlighted and has the
+//      focus.
+//      If this is set before the calendar is first activated this date will
+//      be highlighted.  Otherwise the current date will be highlighted.
+//
+//  Property Handle phoToolTipController
+//      Tooltips with a title seem a little OTT for the Calendar, so a
+//      vanilla ToolTipController is used as the default.  This can be
+//      changed by setting this Property (e.g. to ghoToolTipController).
+//
+//  Property Handle Floating_Menu_Object
+//      Except when being used as a prompt object (pbPromptListBehavior True)
+//      the default context menu for the date cells allows the SelectedDate
+//      to be copied to the clipboard in a variety of formats.  You can set
+//      this Property if you want a differnt context menu.
+//
+//  Integer properties piCurrentMonthColor piCurrentMonthTextColor
+//      piCurrentDateColor Integer piCurrentDateTextColor piOtherMonthColor
+//      piOtherMonthTextColor piFocusCellBackColor piFocusCellForeColor
+//      The colours used for the date cells and their text.
+//      For this purpose the 'Current Date' is today, the 'Current Month' is
+//      the month currently being displayed in the Calendar, the 'Other
+//      Month' is the parts of the preceding and following months included in
+//      the display and the FocusCell is the one displaying the SeletedDate
+//      (i.e. the one with the focus).
+//
+//
+//----------------------------------------------------------------------------
+//  Modifications:
+//  =============
+//   9/ 3/2012  PDC Amended for new font handling in 17.0.
+//                  Changed heading for cleaner layout.
+//                  Added Context Menu to Year Link Label.
+//
+//============================================================================
+Use Windows.pkg
+Use cToolTipController.pkg
+Use cLinkLabel.pkg
+Use An_Dates.pkg
+Use WindowsMonthAndDayNames.pkg
+Use dates.utl
+
+Use Language.pkg
+#IF LNG_DEFAULT=LNG_ENGLISH
+Define CS_CopyAs For "Copy as:"
+Define CS_GoToToday For "Go to today"
+Define CS_NextYear For "Next year"
+Define CS_PreviousYear For "Previous year"
+Define CS_NextMonth as "Next month"
+Define CS_PreviousMonth For "Previous month"
+Define CS_SwitchToYearView For "Switch to year view"
+Define CS_SwitchToMonthView For "Switch to month view"
+#ENDIF
+#IF LNG_DEFAULT=LNG_SWEDISH
+Define CS_CopyAs For "Kopiera som:"
+Define CS_GoToToday For "Hoppa till idag"
+Define CS_NextYear For "N„sta †r"
+Define CS_PreviousYear For "F”reg†ende †r"
+Define CS_NextMonth For "N„sta m†nad"
+Define CS_PreviousMonth For "F”reg†ende m†nad"
+Define CS_SwitchToYearView For "Byt till †rsvy"
+Define CS_SwitchToMonthView For "Byt till m†nadsvy"
+#ENDIF
+
+Class cCalendarCopyMenu is a FloatingPopupMenu
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        String[] saDateFormat
+        Integer iDateFormat
+        Get_Attribute DF_DATE_FORMAT to iDateFormat
+        If (iDateFormat = DF_DATE_EUROPEAN) Begin
+            Move "d/m/yyyy"            to saDateFormat[0]
+            Move "dd/mm/yyyy"          to saDateFormat[1]
+            Move "dd/mm/yy"            to saDateFormat[2]
+            Move "yyyy-mm-dd"          to saDateFormat[3]
+            Move "dd-mmm-yyyy"         to saDateFormat[4]
+            Move "d mmmm yyyy"         to saDateFormat[5]
+            Move "dth mmmm yyyy"       to saDateFormat[6]
+            Move "ddd d mmmm yyyy"     to saDateFormat[7]
+            Move "dddd, dth mmmm yyyy" to saDateFormat[8]
+        End
+        Else If (iDateFormat = DF_DATE_USA) Begin
+            Move "m/d/yyyy"           to saDateFormat[0]
+            Move "mm/dd/yyyy"         to saDateFormat[1]
+            Move "m/d/yy"             to saDateFormat[2]
+            Move "yyyy-mm-dd"         to saDateFormat[3]
+            Move "dd-mmm-yyyy"        to saDateFormat[4]
+            Move "mmmm d, yyyy"       to saDateFormat[5]
+            Move "mmmm dd, yyyy"      to saDateFormat[6]
+            Move "dddd, mmmm d, yyyy" to saDateFormat[7]
+        End
+        Else Begin
+            Move "yyyy/mm/dd" to saDateFormat[0]
+        End
+        Set psaDateFormat to saDateFormat
+    End_Procedure
+
+    Procedure Copy_Date0
+        Register_Function phoCurrentCell Returns Handle
+        Send Copy_Date to (phoCurrentCell(oDaysGrid(Self))) 0
+    End_Procedure
+
+    Procedure Copy_Date1
+        Send Copy_Date to (phoCurrentCell(oDaysGrid(Self))) 1
+    End_Procedure
+
+    Procedure Copy_Date2
+        Send Copy_Date to (phoCurrentCell(oDaysGrid(Self))) 2
+    End_Procedure
+
+    Procedure Copy_Date3
+        Send Copy_Date to (phoCurrentCell(oDaysGrid(Self))) 3
+    End_Procedure
+
+    Procedure Copy_Date4
+        Send Copy_Date to (phoCurrentCell(oDaysGrid(Self))) 4
+    End_Procedure
+
+    Procedure Copy_Date5
+        Send Copy_Date to (phoCurrentCell(oDaysGrid(Self))) 5
+    End_Procedure
+
+    Procedure Copy_Date6
+        Send Copy_Date to (phoCurrentCell(oDaysGrid(Self))) 6
+    End_Procedure
+
+    Procedure Copy_Date7
+        Send Copy_Date to (phoCurrentCell(oDaysGrid(Self))) 7
+    End_Procedure
+
+    Procedure Copy_Date8
+        Send Copy_Date to (phoCurrentCell(oDaysGrid(Self))) 8
+    End_Procedure
+
+    Procedure Popup
+        Date dDate
+        String[] saDateFormat
+        Integer iDateFormat iItem
+        Date dDate
+
+        Get_Attribute DF_DATE_FORMAT to iDateFormat
+        Get pdSelectedDate to dDate
+        Get psaDateFormat to saDateFormat
+        Send Delete_Data
+        Send Add_Item msg_none CS_CopyAs
+        Send Add_Item msg_none ""
+        Send Add_Item msg_Copy_Date0 (DateFormat(dDate,saDateFormat[0]))
+        If (iDateFormat <> DF_DATE_MILITARY) Begin
+            Send Add_Item msg_Copy_Date1 (DateFormat(dDate,saDateFormat[1]))
+            Send Add_Item msg_Copy_Date2 (DateFormat(dDate,saDateFormat[2]))
+            Send Add_Item msg_Copy_Date3 (DateFormat(dDate,saDateFormat[3]))
+            Send Add_Item msg_Copy_Date4 (DateFormat(dDate,saDateFormat[4]))
+            Send Add_Item msg_Copy_Date5 (DateFormat(dDate,saDateFormat[5]))
+            Send Add_Item msg_Copy_Date6 (DateFormat(dDate,saDateFormat[6]))
+            Send Add_Item msg_Copy_Date7 (DateFormat(dDate,saDateFormat[7]))
+        End
+        If (iDateFormat = DF_DATE_EUROPEAN) Begin
+            Send Add_Item msg_Copy_Date8 (DateFormat(dDate,saDateFormat[8]))
+        End
+        For iItem From 0 to (Item_Count(Self) - 1)
+            Set Aux_Value Item iItem to Self
+        Loop
+        Forward Send Popup
+    End_Procedure
+End_Class
+
+Class cCalendarYearMenu is a FloatingPopupMenu
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Property Integer[] piaYears
+    End_Procedure
+
+    Procedure GoToYear Integer iItem
+        Integer[] iaYears
+        Date dDate
+        Get piaYears to iaYears
+        Get pdSelectedDate to dDate
+        Set pbSelecting to True
+        Set SelectedDate to (DateSetYear(dDate,iaYears[iItem]))
+    End_Procedure
+
+    Procedure GoToYear0
+        Send GoToYear 0
+    End_Procedure
+
+    Procedure GoToYear1
+        Send GoToYear 1
+    End_Procedure
+
+    Procedure GoToYear2
+        Send GoToYear 2
+    End_Procedure
+
+    Procedure GoToYear3
+        Send GoToYear 3
+    End_Procedure
+
+    Procedure GoToYear4
+        Send GoToYear 4
+    End_Procedure
+
+    Procedure GoToYear5
+        Send GoToYear 5
+    End_Procedure
+
+    Procedure GoToYear6
+        Send GoToYear 6
+    End_Procedure
+
+    Procedure GoToYear7
+        Send GoToYear 7
+    End_Procedure
+
+    Procedure GoToYear8
+        Send GoToYear 8
+    End_Procedure
+
+    Procedure GoToYear9
+        Send GoToYear 9
+    End_Procedure
+
+    Register_Procedure GoToYear
+    Register_Function pdSelectedDate Returns Date
+
+    Procedure Popup
+        Integer iYear iStartYear iItem
+        Integer[] iaYears
+
+        Move (DateGetYear(pdSelectedDate(Self)) - 5) to iStartYear
+        Move iStartYear to iYear
+        For iItem From 0 to 10
+            Move iYear to iaYears[iItem]
+            Increment iYear
+        Loop
+        Set piaYears to iaYears
+        Send Delete_Data
+        Send Add_Item msg_GoToYear0 (iStartYear)
+        Send Add_Item msg_GoToYear1 (iStartYear + 1)
+        Send Add_Item msg_GoToYear2 (iStartYear + 2)
+        Send Add_Item msg_GoToYear3 (iStartYear + 3)
+        Send Add_Item msg_GoToYear4 (iStartYear + 4)
+        Send Add_Item msg_GoToYear5 (iStartYear + 5)
+        Send Add_Item msg_GoToYear6 (iStartYear + 6)
+        Send Add_Item msg_GoToYear7 (iStartYear + 7)
+        Send Add_Item msg_GoToYear8 (iStartYear + 8)
+        Send Add_Item msg_GoToYear9 (iStartYear + 9)
+        For iItem From 0 to (Item_Count(Self) - 1)
+            Set Aux_Value Item iItem to Self
+        Loop
+        Forward Send Popup
+    End_Procedure
+End_Class
+
+Register_Function piFontPointHeight Returns  Integer
+
+// This is the class used to display the name of each day
+Class cCalendarDayNameTB is a TextBox
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Auto_Size_State to False
+        Set Justification_Mode to (JMode_VCenter + JMode_Center)
+        Set FontPointHeight to (piFontPointHeight(Self))
+    End_Procedure
+End_Class
+
+// A container containing the names of the days of the week
+Class cCalendarDaynameHeader is a Container3d
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Size to 9 90
+        Set Border_Style to Border_None
+        Set Color to clAqua // clBtnFace
+        Set Skip_State to True
+        On_Key kCancel Send Cancel
+    End_Procedure
+
+    Procedure CreateDayNameLabels
+        Integer iItm
+        Handle hoObject
+        String sDay
+        For iItm From 0 to 6
+            Get Create (RefClass(cCalendarDayNameTB)) to hoObject
+            Set Size of hoObject to 10 13
+            Set Location of hoObject to 0 (iItm * 11.8 + 1.5)
+            Get GetDayName (iItm +1) to sDay
+            Set Value of hoObject to sDay
+            Send Add_Focus to hoObject (Parent(Self))
+        Loop
+    End_Procedure
+
+    Procedure End_Construct_Object
+        Forward Send End_Construct_Object
+        Send CreateDayNameLabels
+    End_Procedure
+
+End_Class
+
+// This defines the class used for the cells that display each date in the body of the calendar
+Class cCalendarDayCell is a Form
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Size to 10 14
+        Set Form_Border   to Border_None
+        Set Form_Datatype to Mask_Numeric_Window
+        Set Form_Mask     to "#0"
+        Set Entry_State   to False
+        Set FontPointHeight to (piFontPointHeight(Self))
+
+        Property Date pdAssignedDate 0  // The full date assigned to each cell in the grid
+
+        On_Key kLeftArrow     Send Prev_Day
+        On_Key kRightArrow    Send Next_Day
+        On_Key kUpArrow       Send Prev_Week
+        On_Key kDownArrow     Send Next_Week
+        On_Key Key_Ctrl+Key_C Send Popup to oCalendarCopyMenu
+        On_Key Key_Delete     Send None
+        On_Key kCancel        Send Close_Panel
+    End_Procedure
+
+    Register_Function pbPromptListBehavior Returns Boolean
+    // Trap Escape key
+    //
+    Procedure Cancel
+        Set pbSelecting to False
+        If (pbPromptListBehavior(Self)) Begin
+            Send Close_Panel
+        End
+    End_Procedure
+
+    // psToolTip:
+    // Override this procedure (defined in the class ToolTip_Support_Mixin) to delete the tooltip
+    // if its value is "".
+    { MethodType=Property }
+    { Category=Appearance }
+    { InitialValue="" }
+    Procedure Set psToolTip String sText
+        String sOldText
+        Handle hToolWnd
+        Get psToolTip_private to sOldText
+        If (sOldText <> sText) Begin
+            Set psToolTip_private to sText
+            // Test if this object has been paged yet...
+            If (Window_Handle(Self) <> 0) Begin
+                // If there has never been any tooltip then create one....
+                Get phToolWnd to hToolWnd
+                If (hToolWnd = 0) Begin
+                    Send AddToolTip
+                End
+                Else Begin
+                    If (sText = "") Begin
+                        Send DeleteToolTip
+                    End
+                    Else Begin
+                        Send UpdateToolTip
+                    End
+                End
+            End
+        End
+    End_Procedure
+
+    Register_Function pdSelectedDate  Returns Date
+    Register_Function piCurrentMonth Returns Integer
+    Register_Function piCurrentDateColor      Returns Integer
+    Register_Function piCurrentDateTextColor  Returns Integer
+    Register_Function piCurrentMonthColor     Returns Integer
+    Register_Function piCurrentMonthTextColor Returns Integer
+    Register_Function piOtherMonthColor       Returns Integer
+    Register_Function piOtherMonthTextColor   Returns Integer
+    Register_Function piFocusCellBackColor    Returns Integer
+    Register_Function piFocusCellForeColor    Returns Integer
+
+    Procedure DisplayDay Integer iDayNo Integer iMth Integer iYr Boolean bCurrent
+        Date dDate
+
+        Set Value to iDayNo
+        Move "1/1/1" to dDate   // must start with valid date
+        Move (DateSetYear(dDate,iYr))   to dDate    // set year and month before day, otherwise problems with last day in month
+        Move (DateSetMonth(dDate,iMth)) to dDate
+        Move (DateSetDay(dDate,iDayNo)) to dDate
+        Set pdAssignedDate to dDate
+
+        If (bCurrent) Begin
+            Set phoCurrentCell to Self
+            Set Color to (piFocusCellBackColor(Self))
+            Set TextColor to (piFocusCellForeColor(Self))
+            Send OnDateSetFocus Self dDate
+            Send Activate
+        End
+        Else Begin
+            If (iMth = piCurrentMonth(Self)) Begin
+                If (dDate = Date(CurrentDateTime())) Begin
+                    Set Form_Border to Border_Normal
+                    Set Color     to (piCurrentDateColor(Self))
+                    Set TextColor to (piCurrentDateTextColor(Self))
+                    Send OnDateDisplay Self dDate
+                End
+                Else Begin
+                    Set Form_Border to Border_None
+                    Set Color     to (piCurrentMonthColor(Self))
+                    Set TextColor to (piCurrentMonthTextColor(Self))
+                    Send OnDateDisplay Self dDate
+                End
+            End
+            Else Begin
+                Set Color     to (piOtherMonthColor(Self))
+                Set TextColor to (piOtherMonthTextColor(Self))
+                Send OnOtherDateDisplay Self dDate
+            End
+        End
+        Send Paint
+    End_Procedure
+
+    Procedure Copy_Date Integer iFormat
+        String[] saDateFormat
+        If (num_arguments = 0) Begin
+            Send Popup to oCalendarCopyMenu
+        End
+        Else Begin
+            Get psaDateFormat to saDateFormat
+            Direct_Output "Clipboard:"
+            Writeln (DateFormat(pdAssignedDate(Self),saDateFormat[iFormat]))
+            Close_Output
+        End
+    End_Procedure
+
+    Procedure Default_Action    // sent by kEnter
+        Send OnEnterKey (pdAssignedDate(Self))
+    End_Procedure
+
+    Procedure Mouse_Down Integer iWindowNumber Integer iPosition
+        Set pbSelecting to True
+        Forward Send Mouse_Down iWindowNumber iPosition
+        Set SelectedDate to (pdAssignedDate(Self))
+    End_Procedure
+
+    Procedure Mouse_Down2 Integer iWindowNumber Integer iPosition
+        Set pbSelecting to True
+        Set SelectedDate to (pdAssignedDate(Self))
+        Forward Send Mouse_Down2 iWindowNumber iPosition
+    End_Procedure
+
+    Procedure Mouse_Up Integer iWindowNumber Integer iPosition
+        Forward Send Mouse_Up iWindowNumber iPosition
+        Send OnDateClick (pdSelectedDate(Self))
+    End_Procedure
+
+    Procedure Mouse_Up2 Integer iWindowNumber Integer iPosition
+        Forward Send Mouse_Up2 iWindowNumber iPosition
+        Send OnDateRClick (pdSelectedDate(Self))
+    End_Procedure
+
+    Procedure Mouse_Click Integer iWindowNumber Integer iPosition
+        Forward Send Mouse_Click iWindowNumber iPosition
+        Send OnDateDblClick (pdSelectedDate(Self))
+    End_Procedure
+
+    Procedure Mouse_Click2 Integer iWindowNumber Integer iPosition
+        Forward Send Mouse_Click2 iWindowNumber iPosition
+        Send OnDateRDblClick (pdAssignedDate(Self))
+    End_Procedure
+
+    Procedure Notify_Focus_Change Boolean bChg
+        Register_Function pbPromptListBehavior Returns Boolean
+        Register_Function pbSelecting Returns Boolean
+        Forward Send Notify_Focus_Change bChg
+        If (pbPromptListBehavior(Self) and not(bChg or pbSelecting(Self))) Begin
+            Send Close_Panel
+        End
+        Set pbSelecting to False
+    End_Procedure
+End_Class
+
+//Class cCalendarWeekNumberHeader is a Container3d
+//    Procedure Construct_Object
+//        Forward Send Construct_Object
+//        Set Border_Style to Border_None
+//        Set TextColor to clHighlight
+//        Object oObjIdArray is an array
+//        End_Object
+//    End_Procedure
+//
+//    Procedure CreateWeekNoLabels
+//        Integer iItm
+//        Handle hoArray hoObject
+//        Get oObjIdArray to hoArray
+//        For iItm from 0 to 5
+//            Get Create U_textbox to hoObject
+//            Set Size of hoObject to 15 30
+//            Set Location of hoObject to (iItm * 15 + 1) 1
+//            Set Value of hoArray item (Item_Count(hoArray)) to hoObject
+//            Send Add_Focus to hoObject (Parent(Self))
+//        Loop
+//    End_Procedure
+//
+//    Procedure Display
+//        Integer iItm
+//        Handle hoArray
+//        Date dDate dFirstDate dLastDate
+//
+//        Get oObjIdArray to hoArray
+//        Get pdSelectedDate to dDate
+//        Move (FirstDayInMonth(dDate)) to dDate  // eg "01/03/2008"
+//        // (DateDayNumber(dDate)) is day of week of eg 1/3/2008 (eg Sat)
+//        Move (dDate - DateDayNumber(dDate) + 1) to dDate  // Gives date of first position in grid
+//        For iItm from 0 to 5
+//            Set Value of (Integer(Value(hoArray,iItm))) to (t.calendar.week * String(DateWeekNumber(iItm * 7 + dDate)))
+//        Loop
+//    End_Procedure
+//
+//    Procedure End_Construct_Object
+//        Forward Send End_Construct_Object
+//        Send CreateWeekNoLabels
+//    End_Procedure
+//End_Class
+
+Class cCalendarDaysGrid is a Container3d
+    Procedure Construct_Object
+        Forward Send Construct_Object
+
+        Property Handle[] phoaDayObj    // An array to hold the object_id of each cell
+        Property Handle phoCurrentCell  // The current, focused, cell
+        Integer iRow iCol
+        Property Boolean pbExportState
+
+        // Object handle for this object in cCalendarDisplay object
+        Delegate Set phoDaysGrid to self
+
+        Handle hoObject
+        Handle[] hoaDayObj
+        Set Size to 46 84
+        Set Border_Style to Border_None
+
+        For iRow From 0 to 5
+            For iCol From 0 to 6
+                Get Create (RefClass(cCalendarDayCell)) to hoObject
+                Move hoObject to hoaDayObj[SizeOfArray(hoaDayObj)]
+                Set Location of hoObject to (iRow * 9) (iCol * 12)
+                Send Add_Focus to hoObject (Parent(Self))
+            Loop
+        Loop
+        Set phoaDayObj to hoaDayObj
+    End_Procedure
+
+    Procedure DisplayDays
+        Handle hoDayForm
+        Handle[] hoaDayObj  // array of the object-ids of the cells in the grid
+        Integer iCurrentMonth iCurrentYear
+        Integer iFirstItem iLastItem iItm iDayNo iMth iYr iPrevLastDay
+        Date dDate
+
+        // Calculate the refereneces of the cells that are to be used to display the days of the current month:
+        Get pdSelectedDate  to dDate
+        Move (DateGetDaysInMonth(DateChangeMonth(dDate,- 1))) to iPrevLastDay
+        // the last day of the previous month (28/29/30/31)
+        Move (DateGetDayOfWeek(DateSetDay(dDate,1)) - 2);   // the cell index for the first day of the month
+        to iFirstItem                                     // -2 because DateGetDayOfWeek returns Sunday as 1
+        If (iFirstItem < 0) Begin
+            Move 6 to iFirstItem            // whereas we have Sunday in column 7
+        End
+        Move (DateGetDaysInMonth(dDate) + iFirstItem - 1) to iLastItem  // the cell index for the last day of the month
+
+        // Display the dates in the grid:
+        Get phoaDayObj     to hoaDayObj
+        Get piCurrentMonth to iCurrentMonth
+        Get piCurrentYear  to iCurrentYear
+
+        // Display the visible days of the previous month:
+        Move iCurrentYear  to iYr
+        Move (iCurrentMonth - 1) to iMth
+        If (iMth = 0) Begin
+            Decrement iYr
+            Move 12 to iMth
+        End
+        Move (iPrevLastDay - iFirstItem + 1)  to iDayNo // the day of the last month to be displayed
+        // in the first cell (iItm = 0) of the grid
+        For iItm From 0 to (iFirstItem - 1)
+            Move hoaDayObj[iItm] to hoDayForm
+            Send DisplayDay to hoDayForm iDayNo iMth iYr False
+            Increment iDayNo
+        Loop
+
+        // Display the days of the current month:
+        Move iCurrentYear  to iYr
+        Move iCurrentMonth to iMth
+        Move 1 to iDayNo
+        For iItm From iFirstItem to iLastItem
+            Move hoaDayObj[iItm] to hoDayForm
+            Send DisplayDay to hoDayForm iDayNo iMth iYr False
+            Increment iDayNo
+        Loop
+
+        // Display the visible days of the next month:
+        Move (iCurrentMonth + 1) to iMth
+        If (iMth = 13) Begin
+            Increment iYr
+            Move 1 to iMth
+        End
+        Move 1 to iDayNo
+        For iItm From (iLastItem + 1) to 41
+            Move hoaDayObj[iItm] to hoDayForm
+            Send DisplayDay to hoDayForm iDayNo iMth iYr False
+            Increment iDayNo
+        Loop
+
+    End_Procedure
+
+    Procedure DisplayDay Date dDate Boolean bCurrent
+        Integer iItm iDay iMth iYr
+        Handle[] hoaDayObj  // array of the object-ids of the cells in the grid
+        Handle hoDayForm
+
+        Get phoaDayObj to hoaDayObj
+        For iItm From 0 to 41
+            Move hoaDayObj[iItm] to hoDayForm
+            If (pdAssignedDate(hoDayForm) = dDate) Begin
+                Move (DateGetDay(dDate))   to iDay
+                Move (DateGetMonth(dDate)) to iMth
+                Move (DateGetYear(dDate))  to iYr
+                Send DisplayDay to hoDayForm iDay iMth iYr bCurrent
+            End
+        Loop
+    End_Procedure
+
+    Procedure Broadcast_Set_Floating_Menu_Object Handle hoMenu
+        Broadcast Set Floating_Menu_Object to (If(pbPromptListBehavior(Self),0,hoMenu))
+    End_Procedure
+
+End_Class
+
+{ OverrideProperty = Size InitialValue = 13,6 }
+Class cCalendarBrowseButton is a TextBox
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Property Handle phoMsg
+        Set Size to 13 6
+        Set Color to clWindow
+        Set Border_Style to Border_None
+    End_Procedure
+
+    Procedure Mouse_Up Integer iWindowNumber Integer iPosition
+        Handle hoMsg
+        Get phoMsg to hoMsg
+        Send hoMsg
+    End_Procedure
+
+End_Class
+
+Class cCalendarPrevMthBtn is a cCalendarBrowseButton
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Bitmap to "ActionPrevious.bmp"
+        Set phoMsg to Prev_Month
+        Set psToolTip to CS_PreviousMonth
+    End_Procedure
+End_Class
+
+Class cCalendarNextYrBtn is a cCalendarBrowseButton
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Bitmap to "ActionNext.bmp"
+        Set phoMsg to Next_Year
+        Set psToolTip to CS_NextYear
+    End_Procedure
+End_Class
+
+Class cCalendarMonthLinkLabel is a cLinkLabel
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Size to 14 60
+        Set Color to clWindow
+        Set psToolTip to CS_SwitchToYearView
+    End_Procedure
+
+    Procedure Mouse_Down Integer iWindowNumber Integer iPosition
+        Set pbSelecting to True
+        Forward Send Mouse_Down iWindowNumber iPosition
+    End_Procedure
+
+    Procedure OnClick Integer iItem String sID String sUrl
+        Forward Send OnClick iItem sID sUrl
+        Send ShowMonths
+    End_Procedure
+End_Class
+
+Class cCalendarYearLinkLabel is a cLinkLabel
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Size to 2 40
+        Set Color to clWindow
+        Set psToolTip to CS_SwitchToMonthView
+
+        Object oYearMenu is a cCalendarYearMenu
+        End_Object
+
+    End_Procedure
+
+    Procedure Mouse_Down Integer iWindowNumber Integer iPosition
+        Set pbSelecting to True
+        Forward Send Mouse_Down iWindowNumber iPosition
+    End_Procedure
+
+    Procedure OnClick Integer iItem String sID String sUrl
+        Forward Send OnClick iItem sID sUrl
+        Send ShowDays
+    End_Procedure
+
+    Procedure Mouse_Up2 Integer iWindowNumber Integer iPosition
+        Forward Send Mouse_Up2 iWindowNumber iPosition
+        Send Popup to oYearMenu
+    End_Procedure
+
+End_Class
+
+Class cCalendarHeading is a Container3d
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Size to 13 117
+        Set Color to clWindow
+        Set Border_Style to Border_None
+        Set Skip_State to True
+        Property String psLabel
+    End_Procedure
+
+    Procedure Set Label String sValue
+        Set psLabel to sValue
+        Integer iExt iParentSize
+        Get Text_Extent sValue to iExt
+        Get GuiToDialog (Hi(iExt)) (Low(iExt)) to iExt
+        Get Size to iParentSize
+        Set Location of oLinkLabel to 2 ((Low(iParentSize) - Low(iExt)) / 2)
+        Set Label of oLinkLabel to ('<A ID="YearLink">' + sValue + '</A>')
+    End_Procedure
+End_Class
+
+{ OverrideProperty = Size InitialValue = 14,26 }
+Class cCalendarMonthBtn is a Button
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Size to 14 26
+    End_Procedure
+
+    Function MonthNo String sMonth Returns Integer
+        Function_Return ((Pos(sMonth, MonthNames) / 9) +1)
+    End_Function
+
+    Procedure Mouse_Down Integer iWindowNumber Integer iPosition
+        Set pbSelecting to True
+        Forward Send Mouse_Down iWindowNumber iPosition
+    End_Procedure
+
+    Procedure OnClick
+        Date dDate
+        Set pbSelecting to True
+        Get pdSelectedDate to dDate
+        Set SelectedDate to (DateSetMonth(dDate,MonthNo(Self,Value(Self,0))))
+        Send ShowDays
+    End_Procedure
+
+    Register_Function pbPromptListBehavior Returns Boolean
+    Register_Function pbSelecting Returns Boolean
+
+    Procedure Notify_Focus_Change Boolean bChg
+        Forward Send Notify_Focus_Change bChg
+        If (pbPromptListBehavior(Self) and not(bChg or pbSelecting(Self))) Begin
+            Send Close_Panel
+        End
+        Set pbSelecting to False
+    End_Procedure
+
+End_Class
+
+Class cCalendarTodayLink is a Button // cLinkLabel
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Size to 12 60
+        //        Set Color to clWindow
+        //        Set Label to ('<A ID="YearLink">' + CS_GoToToday + '</A>')
+        Set Label to CS_GoToToday
+    End_Procedure
+
+    Procedure Mouse_Down Integer iWindowNumber Integer iPosition
+        Set pbSelecting to True
+        Forward Send Mouse_Down iWindowNumber iPosition
+    End_Procedure
+
+    Procedure OnClick
+        Send Go_Today
+        Send ShowDays
+    End_Procedure
+
+End_Class
+
+// Little trick to avoid the Studio claiming that child objects cannot be modelled
+{ DesignerClass = cDTContainer3D }
+Class cCalendarDisplay is a Container3d
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Size to 109 130 // set size to 108 113 to display oTodayForm
+        Set Color to clWindow
+        Set Border_Style to Border_None
+        Set Visible_State to False  // until activated and filled
+
+        Property Handle  phoDaysGrid
+        Property Integer piFontPointHeight 8
+        Property Integer piCurrentMonthColor        clWindow
+        Property Integer piCurrentMonthTextColor    clWindowText
+        Property Integer piCurrentDateColor         clWindow
+        Property Integer piCurrentDateTextColor     clWindowText
+        Property Integer piOtherMonthColor          clWindow    // clInactiveCaption
+        Property Integer piOtherMonthTextColor      clInactiveCaptionText
+        Property Integer piFocusCellBackColor       clHighlight
+        Property Integer piFocusCellForeColor       clHighlightText
+
+        Property Date    pdSeedDate 0       // the date with which to seed to calendar when it is first invoked
+
+        Property Date    pdSelectedDate   0  // the currently active date - the one that is highlighted and has the focus
+        Property Integer piCurrentYear  -1
+        Property Integer piCurrentMonth -1
+        Property Boolean pbPromptListBehavior False // Set true when being used as a prompt and it is to be closed when it loses the focus.
+        Property Boolean pbSelecting                // Internal use only
+        Property Handle  private.ToolTipController
+        Property Handle  private.Floating_Menu_Object
+        Property String[] psaDateFormat             // Array of date format strings used by oCalendarCopyMenu
+
+        On_Key Key_Ctrl+Key_PgUp Send Prev_Year
+        On_Key Key_Ctrl+Key_PgDn Send Next_Year
+        On_Key          Key_PgUp Send Prev_Month
+        On_Key          Key_PgDn Send Next_Month
+        On_Key          Key_Home Send Go_Today
+        On_Key Key_Alt+Key_G     Send Go_Today
+        On_Key kCancel           Send Cancel
+
+        // For some reason unless we have a form object the Calendar
+        // won't stay on the screen when used as a prompt object (???)
+        Object oForm is a Form
+            Set Visible_State to False
+        End_Object
+
+        Object oMonthHeading is a cCalendarHeading
+            Set Location to 0 0
+
+            Object oPrevMthBtn is a cCalendarPrevMthBtn
+                Set Location to 0 18
+            End_Object
+
+            Object oLinkLabel is a cCalendarMonthLinkLabel
+                Set Location to 0 67
+            End_Object
+
+            Object oNextMthBtn is a cCalendarBrowseButton
+                Set Location to 0 102
+                Set Bitmap to "ActionNext.bmp"
+                Set phoMsg to Next_Month
+                Set psToolTip to CS_NextMonth
+            End_Object
+
+        End_Object
+
+        Object oYearHeading is a cCalendarHeading
+            Set Location to 0 0
+            Set Visible_State to False
+
+            Object oPrevYrBtn is a cCalendarBrowseButton
+                Set Location to 0 18
+                Set Bitmap to "ActionPrevious.bmp"
+                Set phoMsg to Prev_Year
+                Set psToolTip to CS_PreviousYear
+            End_Object
+
+            Object oLinkLabel is a cCalendarYearLinkLabel
+                Set Location to 0 67
+            End_Object
+
+            Object oNextYrBtn is a cCalendarNextYrBtn
+                Set Location to 0 102
+            End_Object
+        End_Object
+
+        Object oDaynameHeader is a cCalendarDaynameHeader
+            Set Location to 13 18
+        End_Object
+
+        Object oDaysGrid is a cCalendarDaysGrid
+            Set Location to 22 18
+        End_Object
+
+        Object oMonthBtns is a Container3d
+            Set Size to 63 90
+            Set Location to 12 18
+            Set Color to clWindow
+            Set Border_Style to Border_None
+            Set Visible_State to False
+
+            Object oJanBtn is a cCalendarMonthBtn
+                Set Location to 1 5
+                Set Label to (GetMonthName(1))
+            End_Object
+
+            Object oFebBtn is a cCalendarMonthBtn
+                Set Location to 1 33
+                Set Label to (GetMonthName(2))
+            End_Object
+
+            Object oMarBtn is a cCalendarMonthBtn
+                Set Location to 1 61
+                Set Label to (GetMonthName(3))
+            End_Object
+
+            Object oAprBtn is a cCalendarMonthBtn
+                Set Location to 16 5
+                Set Label to (GetMonthName(4))
+            End_Object
+
+            Object oMayBtn is a cCalendarMonthBtn
+                Set Location to 16 33
+                Set Label to (GetMonthName(5))
+            End_Object
+
+            Object oJunBtn is a cCalendarMonthBtn
+                Set Location to 16 61
+                Set Label to (GetMonthName(6))
+            End_Object
+
+            Object oJulyBtn is a cCalendarMonthBtn
+                Set Location to 31 5
+                Set Label to (GetMonthName(7))
+            End_Object
+
+            Object oAugBtn is a cCalendarMonthBtn
+                Set Location to 31 33
+                Set Label to (GetMonthName(8))
+            End_Object
+
+            Object oSeptBtn is a cCalendarMonthBtn
+                Set Location to 31 61
+                Set Label to (GetMonthName(9))
+            End_Object
+
+            Object oOctBtn is a cCalendarMonthBtn
+                Set Location to 46 5
+                Set Label to (GetMonthName(10))
+            End_Object
+
+            Object oNovBtn is a cCalendarMonthBtn
+                Set Location to 46 33
+                Set Label to (GetMonthName(11))
+            End_Object
+
+            Object oDecBtn is a cCalendarMonthBtn
+                Set Location to 46 61
+                Set Label to (GetMonthName(12))
+            End_Object
+
+        End_Object
+
+        Object oTodayLink is a cCalendarTodayLink
+            Set Location to 76 32
+        End_Object
+
+        // Tooltips with a title seem a little OTT for the Calendar,
+        // so we define a vanilla ToolTipController in case 'fancy'
+        // tooltips are used in the application.
+        // This can always be changed by setting the Calendar's
+        // phoToolTipController property.
+        //
+        Object oCalendarToolTipController is a cToolTipController
+        End_Object
+
+        Set private.ToolTipController to oCalendarToolTipController
+        Broadcast Recursive Set phoToolTipController to oCalendarToolTipController
+
+        Object oCalendarCopyMenu is a cCalendarCopyMenu
+        End_Object
+
+        Set private.Floating_Menu_Object to oCalendarCopyMenu
+        Send Broadcast_Set_Floating_Menu_Object to oDaysGrid oCalendarCopyMenu
+
+    End_Procedure
+
+    { MethodType = Property }
+    Procedure Set phoToolTipController Handle hoController
+        Set private.ToolTipController to hoController
+        Broadcast Recursive Set phoToolTipController to hoController
+    End_Procedure
+
+    { MethodType = Property }
+    Function phoToolTipController Returns Handle
+        Function_Return (private.ToolTipController(Self))
+    End_Function
+
+    { MethodType = Property }
+    Procedure Set Floating_Menu_Object Handle hoMenu
+        Set private.Floating_Menu_Object to hoMenu
+        Send Broadcast_Set_Floating_Menu_Object to oDaysGrid hoMenu
+    End_Procedure
+
+    { MethodType = Property }
+    Function Floating_Menu_Object Returns Handle
+        Function_Return (private.Floating_Menu_Object(Self))
+    End_Function
+
+    // Sent after a date in the current month has been displayed.
+    Procedure OnDateDisplay Handle hoCell Date dDate
+    End_Procedure
+
+    // Sent after a date not in the current month has been displayed.
+    Procedure OnOtherDateDisplay Handle hoCell Date dDate
+    End_Procedure
+
+    // Sent when a date cell is about to receive the focus.  You could
+    // augment this to change the colour if the date is significant.
+    Procedure OnDateSetFocus Handle hoCell Date dDate
+    End_Procedure
+
+    // Sent when the Enter key is pressed when a cell has the focus.
+    Procedure OnEnterKey Date dDate
+    End_Procedure
+
+    Procedure OnDateClick Date dDate
+    End_Procedure
+
+    Procedure OnDateDblClick Date dDate
+    End_Procedure
+
+    Procedure OnDateRClick Date dDate
+    End_Procedure
+
+    Procedure OnDateRDblClick Date dDate
+    End_Procedure
+
+    Procedure ShowDays
+        Set Visible_State of oMonthBtns to False
+        Set Visible_State of oYearHeading to False
+        Set Visible_State of oMonthHeading to True
+        Set Visible_State of oDaysGrid to True
+    End_Procedure
+
+    Procedure ShowMonths
+        Integer iMth
+        Handle ho
+
+        Set Visible_State of oMonthBtns    to True
+        Set Visible_State of oMonthHeading to False
+        Set Visible_State of oDaysGrid     to False
+        Set Visible_State of oYearHeading  to True
+        Move (DateGetMonth(pdSelectedDate(Self))) to iMth
+        Move (oMonthBtns(Self)) to ho
+        Case Begin
+            Case (iMth =  1)
+                Send Activate to (oJanBtn(ho))
+                Case Break
+            Case (iMth =  2)
+                Send Activate to (oFebBtn(ho))
+                Case Break
+            Case (iMth =  3)
+                Send Activate to (oMarBtn(ho))
+                Case Break
+            Case (iMth =  4)
+                Send Activate to (oAprBtn(ho))
+                Case Break
+            Case (iMth =  5)
+                Send Activate to (oMayBtn(ho))
+                Case Break
+            Case (iMth =  7)
+                Send Activate to (oJunBtn(ho))
+                Case Break
+            Case (iMth =  6)
+                Send Activate to (oJulyBtn(ho))
+                Case Break
+            Case (iMth =  8)
+                Send Activate to (oAugBtn(ho))
+                Case Break
+            Case (iMth =  9)
+                Send Activate to (oSeptBtn(ho))
+                Case Break
+            Case (iMth = 10)
+                Send Activate to (oOctBtn(ho))
+                Case Break
+            Case (iMth = 11)
+                Send Activate to (oNovBtn(ho))
+                Case Break
+            Case (iMth = 12)
+                Send Activate to (oDecBtn(ho))
+                Case Break
+        Case End
+    End_Procedure
+
+    Procedure DisplayCalendar Date dNewDate
+        If (dNewDate = 0) Begin
+            Move (CurrentDateTime()) to dNewDate
+        End
+        Set SelectedDate to dNewDate True   // True to force redisplay
+    End_Procedure
+
+    Register_Object oTodayGroup
+
+    { MethodType = Property }
+    Procedure Set SelectedDate Date dNewDate Boolean bForceRedisplay
+        Integer iDay iMonth iYear
+        Date    dOldDate
+        Boolean bRedisplay
+        String  sMonthName
+
+        Move (If(num_arguments > 1,bForceRedisplay,False)) to bRedisplay
+        If (dNewDate = 0) Begin
+            Move (CurrentDateTime()) to dNewDate
+        End
+        Get pdSelectedDate to dOldDate
+        If (dNewDate <> dOldDate or bRedisplay) Begin
+            If (dOldDate <> 0) Begin
+                Send DisplayDay to oDaysGrid dOldDate False // False because leaving date
+            End
+            Set pdSelectedDate to dNewDate
+            Move (DateGetDay(dNewDate))   to iDay
+            Move (DateGetYear(dNewDate))  to iYear
+            Move (DateGetMonth(dNewDate)) to iMonth
+            If (piCurrentYear(Self) <> iYear or piCurrentMonth(Self) <> iMonth or bRedisplay) Begin
+                Set piCurrentMonth to iMonth
+                Set piCurrentYear  to iYear
+                Get MonthNameFromInteger iMonth True True to sMonthName
+                Set Label of oMonthHeading to (sMonthName * String(iYear))
+                //                Set Label of oMonthHeading to (DateGetMonthName(dNewDate) * String(iYear))
+                Set Label of oYearHeading  to (DateGetYear(dNewDate))
+                Send DisplayDays  to (oDaysGrid(Self))
+            End
+            Send DisplayDay to oDaysGrid dNewDate True
+            //            Set Visible_State of oTodayLink to (dNewDate <> Date(CurrentDateTime()))
+        End
+    End_Procedure
+
+    Procedure Next_Year
+        Date dDate
+        Set pbSelecting to True
+        Get pdSelectedDate to dDate
+        Set SelectedDate to (DateSetYear(dDate,DateGetYear(dDate) + 1))
+    End_Procedure
+
+    Procedure Prev_Year
+        Date dDate
+        Set pbSelecting to True
+        Get pdSelectedDate to dDate
+        Set SelectedDate to (DateSetYear(dDate,DateGetYear(dDate) - 1))
+    End_Procedure
+
+    Procedure Next_Month
+        Date dDate
+        Set pbSelecting to True
+        Get pdSelectedDate to dDate
+        Set SelectedDate to (DateChangeMonth(dDate,1))
+    End_Procedure
+
+    Procedure Prev_Month
+        Date dDate
+        Set pbSelecting to True
+        Get pdSelectedDate to dDate
+        Set SelectedDate to (DateChangeMonth(dDate,- 1))
+    End_Procedure
+
+    Procedure Next_Week
+        Set pbSelecting to True
+        Set SelectedDate to (pdSelectedDate(Self) + 7)
+    End_Procedure
+
+    Procedure Prev_Week
+        Set pbSelecting to True
+        Set SelectedDate to (pdSelectedDate(Self) - 7)
+    End_Procedure
+
+    Procedure Next_Day
+        Set pbSelecting to True
+        Set SelectedDate to (pdSelectedDate(Self) + 1)
+    End_Procedure
+
+    Procedure Prev_Day
+        Set pbSelecting to True
+        Set SelectedDate to (pdSelectedDate(Self) - 1)
+    End_Procedure
+
+    Procedure Go_Today
+        Set pbSelecting to True
+        Set SelectedDate to (CurrentDateTime())
+    End_Procedure
+
+    Procedure Activate Returns Integer
+        Integer iFail
+        Forward Get msg_Activate to iFail
+        If (iFail = 0 and pbPromptListBehavior(Self)) Begin
+            Send Setup
+        End
+        Procedure_Return iFail
+    End_Procedure
+
+    Procedure Add_Focus Handle hoParent Returns Integer
+        Integer iFail
+        Forward Get msg_Add_Focus hoParent to iFail
+        If (iFail = 0 and not(pbPromptListBehavior(Self))) Begin
+            Send Setup
+        End
+        Procedure_Return iFail
+    End_Procedure
+
+    Procedure Setup
+        Date dInitialDate
+        Get pdSeedDate to dInitialDate
+        // If pdSeedDate is 0 the calendar will be initialised to today's date.
+        Set pbSelecting to True
+        Send DisplayCalendar dInitialDate
+        Set Visible_State to True
+        Send DisplayDay to oDaysGrid dInitialDate True
+    End_Procedure
+
+    { MethodType = Property }
+    Function SelectedDate Returns Date
+        Function_Return (pdSelectedDate(Self))
+    End_Procedure
+
+    Procedure Refresh
+        Set SelectedDate to (pdSelectedDate(Self)) True // True to force redisplay of whole grid.
+    End_Procedure
+
+    Procedure Close_Panel
+        If (not(pbSelecting(Self))) Begin
+            Forward Send Close_Panel
+            Send ShowDays   // ready for next time
+        End
+    End_Procedure
+
+End_Class

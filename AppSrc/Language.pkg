@@ -1,0 +1,89 @@
+// Use Language     // Default language setup
+// Sets default languange
+
+Use LangSymb.pkg // Language symbols
+
+#IFDEF LNG_DEFAULT
+#ELSE
+// define LNG_DEFAULT for LNG_ENGLISH // <-- Change default language here
+Define LNG_DEFAULT For LNG_SWEDISH // <-- Change default language here
+#ENDIF
+
+#IFSAME _LANGUAGE_ $DUTCH$ $SPANISH$ $ENGLISH$ $DANISH$ $SWEDISH$ $NORWEGIAN$ $GERMAN$ $PORTUGUESE$ $FRENCH$ $ITALIAN$ $PAPIAMENTU$
+#ELSE
+ #IF LNG_DEFAULT=LNG_DUTCH
+Define _LANGUAGE_ For $DUTCH$
+ #ENDIF
+ #IF LNG_DEFAULT=LNG_SPANISH
+Define _LANGUAGE_ For $SPANISH$
+ #ENDIF
+ #IF LNG_DEFAULT=LNG_ENGLISH
+Define _LANGUAGE_ For $ENGLISH$
+ #ENDIF
+ #IF LNG_DEFAULT=LNG_DANISH
+Define _LANGUAGE_ For $DANISH$
+ #ENDIF
+ #IF LNG_DEFAULT=LNG_SWEDISH
+Define _LANGUAGE_ For $SWEDISH$
+ #ENDIF
+ #IF LNG_DEFAULT=LNG_NORWEGIAN
+Define _LANGUAGE_ For $NORWEGIAN$
+ #ENDIF
+ #IF LNG_DEFAULT=LNG_GERMAN
+Define _LANGUAGE_ For $GERMAN$
+ #ENDIF
+ #IF LNG_DEFAULT=LNG_PORTUGUESE
+Define _LANGUAGE_ For $PORTUGUESE$
+ #ENDIF
+ #IF LNG_DEFAULT=LNG_FRENCH
+Define _LANGUAGE_ For $FRENCH$
+ #ENDIF
+ #IF LNG_DEFAULT=LNG_ITALIAN
+Define _LANGUAGE_ For $ITALIAN$
+ #ENDIF
+ #IF LNG_DEFAULT=LNG_PAPIAMENTU
+Define _LANGUAGE_ For $PAPIAMENTU$
+ #ENDIF
+#ENDIF
+
+#REM LANGUAGE SET BY LANGUAGE.PKG: _LANGUAGE_
+
+#COMMAND INCLUDE_LANGUAGE_FILE R .
+ #PUSH !e
+ #SET E$ LNG_DEFAULT
+ #INCLUDE !1.!e
+ #POP E$
+#ENDCOMMAND
+#COMMAND USE_LANGUAGE_FILE R .
+ #PUSH !e
+ #SET E$ LNG_DEFAULT
+ Use !1.!e
+ #POP E$
+#ENDCOMMAND
+
+Integer giLanguage
+Move LNG_DEFAULT to giLanguage
+
+Class cLanguageValues is an Array
+    Procedure Set language_value Integer liLanguage Integer liConst String lsValue
+        Set Value Item (liLanguage*LNG_MAX+liConst) to lsValue
+    End_Procedure
+    Function language_value Integer liConst Returns String
+        String lsValue
+        Get Value Item (giLanguage*LNG_MAX+liConst) to lsValue
+        If (lsValue="") Begin
+            Function_Return (Value(self,LNG_DEFAULT*LNG_MAX+liConst))
+        End
+        Function_Return lsValue
+    End_Function
+    Function language_coded_value Integer liConst Returns String
+        Function_Return ("LV."+String(liConst))
+    End_Function
+    Function language_decoded_value String lsValue Returns String
+        If (Left(lsValue,3)="LV.") Begin
+            Move (Replace("LV.",lsValue,"")) to lsValue
+            Get language_value (Integer(lsValue)) to lsValue
+        End
+        Function_Return lsValue
+    End_Function
+End_Class

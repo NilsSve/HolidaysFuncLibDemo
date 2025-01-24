@@ -1,0 +1,6 @@
+cCalendarHolidays,CalendarHolidays.pkg,Main
+cDatabaseFunctions,cDataBaseFunctions.pkg,Main
+cNationalHolidays,CalendarHolidays.pkg,Main
+cWSCurrencyConvertor,cWSCurrencyConvertor.pkg,Other
+cWSHolidayService,cWSHolidayService.pkg,Main
+cWSQuoteofTheDay,cWSQuoteofTheDay.pkg,Other

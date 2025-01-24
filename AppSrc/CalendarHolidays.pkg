@@ -1,0 +1,2654 @@
+﻿//****************************************************************************
+// $Module type: Class Package
+// $Module name: CalendarHolidays.pkg
+// $Author     : Nils Svedmyr, RDC Tools International. nils.svedmyr@rdctools.com
+// Created     : 2009-07-27 @ 12:53
+//
+// Description : To calculate dates for holidays *and* other special days for a given year.
+//
+// List of holiday Functions: See DateFunctionsTest.vw when NationalHolidays program is run.
+////
+// $Rev History:
+//    2009-07-27  Module header created
+//    2010-12-14  Mother's Day for all countries in separate package. (MothersDay.pkg)
+//    2010-12-27  Made functions into a class
+//    2011-02-22  Added class cNationalHolidays (Ola Eldoy)
+//    2025-01-22  Merged much of the holiday logic that was split over several 
+//                packages into one place: cCalendarHolidays and ocClalendarHoliday object
+//                By: Nils Svedmyr
+//****************************************************************************
+
+// * Years when the Gregorian calendar was introduced:
+//   1582 - Spain, Italy, Polen, Portugal, France, Luxembourg
+//          and the katholic parts of the Netherlands
+//   1583 - Bayern och Tyrol
+//   1583-1585 - The katholic parts of Germany and Schweiz
+//   1584 - Austria och the Czeck Republic
+//   1587 - Hungary
+//   1590 - Transsylvania
+//   1610 - Preussen
+//   1700 - Denmark (inclusive Norway, Faroe Islands and Iceland)
+//          and the protestantic parts of Germany, Netherlands and Schweiz
+//          (except the Sankt Gallen canton)
+//   1724 - The Swiss canton Sankt Gallen
+//   1752 - Britain and colonies (inclusive those that would later constitute the USA)
+//   1753 - Sweden (inclusive Finland)
+//   1873 - Japan
+//   1911 - China
+//   1912 - Albania
+//   1915 - Lithuania
+//   1916 - Bulgaria
+//   1918 - Ryssia och Estonia
+//   1919 - Rumania och Serbia
+//   1924 - Grece
+//   1926 - Turkey
+//   1928 - Egypt 
+//
+Use GlobalDateTimeFunctions.pkg
+
+// * Note: By default the year 1752 (Britain/US) has been selected as the first Gregorian year
+// for the Easter algorithm.
+// If you have the need to calculate Easter dates before the year 1928 (Egypt), you may
+// need to replace the default first Gregorian year - depending on where in the world
+// the calculation should take place - with a year from the list above.
+Define C_FirstGregorianYear for 1752 
+
+Struct tLunar
+    Integer iYear
+    Integer iMonth
+    Integer iDay
+    Boolean bLeap
+End_Struct
+
+Struct tHoliday
+    Date    dDate
+    Boolean bNationalHoliday
+    String  sHolidayName
+End_Struct  
+
+Struct tHolidayFuncVar
+    String sType
+    String sVarName
+End_Struct
+
+Struct tHolidayFunc
+    String sName
+    String sHelp
+    tHolidayFuncVar[] HolidayFuncVarArray
+    String sReturnType
+End_Struct
+
+#IFNDEF ghoNationalHolidayObject
+    Global_Variable Integer ghoNationalHolidayObject
+    Move 0 to ghoNationalHolidayObject
+#ENDIF
+
+// After the class (end of package) an object of the class cDateFunctions sets
+// the ghoDateFunctions to Self.
+#IFNDEF ghoCalendarHolidays
+    Global_Variable Integer ghoCalendarHolidays
+    Move 0 to ghoCalendarHolidays
+#ENDIF
+
+// This is the class to use when creating National Holidays packages,
+// such as BrittishHolidays.pkg, SwedishHolidays.pkg, NorwegianHolidays.pkg etc.
+// Each such country holiday package should then be added to the CountryPackages.pkg.
+// The class registers itself with the ghoCalendarHolidays object.
+Class cNationalHolidays is a cObject
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Property String psOfficial_Short
+        Property String psCountryName
+        Move Self to ghoNationalHolidayObject
+    End_Procedure
+
+    Procedure End_Construct_Object
+        Forward Send End_Construct_Object
+        If (ghoCalendarHolidays <> 0) Begin
+            Send RegisterNationalHolidays of ghoCalendarHolidays Self
+        End
+    End_Procedure
+
+End_Class
+
+// Note: All Holiday Date functions of the class is defined in an object that
+//       is placed after the class definition (bottom of this package)
+//       The reason is the usage of the "Procedure RegisterInterface"
+//       message. It is used for capturing the function name, parameters and help text (comment).
+//       And it is *only* allowed to use meta tags { Published } and { Description }, in
+//       an object (not class).
+Class cCalendarHolidays is a cObject
+
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Property String[] psArrayAsYear
+        Property Handle[] phoNationalHolidaysArray
+        Property tHolidayFunc[] pHolidayFunctions
+    End_Procedure
+
+    Procedure End_Construct_Object
+        Send DoFillHexValues
+        Forward Send End_Construct_Object
+    End_Procedure
+
+    // Register functions to class pHolidayFunctions struct array property.
+    Procedure RegisterInterface Handle hMsg String sMsgName String sParams String sComment
+        Handle hNewTest       
+        String sReturnType sCRLF
+        tHolidayFunc   HolidayFunction
+        tHolidayFunc[] HolidayFuncArray
+        tHolidayFuncVar[] HolidayFuncVarArray
+        
+        If (Left(sMsgName, 4) = "msg_") Begin
+            Move (Replace("msg_", sMsgName, "")) to sMsgName
+        End
+        If (Left(sMsgName, 4) = "get_") Begin
+            Move (Replace("get_", sMsgName, "")) to sMsgName
+        End
+        
+        If (sParams <> "") Begin
+            Get ExtractParams sParams (&sReturnType) to HolidayFuncVarArray
+            Move HolidayFuncVarArray to HolidayFunction.HolidayFuncVarArray 
+            Move sReturnType         to HolidayFunction.sReturnType
+        End
+        Get pHolidayFunctions to HolidayFuncArray
+        Move sMsgName         to HolidayFunction.sName
+        Move (Character(13)+Character(10)) to sCRLF
+        Move (Replaces("\n", sComment, sCRLF)) to sComment
+        Move sComment         to HolidayFunction.sHelp
+        Move HolidayFunction  to HolidayFuncArray[-1] 
+        Move (SortArray(HolidayFuncArray)) to HolidayFuncArray
+        Set pHolidayFunctions to HolidayFuncArray
+    End_Procedure
+    
+    // Helper function for Procedure RegisterInterface.
+    Function ExtractParams String sParams String ByRef sReturnType Returns tHolidayFuncVar[]
+        tHolidayFuncVar[] HolidayFuncVarArray
+        String[] asParams
+        Integer iCount iSize iParam
+        Move 0 to iParam
+        Move (StrSplitToArray(sParams, " ")) to asParams
+        Move (SizeOfArray(asParams)) to iSize
+        Decrement iSize
+        For iCount from 0 to iSize
+            If (Lowercase(asParams[iCount]) = "returns") Begin
+                Increment iCount
+                Move asParams[iCount] to sReturnType
+                Move iSize to iCount // Get out of here.
+            End
+            Else Begin
+                Move asParams[iCount] to HolidayFuncVarArray[iParam].sType
+                Increment iCount
+                Move asParams[iCount] to HolidayFuncVarArray[iParam].sVarName 
+                Increment iParam
+            End
+        Loop    
+        Function_Return HolidayFuncVarArray
+    End_Function
+
+    Procedure RegisterNationalHolidays Handle hoNationalHolidays
+        Handle[] hoNationalHolidaysArray
+        Get phoNationalHolidaysArray to hoNationalHolidaysArray
+        Move hoNationalHolidays to hoNationalHolidaysArray[SizeOfArray(hoNationalHolidaysArray)]
+        Set phoNationalHolidaysArray to hoNationalHolidaysArray
+    End_Procedure
+
+    // Returns the national holiday object handle for the passed sOfficial_Short code
+    Function NationalHolidaysObject String sOfficial_Short Returns Handle
+        Integer iCount
+        Handle[] hoNationalHolidaysArray
+        Get phoNationalHolidaysArray to hoNationalHolidaysArray
+        For iCount From 0 to (SizeOfArray(hoNationalHolidaysArray) - 1)
+            If (psOfficial_Short(hoNationalHolidaysArray[iCount]) = sOfficial_Short) Begin
+                Function_Return hoNationalHolidaysArray[iCount]
+            End
+        Loop
+        Function_Return 0
+    End_Function
+
+    // *** Common Interface Holiday Date Functions ***
+    //
+    //  Params:  A 4-digit year as an integer variable
+    //           A 2-character string ISO Official_Short ISO_Short, accorging to the list:
+    //           https://www.iso.org/obp/ui/#search/code/
+    //           Note: sOfficial_Short is not always used.
+    //  Returns: A date.
+
+    // *** Helper Functions ***
+    //
+    Procedure HELPER_FUNCTIONS // For the Studio Code Explorer
+    End_Procedure
+
+    // First out are functions that used to be defined in the An_dates.pkg, but was moved
+    // here for convenience.
+    // *** Start An_Dates.pkg functions ***
+    Function LeftFill String sString Integer iWidth String sFillChar Returns String
+        Function_Return (Insert(Repeat(sFillChar,0 max (iWidth-Length(Trim(sString)))),Trim(sString),0))
+    End_Function
+    
+    Function Ordinal Integer iNum Returns String
+        String sNum
+        Move iNum to sNum
+        If (Mid(sNum,1,Length(sNum)-1) = 1) Begin
+            Function_Return (sNum-"th")
+        End
+        // 11th, 113th, 2,312th etc
+        Else If (Right(sNum,1) = 1) Begin
+            Function_Return (sNum-"st")
+        End
+        Else If (Right(sNum,1) = 2) Begin
+            Function_Return (sNum-"nd")
+        End
+        Else If (Right(sNum,1) = 3) Begin
+            Function_Return (sNum-"rd")
+        End
+        Else Begin
+            Function_Return (sNum-"th")
+        End
+    End_Function
+
+    // Note: 2025-01-22 NS. Changed to use DAW's DateSet global function.
+    // Construct a date from integers iYear iMonth and iDay
+    Function DateSetDate Integer iYear Integer iMonth Integer iDay Returns Date
+        Date dDate
+//        Move "1/1/1" to dDate
+//        Move (DateSetYear(dDate,iYear))   to dDate
+//        Move (DateSetMonth(dDate,iMonth)) to dDate
+//        Move (DateSetDay(dDate,iDay))     to dDate 
+        Move (DateSet(iYear, iMonth, iDay)) to dDate
+        Function_Return dDate
+    End_Function
+    
+    Function IsLeapYear Integer iYear Returns Boolean
+        Function_Return ((not(Mod(iYear, 4))) and (Mod(iYear, 100)) and (Mod(iYear, 400)))
+    End_Function
+
+    // Check if a date represented as a string is valid.
+    // Returns true if date is valid; false otherwise.
+    // Note: It preserves the state of the Err and LastErr global variables.
+    //       For some odd reason this gives a false positive;
+    //         Move (IsDateValid(sValue)) to bOK
+    //       even if the sValue = "" or sValue = "xfsdf"(!)
+    Function IsValidDateString String sDate Returns Boolean
+        Date dDate
+        DateTime dtDate
+        Boolean bWasTrappd bErr bOK bIsLeapYear
+        Integer iLastErr iYear iMonth iDay iMonthDays
+        
+        Move Err to bErr
+        Move LastErr to iLastErr
+        Move False to Err
+        Get isTrapped of (trappedErrors(Error_Object_Id)) 16 to bWasTrappd
+        Send Ignore_Error to Error_Object_Id 16
+        Move (Date(sDate)) to dDate
+        Move sDate to dtDate
+        If (bWasTrappd) Begin
+            Send Trap_Error to Error_Object_Id 16
+        End 
+        If (Err = False) Begin  
+            Move (DateGetYear(dtDate))  to iYear
+            Move (DateGetMonth(dtDate)) to iMonth
+            Move (DateGetDay(dtDate))   to iDay
+            Move (not(iYear > 1753 and iMonth > 0 and iMonth <= 12 and iDay > 0 and iDay <= 31)) to Err
+            If (not(Err) and iMonth = 2) Begin 
+                Get IsLeapYear iYear to bIsLeapYear 
+                Move (If(bIsLeapYear, 29, 28)) to iMonthDays
+                Move (iDay > iMonthDays) to Err
+            End
+        End
+        Move (Err = False and LastErr <> 16 and String(dDate) <> "") to bOK
+        Move bErr to Err
+        Move iLastErr to LastErr
+        
+        Function_Return bOK
+    End_Function
+    
+    // IsInteger returns True if the value held by the sValue parameter is an integer (the function does not handle thousand seps).
+    // Note that even if this function returns True it may still not be possible to 'Move' the value to an integer variable. This will
+    // be the case if the value falls outside of the integer value range (-2147483648 to 2147483647)
+    Function IsInteger String sValue Returns Boolean
+        Integer iPos iLen 
+        If (Trim(sValue) = "") Begin
+            Function_Return False
+        End
+        Move (Trim(sValue)) to sValue
+        If (Left(sValue,1)="-") Begin
+            Move (Replace("-",sValue,"")) to sValue
+        End
+        Move (Length(sValue)) to iLen
+        For iPos from 1 to iLen
+            If (not(Pos(Mid(sValue,1,iPos),"0123456789"))) Begin
+                Function_Return False
+            End
+        Loop
+        Function_Return True
+    End_Function
+
+    // Given the number of a day in the week, return its short name.
+    // Day 1 is Sunday.
+    //
+    Function GetDayName Integer iWeekDay Returns String
+        String sDayName
+        Get DayNameFromInteger iWeekDay False True to sDayName
+        Function_Return sDayName
+    End_Function
+    
+    Function GetDayNameLong Integer iWeekDay Returns String
+        String sDayName
+        Get DayNameFromInteger iWeekDay True True to sDayName
+        Function_Return sDayName
+    End_Function
+    
+    // Given a data (or DateTime) return the short name of the day of the week.
+    //
+    Function DateGetDayNameLong DateTime dtDate Returns String
+        Integer iWeekday 
+        String sDay
+        Get DateGetDayofWeek_WDS dtDate 2 to iWeekday
+        Get GetDayNameLong iWeekday to sDay
+        Move (Trim(sDay)) to sDay
+        Function_Return sDay
+    End_Function
+    
+    // Given a data (or DateTime) return the short name of the day of the week.
+    //
+    Function DateGetDayName DateTime dtDate Returns String
+        Integer iWeekday 
+        String sDay
+        Get DateGetDayofWeek_WDS dtDate 2 to iWeekday
+        //    Move (DateGetDayofWeek(dtDate)) to iWeekday
+        Get GetDayName iWeekday to sDay
+        Function_Return sDay
+    End_Function
+    
+    // Given the number of a month, return its name.
+    //
+    Function GetMonthName Integer iMthNo Returns String
+        String sMonthName
+        Get MonthNameFromInteger iMthNo False True to sMonthName
+        Function_Return sMonthName
+    End_Function
+    
+    // Given a date (or DateTime) return the name of the month.
+    //
+    Function DateGetMonthName Date dtDate Returns String 
+        String sMonth
+        Get GetMonthName (DateGetMonth(dtDate)) to sMonth
+        Function_Return sMonth
+    End_Function
+    
+    Function GetMonthNameLong Integer iMthNo Returns String
+        String sMonthName
+        Get MonthNameFromInteger iMthNo True True to sMonthName
+        Function_Return sMonthName
+    End_Function
+    
+    // Given a date (or DateTime) return the name of the month.
+    //
+    Function DateGetMonthNameLong Date dtDate Returns String
+        String sMonth
+        Get GetMonthNameLong (DateGetMonth(dtDate)) to sMonth
+        Function_Return sMonth
+    End_Function
+    
+    // Given a  date (or DateTime) return the number of days in the month.
+    //
+    Function DateGetDaysInMonth DateTime dtDate Returns Integer
+        Integer iMth iYr iDays
+        Move (DateGetMonth(dtDate)) to iMth
+        If ("4,6,9" contains iMth or iMth = 11) Begin
+            Move 30 to iDays
+        End
+        Else If (iMth = 2) Begin
+            Move (DateGetYear(dtDate))       to iYr
+            Move (If(Mod(iYr,4) = 0 and (Mod(iYr,100) <> 0 or Mod(iYr,400) = 0),29,28)) to iDays
+        End
+        Else Begin
+            Move 31 to iDays
+        End
+        Function_Return iDays
+    End_Function
+    
+    // Return the number of the day of the week according to the ISO definition -
+    // Moday is day 1.
+    // The built-in function DateGetDayOfWeek returns Sunday as 1.
+    // "The great advantage of having International Standards is that they make
+    // it easy for the American people to differ from everybody else."
+    //
+    Function DateGetISODayOfWeek DateTime dtDate Returns Integer
+        Integer iDayNo
+        Move (DateGetDayOfWeek(dtDate)) to iDayNo
+        Function_Return (If(iDayNo = 1,7,iDayNo - 1))
+    End_Function
+    
+    // Changed 2025-01-22 NS. Now uses the DAW DateGetWeekOfYearISO function instead.
+    //
+    // Return the week number (ISO 8601 definition - weeks start on a Monday
+    // and week 1 of any year is that with the year's first Thursday in it).
+    Function DateGetISOWeek DateTime dtDate Returns Integer
+        Integer iWeek
+        Move (DateGetWeekOfYearISO(dtDate)) to iWeek
+        Function_Return iWeek
+    End_Function
+    
+    // Return the Year of the Week (ISO 8601 definition - weeks start on a Monday
+    // and week 1 of any year is that with the year's first Thursday in it) containing
+    // the date passed.
+    //
+    Function DateGetISOYear DateTime dtDate Returns Integer
+        Integer  iDayNo
+        Date     dDate dNearestThu
+    
+        // Algorithm (from Wikipedia: http://en.wikipedia.org/wiki/Talk:ISO_week_date#Algorithms)
+        // Determine the date's Day of Week, D
+        // Use that to move to the nearest Thursday (-3..+3 days)
+        // The result the year of that Date, Y
+        Move dtDate to dDate
+        Get DateGetISODayOfWeek dDate to iDayNo
+        Move (dDate - iDayNo + 4) to dNearestThu  // go to previous Thursday
+        Function_Return (DateGetYear(dNearestThu))
+    End_Function
+    
+    // Return a date in the format Year-Week-Day (e.g. "2009-W53-7")
+    //
+    Function DateGetISOWeekDate DateTime dtDate Returns String
+        Integer  iWeek
+        String   sYear sDays
+        Get DateGetISOYear dtDate to sYear
+        Get DateGetISOWeek dtDate to iWeek
+        Get DateGetISODayOfWeek dtDate to sDays
+        Function_Return (sYear - "-W" - LeftFill(iWeek,2,0) - "-" - sDays)
+    End_Function
+    
+    // Given a date (or DateTime) return the date (DateTime) of the last day in the month.
+    //
+    Function DateGetLastDayOfMonth DateTime dtDate Returns DateTime
+        DateTime dtLastDate 
+        Integer iDays
+        Get DateGetDaysInMonth dtDate to iDays
+        Move (DateSetDay(dtDate, iDays)) to dtLastDate
+        Function_Return dtLastDate
+    End_Function
+    
+    // Given a date (or DateTime) return the date (DateTime) of the first day of the year
+    //
+    Function DateGetFirstDayOfYear DateTime dtDate Returns DateTime
+        Move (DateSetDay(dtDate,1))   to dtDate
+        Move (DateSetMonth(dtDate,1)) to dtDate
+        Function_Return dtDate
+    End_Function
+    
+    // Given a date (or DateTime) return the date (DateTime) of the Last day of the year
+    //
+    Function DateGetLastDayOfYear DateTime dtDate Returns DateTime
+        Move (DateSetMonth(dtDate,12)) to dtDate
+        Move (DateSetDay(dtDate,31))   to dtDate
+        Function_Return dtDate
+    End_Function
+    
+    // Given a date (or DateTime) advance or retard it by a given number of months.
+    // If the original date happens to be the last day of the month, and you want the
+    // returned date to be the last day of the new month (e.g.  - if advancing by one
+    // month - you would want 28th February to become 31st March rather than 28th March
+    // or 30th April to become 31st May) pass the optional boolean parameter as a true
+    // value (the 31st May will always become 30th June etc.).
+    //
+    Function DateChangeMonth DateTime dtDate Integer iMths Boolean bLastDay Returns DateTime
+        // If bLastDay is present and True the last day of the new month will be returned.
+        // Use this if you want the 28th February to become eg 31st March or 30th April to become 31st May.
+        Integer iDay iMth iYr iYrs iLastDay iDays
+        Boolean bIsLast
+        Move (DateGetDay(dtDate))   to iDay
+        Move (DateGetMonth(dtDate)) to iMth
+        Move (DateGetYear(dtDate))  to iYr       
+        Get DateGetDaysInMonth dtDate to iDays
+        If (num_arguments > 2 and bLastDay and iDay = iDays) Begin
+            Move True to bIsLast
+        End
+        Move (iMth + iMths) to iMth
+        If (iMth > 12) Begin
+            Move (iMth / 12) to iYrs
+            Move (Mod(iMth,12)) to iMth
+        End
+        While (iMth < 1)
+            Move (iMth + 12) to iMth
+            Decrement iYrs
+        Loop
+        Move (DateSetDay(dtDate,1)) to dtDate
+        If (iMth < 12 or iYr =< 2500) Begin
+            Move (DateSetMonth(dtDate,iMth)) to dtDate
+        End
+        Move (DateSetYear(dtDate,0 max (iYr + iYrs) min 2500)) to dtDate
+        Get DateGetDaysInMonth dtDate to iLastDay
+        If (bIsLast) Begin
+            Move iLastDay to iDay
+        End
+        Else Begin
+            Move (iDay min iLastDay) to iDay
+        End
+        Function_Return (DateSetDay(dtDate,iDay))
+    End_Function
+    
+    // Given a date (or DateTime) advance or retard it by a given number of years.
+    // The last day of the month is treated as for DateChangeMonth.
+    //
+    Function DateChangeYear DateTime dtDate Integer iYrs Boolean bLastDay Returns DateTime
+        // If bLastDay is present and True the last day of the new month will be returned.
+        // Use this if you want the 28th February 2007 to become eg 29th Feburary 2008.
+        Integer iDay iYr iLastDay
+        Move (DateGetDay(dtDate))   to iDay
+        Move (DateGetYear(dtDate))  to iYr
+        Move (DateSetDay(dtDate,1)) to dtDate
+        Move (DateSetYear(dtDate,0 max (iYr + iYrs) min 2500)) to dtDate
+        Get DateGetDaysInMonth dtDate to iLastDay
+        If (num_arguments > 2 and bLastDay) Begin
+            Move iLastDay to iDay
+        End
+        Else Begin
+            Move (iDay min iLastDay) to iDay
+        End
+        Function_Return (DateSetDay(dtDate,iDay))
+    End_Function
+    
+    // Format a date according to the mask passed as second parameter:
+    // (DateFormat(2/6/2009,"dd/mm/yyyy"))          => 02/06/2009 (or 06/02/2009 if DF_DATE_FORMAT is DF_DATE_USA)
+    // (DateFormat(2/6/2009,"d/m/yy"))              => 2/6/09
+    // (DateFormat(2/6/2009,"dd-mmm-yyyy"))         => 02-Jun-2009 (or 02-Feb-2009 if DF_DATE_FORMAT is DF_DATE_USA)
+    // (DateFormat(2/6/2009,"d mmmm yyyy"))         => 2 June 2009
+    // (DateFormat(2/6/2009,"ddd, dd mmm yyyy"))    => Tues 02 Jun 2009
+    // (DateFormat(2/6/2009,"dddd, dth mmmm yyyy")) => Tuesday, 2nd June 2009
+    //
+    Function DateFormat Date dDate String sFormat Returns String
+        Integer iDateSep
+        String  sDateSep
+    
+        If (dDate = 0) Begin
+            Move "" to sFormat
+        End
+        Else Begin
+            Get_Attribute DF_DATE_SEPARATOR to iDateSep
+            Move (Character(iDateSep)) to sDateSep
+            Move (Replaces("/",sFormat,sDateSep)) to sFormat
+            
+            // ToDo: How should these be refactored from global functions?
+            Move (Replaces("d",sFormat,"\d")) to sFormat  // because if the day name is Wednesday the "d"s will be replaced with the day.
+            Move (Replaces("m",sFormat,"\m")) to sFormat  // because if the month name is September the "m" will be replaced with the month.
+            Move (Replace("\d\dth",sFormat,LeftFill(Ordinal(DateGetDay(dDate)),2,"0"))) to sFormat
+            Move (Replace("\dth",sFormat,Ordinal(DateGetDay(dDate))))                   to sFormat
+            Move (Replace("\d\d\d\d",sFormat,DateGetDayName(dDate)))                    to sFormat
+            Move (Replace("\d\d\d",sFormat,Left(DateGetDayName(dDate),3)))              to sFormat
+            Move (Replace("\d\d",sFormat,LeftFill(DateGetDay(dDate),2,"0")))            to sFormat
+            Move (Replace("\d",sFormat,DateGetDay(dDate)))                              to sFormat
+    
+            Move (Replace("\m\m\m\m",sFormat,DateGetMonthName(dDate)))                  to sFormat
+            Move (Replace("\m\m\m",sFormat,Left(DateGetMonthName(dDate),3)))            to sFormat
+            Move (Replace("\m\m",sFormat,LeftFill(DateGetMonth(dDate),2,"0")))          to sFormat
+            Move (Replace("\m",sFormat,DateGetMonth(dDate)))                            to sFormat
+    
+            Move (Replace("yyyy",sFormat,DateGetYear(dDate)))                           to sFormat
+            Move (Replace("yy",sFormat,Right(DateGetYear(dDate),2)))                    to sFormat
+        End
+        Function_Return sFormat
+    
+    End_Function
+    // *** End An_Dates.pkg functions ***
+
+    // Amended to use built-in date functions
+    Function YearFromDate Date dDate Returns Integer
+        Function_Return (DateGetYear(dDate))
+    End_Function
+
+    // Helper function for the MothersDay function (internal - no error handling)
+    // In Norway falls on the second Sunday in February.
+    // Function NorwayMothersDay
+    //   Params:  4-digit integer Year
+    //   Returns: 4-character string in the format: MMDD
+    Function NorwayMothersDay Integer iYear Returns Date
+        Integer iDayNumber
+        Date    dReturn
+    
+        // Start with 1st of February:
+        // *** PDC ***
+        //    Get HolidayDateCompose (String(iYear)) (String(02)) (String(01)) to dReturn // Function of CalcHolidays.pkg
+        Get DateSetDate iYear 2 1 to dReturn
+        // ***
+        Get DateGetISODayOfWeek dReturn to iDayNumber
+    
+        // If iDayNumber = Sunday, do nothing.
+        If (iDayNumber = 7) Begin
+            Move (0 + dReturn) to dReturn
+        End
+        // Else if iDayNumber is less then Sunday, add number of days to next Sunday.
+        Else If (iDayNumber < 5) Begin
+            Move ((6 - iDayNumber) + dReturn) to dReturn
+        End
+        // Add the second week.
+        Move (dReturn + 7) to dReturn
+    
+        Function_Return dReturn
+    End_Function
+    
+    // Ireland, Nigeria & United Kingdom is the fourth Sunday in Lent.
+    // Lent starts at AshWednesday the first day of Lent and occurs forty-six
+    // days before Easter
+    Function FourthSundayLent Integer iYear Returns Date
+        Date dReturn
+        Integer iDayNumber
+    
+        Get AshWednesday iYear to dReturn
+        Get DateGetISODayOfWeek dReturn to iDayNumber
+        // If iDayNumber < Sunday, add number of days to first Sunday.
+        If (iDayNumber < 7) Begin
+            Move ((7 - iDayNumber) + dReturn) to dReturn
+        End
+    
+        // Add 3 more week.
+        Move (dReturn + 21) to dReturn // Fourth Sunday.
+        Function_Return dReturn
+    End_Function
+    
+    // Hong Kong, Hungary, Lithuania, Mozambique, Portugal & Spain
+    // celebrates Mother's Day on the first Sunday in May.
+    Function FirstSundayMay Integer iYear Returns Date
+        Date dReturn
+        Integer iDayNumber
+    
+        // Start with the 1st of May.
+        Get DateSetDate iYear 5 1 to dReturn
+        Get DateGetISODayOfWeek dReturn to iDayNumber
+        // If iDayNumber < Sunday, add number of days to first Sunday.
+        If (iDayNumber < 7) Begin
+            Move ((7 - iDayNumber) + dReturn) to dReturn
+        End
+        Function_Return dReturn
+    End_Function
+    
+    // Many countries (to many to mention here) celebrates Mother's Day
+    // on the second Sunday in May.
+    Function SecondSundayMay Integer iYear Returns Date
+        Date dReturn
+    
+        Get FirstSundayMay iYear to dReturn
+        // Add another week.
+        Move (dReturn + 7) to dReturn // Second Sunday.
+        Function_Return dReturn
+    End_Function
+    
+    // Several countries celebrates Mother's Day on the last Sunday in May.
+    Function LastSundayMay Integer iYear Returns Date
+        Date dReturn
+        Integer iDayNumber
+    
+        Get DateSetDate iYear 5 31 to dReturn
+        Get DateGetISODayOfWeek dReturn to iDayNumber
+        If (iDayNumber <> 7) Begin
+            Move (dReturn - iDayNumber) to dReturn
+        End
+        Function_Return dReturn
+    End_Function
+    
+    // Luxembourg celebrates Mother's Day on the second Sunday in June.
+    Function SecondSundayJune Integer iYear Returns Date
+        Date dReturn
+        Integer iDayNumber
+    
+        // Start with the 1st of June.
+        Get DateSetDate iYear 6 1 to dReturn
+        Get DateGetISODayOfWeek dReturn to iDayNumber
+        // If iDayNumber < Sunday, add number of days to first Sunday.
+        If (iDayNumber < 7) Begin
+            Move ((7 - iDayNumber) + dReturn) to dReturn
+        End
+    
+        // Add another week.
+        Move (dReturn + 7) to dReturn // Second Sunday.
+        Function_Return dReturn
+    End_Function
+    
+    // Kenya celebrates Mother's Day on the last Sunday in June.
+    Function LastSundayJune Integer iYear Returns Date
+        Date dReturn
+        Integer iDayNumber
+    
+        get DateSetDate iYear 6 31 to dReturn
+        Get DateGetISODayOfWeek dReturn to iDayNumber
+        Move (dReturn - iDayNumber) to dReturn
+    
+        Function_Return dReturn
+    End_Function
+    
+    // Malawi celebrates Mother's Day on the second Monday of October.
+    Function SecondMondayOctober Integer iYear Returns Date
+        Date dReturn
+        Integer iDayNumber
+    
+        Get DateSetDate iYear 10 1 to dReturn
+        Get DateGetISODayOfWeek dReturn to iDayNumber
+        // If iDayNumber < Monday, add number of days to first Monday.
+        If (iDayNumber < 6) Begin
+            Move ((7 - iDayNumber) + dReturn) to dReturn
+        End
+    
+        // Add another week.
+        Move (dReturn + 7) to dReturn // Second Sunday.
+        Function_Return dReturn
+    End_Function
+    
+    // Argentina celebrates Mother's Day on the third Sunday of October.
+    Function ThirdSundayOctober Integer iYear Returns Date
+        Date dReturn
+        Integer iDayNumber
+    
+        // Start with the 1st of June.
+        get DateSetDate iYear 6 1 to dReturn
+        Get DateGetISODayOfWeek dReturn to iDayNumber
+        // If iDayNumber < Sunday, add number of days to first Sunday.
+        If (iDayNumber < 7) Begin
+            Move ((7 - iDayNumber) + dReturn) to dReturn
+        End
+    
+        // Add two week.
+        Move (dReturn + 14) to dReturn
+        Function_Return dReturn
+    End_Function
+    
+    // Russia celebrates Mother's Day on the last Sunday of November.
+    Function LastSundayNovember Integer iYear Returns Date
+        Date dReturn
+        Integer iDayNumber
+    
+        Get DateSetDate iYear 11 31 to dReturn
+        Get DateGetISODayOfWeek dReturn to iDayNumber
+        Move (dReturn - iDayNumber) to dReturn
+        Function_Return dReturn
+    End_Function
+
+    // Helper function for the NationalDay function (internal - no error handling)
+    // Great Britain (U.K.) has a moving National Day - and falls on the second Saturday in June.
+    // Function UKNationalDay
+    //   Params:  4-digit integer Year
+    //   Returns: 4-character string in the format: MMDD
+    Function UKNationalDay Integer iYear Returns String
+        Date   dDate
+        String sMonth sDay
+        Integer iDayNumber iDateFormat
+    
+        // Start with 1st of June:
+        Get DateSetDate iYear 6 1 to dDate
+        Get DateGetISODayOfWeek dDate to iDayNumber
+    
+        // If iDayNumber = Sunday, add 6 days to next Saturday.
+        If (iDayNumber = 7) Begin
+            Move (6 + dDate) to dDate
+        End
+        // Else if iDayNumber is less then Saturday, add number of days to next Saturday.
+        Else If (iDayNumber < 5) Begin
+            Move ((6 - iDayNumber) + dDate) to dDate
+        End
+    
+        // Add the second week.
+        Move (dDate + 7) to dDate
+    
+        // And get the month and day.
+        Get_Attribute DF_DATE_FORMAT to iDateFormat
+        Set_Attribute DF_DATE_FORMAT to DF_DATE_USA
+        Move (Left(dDate, 2))        to sMonth
+        Move (Mid(dDate, 2, 4))      to sDay
+        Set_Attribute DF_DATE_FORMAT to iDateFormat // Reset date format.
+    
+        Function_Return (String(sMonth) + String(sDay))
+    End_Function
+
+    Function HexToBinary Number nNum Returns String
+        String sString
+
+        Repeat
+            Move (String(Round(Number(nNum/2)-Integer(nNum/2)))+sString) to sString
+            Move (Integer(nNum/2)) to nNum
+        Until (nNum=0)
+        Function_Return (Right('0000'+sString,4))
+    End_Function
+
+    Function HexLeapMonth Integer iYear Returns Integer
+        String[] sArrayAsYear
+        Get psArrayAsYear to sArrayAsYear
+        Function_Return ('$'+Right(sArrayAsYear[iYear-1900],1))
+    End_Function
+
+    Function HexLeapDays Integer iYear Returns Integer
+        Integer iLeapMonth iDay
+        String[] sArrayAsYear
+
+        Get psArrayAsYear to sArrayAsYear
+        Get HexLeapMonth iYear to iLeapMonth
+        If (iLeapMonth) Begin
+            Move (If(Mid(sArrayAsYear[iYear-1900],1,2)=1,30,29)) to iDay
+        End
+        Function_Return iDay
+    End_Function
+
+    Function HexMonthDays Integer iYear Integer iMonth Returns Integer
+        Integer iLoop
+        String  sTemp sString
+        String[] sArrayAsYear
+
+        Get psArrayAsYear to sArrayAsYear
+        For iLoop From 0 to 2
+            Get HexToBinary ('$'+Mid(sArrayAsYear[iYear-1900],1,3+iLoop)) to sTemp
+            Move (sString+sTemp) to sString
+        Loop
+        Function_Return (If(Mid(sString,1,iMonth)=1,30,29))
+    End_Function
+
+    Function HexYearDays Integer iYear Returns Integer
+        Integer iDays iLoop iString
+        String  sString
+        String[] sArrayAsYear
+
+        Get psArrayAsYear to sArrayAsYear
+        Move 348 to iDays
+        Add (HexLeapDays(Self,iYear)) to iDays
+        For iLoop From 0 to 2
+            Get HexToBinary ('$'+Mid(sArrayAsYear[iYear-1900],1,3+iLoop)) to sString
+            For iString From 1 to 4
+                Add (Mid(sString,1,iString)) to iDays
+            Loop
+        Loop
+        Function_Return iDays
+    End_Function
+
+    Procedure DoFillHexValues
+        String[] sArrayAsYear
+        Move '$04bd8' to sArrayAsYear[0]   // Year 1900 ??  dec=19416
+        Move '$04ae0' to sArrayAsYear[1]
+        Move '$0a570' to sArrayAsYear[2]
+        Move '$054d5' to sArrayAsYear[3]
+        Move '$0d260' to sArrayAsYear[4]
+        Move '$0d950' to sArrayAsYear[5]
+        Move '$16554' to sArrayAsYear[6]
+        Move '$056a0' to sArrayAsYear[7]
+        Move '$09ad0' to sArrayAsYear[8]
+        Move '$055d2' to sArrayAsYear[9]
+        Move '$04ae0' to sArrayAsYear[10]
+        Move '$0a5b6' to sArrayAsYear[11]
+        Move '$0a4d0' to sArrayAsYear[12]
+        Move '$0d250' to sArrayAsYear[13]
+        Move '$1d255' to sArrayAsYear[14]
+        Move '$0b540' to sArrayAsYear[15]
+        Move '$0d6a0' to sArrayAsYear[16]
+        Move '$0ada2' to sArrayAsYear[17]
+        Move '$095b0' to sArrayAsYear[18]
+        Move '$14977' to sArrayAsYear[19]
+        Move '$04970' to sArrayAsYear[20]
+        Move '$0a4b0' to sArrayAsYear[21]
+        Move '$0b4b5' to sArrayAsYear[22]
+        Move '$06a50' to sArrayAsYear[23]
+        Move '$06d40' to sArrayAsYear[24]
+        Move '$1ab54' to sArrayAsYear[25]
+        Move '$02b60' to sArrayAsYear[26]
+        Move '$09570' to sArrayAsYear[27]
+        Move '$052f2' to sArrayAsYear[28]
+        Move '$04970' to sArrayAsYear[29]
+        Move '$06566' to sArrayAsYear[30]
+        Move '$0d4a0' to sArrayAsYear[31]
+        Move '$0ea50' to sArrayAsYear[32]
+        Move '$06e95' to sArrayAsYear[33]
+        Move '$05ad0' to sArrayAsYear[34]
+        Move '$02b60' to sArrayAsYear[35]
+        Move '$186e3' to sArrayAsYear[36]
+        Move '$092e0' to sArrayAsYear[37]
+        Move '$1c8d7' to sArrayAsYear[38]
+        Move '$0c950' to sArrayAsYear[39]
+        Move '$0d4a0' to sArrayAsYear[40]
+        Move '$1d8a6' to sArrayAsYear[41]
+        Move '$0b550' to sArrayAsYear[42]
+        Move '$056a0' to sArrayAsYear[43]
+        Move '$1a5b4' to sArrayAsYear[44]
+        Move '$025d0' to sArrayAsYear[45]
+        Move '$092d0' to sArrayAsYear[46]
+        Move '$0d2b2' to sArrayAsYear[47]
+        Move '$0a950' to sArrayAsYear[48]
+        Move '$0b557' to sArrayAsYear[49]
+        Move '$06ca0' to sArrayAsYear[50]
+        Move '$0b550' to sArrayAsYear[51]
+        Move '$15355' to sArrayAsYear[52]
+        Move '$04da0' to sArrayAsYear[53]
+        Move '$0a5b0' to sArrayAsYear[54]
+        Move '$14573' to sArrayAsYear[55]
+        Move '$052b0' to sArrayAsYear[56]
+        Move '$0a9a8' to sArrayAsYear[57]
+        Move '$0e950' to sArrayAsYear[58]
+        Move '$06aa0' to sArrayAsYear[59]
+        Move '$0aea6' to sArrayAsYear[60]
+        Move '$0ab50' to sArrayAsYear[61]
+        Move '$04b60' to sArrayAsYear[62]
+        Move '$0aae4' to sArrayAsYear[63]
+        Move '$0a570' to sArrayAsYear[64]
+        Move '$05260' to sArrayAsYear[65]
+        Move '$0f263' to sArrayAsYear[66]
+        Move '$0d950' to sArrayAsYear[67]
+        Move '$05b57' to sArrayAsYear[68]
+        Move '$056a0' to sArrayAsYear[69]
+        Move '$096d0' to sArrayAsYear[70]
+        Move '$04dd5' to sArrayAsYear[71]
+        Move '$04ad0' to sArrayAsYear[72]
+        Move '$0a4d0' to sArrayAsYear[73]
+        Move '$0d4d4' to sArrayAsYear[74]
+        Move '$0d250' to sArrayAsYear[75]
+        Move '$0d558' to sArrayAsYear[76]
+        Move '$0b540' to sArrayAsYear[77]
+        Move '$0b6a0' to sArrayAsYear[78]
+        Move '$195a6' to sArrayAsYear[79]
+        Move '$095b0' to sArrayAsYear[80]
+        Move '$049b0' to sArrayAsYear[81]
+        Move '$0a974' to sArrayAsYear[82]
+        Move '$0a4b0' to sArrayAsYear[83]
+        Move '$0b27a' to sArrayAsYear[84]
+        Move '$06a50' to sArrayAsYear[85]
+        Move '$06d40' to sArrayAsYear[86]
+        Move '$0af46' to sArrayAsYear[87]
+        Move '$0ab60' to sArrayAsYear[88]
+        Move '$09570' to sArrayAsYear[89]
+        Move '$04af5' to sArrayAsYear[90]
+        Move '$04970' to sArrayAsYear[91]
+        Move '$064b0' to sArrayAsYear[92]
+        Move '$074a3' to sArrayAsYear[93]
+        Move '$0ea50' to sArrayAsYear[94]
+        Move '$06b58' to sArrayAsYear[95]
+        Move '$055c0' to sArrayAsYear[96]
+        Move '$0ab60' to sArrayAsYear[97]
+        Move '$096d5' to sArrayAsYear[98]
+        Move '$092e0' to sArrayAsYear[99]
+        Move '$0c960' to sArrayAsYear[100]
+        Move '$0d954' to sArrayAsYear[101]
+        Move '$0d4a0' to sArrayAsYear[102]
+        Move '$0da50' to sArrayAsYear[103]
+        Move '$07552' to sArrayAsYear[104]
+        Move '$056a0' to sArrayAsYear[105]
+        Move '$0abb7' to sArrayAsYear[106]
+        Move '$025d0' to sArrayAsYear[107]
+        Move '$092d0' to sArrayAsYear[108]
+        Move '$0cab5' to sArrayAsYear[109]
+        Move '$0a950' to sArrayAsYear[110]
+        Move '$0b4a0' to sArrayAsYear[111]
+        Move '$0baa4' to sArrayAsYear[112]
+        Move '$0ad50' to sArrayAsYear[113]
+        Move '$055d9' to sArrayAsYear[114]
+        Move '$04ba0' to sArrayAsYear[115]
+        Move '$0a5b0' to sArrayAsYear[116]
+        Move '$15176' to sArrayAsYear[117]
+        Move '$052b0' to sArrayAsYear[118]
+        Move '$0a930' to sArrayAsYear[119]
+        Move '$07954' to sArrayAsYear[120]
+        Move '$06aa0' to sArrayAsYear[121]
+        Move '$0ad50' to sArrayAsYear[122]
+        Move '$05b52' to sArrayAsYear[123]
+        Move '$04b60' to sArrayAsYear[124]
+        Move '$0a6e6' to sArrayAsYear[125]
+        Move '$0a4e0' to sArrayAsYear[126]
+        Move '$0d260' to sArrayAsYear[127]
+        Move '$0ea65' to sArrayAsYear[128]
+        Move '$0d530' to sArrayAsYear[129]
+        Move '$05aa0' to sArrayAsYear[130]
+        Move '$076a3' to sArrayAsYear[131]
+        Move '$096d0' to sArrayAsYear[132]
+        Move '$04bd7' to sArrayAsYear[133]
+        Move '$04ad0' to sArrayAsYear[134]
+        Move '$0a4d0' to sArrayAsYear[135]
+        Move '$1d0b6' to sArrayAsYear[136]
+        Move '$0d250' to sArrayAsYear[137]
+        Move '$0d520' to sArrayAsYear[138]
+        Move '$0dd45' to sArrayAsYear[139]
+        Move '$0b5a0' to sArrayAsYear[140]
+        Move '$056d0' to sArrayAsYear[141]
+        Move '$055b2' to sArrayAsYear[142]
+        Move '$049b0' to sArrayAsYear[143]
+        Move '$0a577' to sArrayAsYear[144]
+        Move '$0a4b0' to sArrayAsYear[145]
+        Move '$0aa50' to sArrayAsYear[146]
+        Move '$1b255' to sArrayAsYear[147]
+        Move '$06d20' to sArrayAsYear[148]
+        Move '$0ada0' to sArrayAsYear[149]
+        Move '$14b63' to sArrayAsYear[150]     //Year 2050
+
+        Set psArrayAsYear to sArrayAsYear
+    End_Procedure
+
+End_Class
+
+// Note: All Holiday Date functions of the class is defined in this object.
+//       The reason is the usage of the class "Procedure RegisterInterface"
+//       message. It is used for capturing the function name and help text.
+//       It is *only* allowed to use the meta tags { Published } and { Description },
+//       in an object (not class). 
+//
+// The Official_Short ISO_Short should consist of two characters as defined by the ISO -
+//       - International Standard Organization. The ISO_Shorts can be found at this address:
+//       https://www.iso.org/obp/ui/#search/code/
+//       and are used by of these functions.
+//
+Object oCalendarHolidays is a cCalendarHolidays
+    Move Self to ghoCalendarHolidays
+
+    // *** Include of other function packages ***
+    #Include NationalDays.pkg // Function "NationalDay" that returns the National Day for the passed year and an ISO 2-character country code.
+    #Include MothersDay.pkg   // Function "MothersDay" that returns the Mother's Day for the passed year and an ISO 2-character country code.
+
+    {Published=True} 
+    { Description = """
+      1:st Sunday after FeastChristKing. Falls Between november 27 and december 3. Four Sundays before ChristmasDay.
+      """ }
+    Function Advent1 Integer iYear Returns Date
+        Date dReturn
+        Get FeastOfChristTheKing iYear to dReturn
+        Move (dReturn + 7) to dReturn
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "Falls one week after 1:st Advent" }
+    Function Advent2 Integer iYear Returns Date
+        Date dReturn
+        Get FeastOfChristTheKing iYear to dReturn
+        Move (dReturn + 14) to dReturn
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "Falls two weeks after 1:st Advent" }
+    Function Advent3 Integer iYear Returns Date
+        Date dReturn
+        Get FeastOfChristTheKing iYear to dReturn
+        Move (dReturn + 21) to dReturn
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "Falls three weeks after 1:st Advent (last Sunday before ChristmasDay, can ultimately fall on Christmas Eve)" }
+    Function Advent4 Integer iYear Returns Date
+        Date dReturn
+        Get FeastOfChristTheKing iYear to dReturn
+        Move (dReturn + 28) to dReturn
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = """
+      All Saints Day is a feast celebrated on November 1 in Western Christianity, and on the first Sunday
+      after Pentecost in Eastern Christianity in honour of All the saints, known and unknown.
+      \nIn Sweden it is a moving holiday and is the Saturday that falls Between 31st of October and 6th of November.
+      See also the Halloween Function.
+      Returns: The Date of All Saints Day, according to the Gregorian calendar.
+      """ }
+    Function AllSaintsDay Integer iYear String sOfficial_Short Returns Date
+        Date dReturn
+        Integer iDayNumber
+
+        If (sOfficial_Short = "SE") Begin
+            // Start with the 31st of October:
+            Get DateSetDate iYear 10 31 to dReturn
+            Get DateGetISODayOfWeek dReturn to iDayNumber
+
+            // If iDayNumber = Sunday, add 6 days to next Saturday.
+            If (iDayNumber = 7) Begin
+                Move (6 + dReturn) to dReturn
+            End
+            // Else if iDayNumber is less then Saturday, add number of days to next Saturday.
+            Else If (iDayNumber < 5) Begin
+                Move ((6 - iDayNumber) + dReturn) to dReturn
+            End
+            // Else the iDayNumber was = 6 which is the Saturday.
+        End
+
+        // Eastern Christian - Orthodox and Eastern Catholic church. The first Sunday after Pentecost.
+        //    Else If ("" contains String(sOfficial_Short)) Begin // ***TODO: which countries?
+        //        Get Pentecost iYear to dReturn
+        // If iDayNumber is less then Sunday, add number of days to next Sunday.
+        //        Else If (iDayNumber < 7) Begin
+        //             Move ((7 - iDayNumber) + dReturn) to dReturn
+        //        End
+        //    End
+
+        // Western Christian holiday 1st of November.
+        Else Begin
+            Get DateSetDate iYear 11 1 to dReturn
+        End
+
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "The day before AllSaintsDay." }
+    Function AllSaintsDayEve Integer iYear String sOfficial_Short Returns Date
+        Date dReturn
+        Get AllSaintsDay iYear sOfficial_Short to dReturn
+        Decrement dReturn
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description  = """
+      Ascension Day is the Christian celebration of Christ's ascension to heaven.
+      It is celebrated 40 days after Easter Sunday on a Thursday.
+      \nIn some countries (e.g. Austria, Belgium, Croatia, Denmark, Finland, France, Germany, Iceland,
+      Indonesia, the Netherlands, Norway, Sweden, Switzerland and Vanuatu) it is a public holiday; Germany
+      also holds its Father's Day on the same Date.
+      \nThe Date of Ascension (always a Thursday), according to the Gregorian calendar (for years
+      after 1752) or the Julian calendar (for years before 1753) as a Date variable.
+      """ }
+    Function AscensionDay Integer iYear Returns Date
+        Date dReturn
+        Get EasterDay iYear to dReturn
+        Function_Return (dReturn + 39)
+    End_Function
+
+    {Published=True} 
+    { Description  = """
+      Ash Wednesday, in the Western Christian calendar, is the first day of Lent and occurs forty-six days
+      (forty days not counting Sundays) before Easter. It is a moveable fast, falling on a different Date
+      each year because it is dependent on the Date of Easter. It can occur as early as the 4th of February
+      (5th of February on leap years) or as late as the 10th of March.
+      """ }
+    Function AshWednesday Integer iYear Returns Date
+        Date dReturn
+        Get EasterDay iYear to dReturn
+        Move (dReturn -46)  to dReturn
+        Function_Return dReturn
+    End_Function
+
+    // Function: EasterDay (Easter Sunday)
+    //  Params:  A 4-digit year as an integer variable. 
+    {Published=True} 
+    { Description  = """
+      The EasterDay function calculates the Easter Sunday and is a major Function that forms the basis for
+      calculating several other movable holidays; PalmSunday, HolyThursday, HolyFriday, HolySaturday,
+      EasterMonday, AscensionThursday and Pentecost.
+      \nThe Date of Easter Day was defined by the Council of Nicaea in AD 325 as the Sunday after the first full moon
+      which falls on or after the Spring Equinox. The Equinox is assumed to always fall on 21st March, so the
+      calculation reduces to determining the Date of the full moon and the Date of the following Sunday. The algorithm
+      used here was introduced around the year 532 by Dionysius Exiguus.
+      \nUnder the Julian Calendar a simple 19-year cycle is used to track the phases of the Moon. Under the
+      Gregorian Calendar (devised by Clavius and Lilius, and introduced by Pope Gregory XIII in October 1582.),
+      two correction factors were added to make the cycle more accurate.
+      \nReturns: The Easter Sunday date, according to the Gregorian calendar (for years after C_FirstGregorianYear)
+      or the Julian calendar (for years before C_FirstGregorianYear) as a Date variable.
+      \nAdopted from a C-algorithm by Simon Kershaw.
+      """ }
+    Function EasterDay Integer iYear Returns Date
+        Integer iGolden iSolar iLunar iPfm iDom iTmp iEaster
+        Number nTmp
+        Date dReturn
+        String sMonth
+        
+        // We refer to the year number as iYear, and use it to calculate the Golden number, iGolden:
+        Move (Mod(iYear, 19) + 1) to iGolden
+
+        // * Julian Calendar *
+        If (iYear <= C_FirstGregorianYear) Begin
+            // Get the "Dominical number", i.e a Sunday:
+            Move (iYear + (iYear/4) + 5) to nTmp
+            // We needed to split up calculation because the Mod function can not woerk on expressions.
+            Move (Mod(nTmp, 7)) to iDom
+
+            // Uncorrect date of the Paschal full moon
+            Move (3 - (11 * iGolden) - 7) to nTmp
+            Move (Mod(nTmp, 30))          to iPfm // iPfm is short for Pachal Full Moon.
+        End
+
+        // * Gregorian Calendar *
+        If (iYear > C_FirstGregorianYear) Begin
+
+            // Calculate the date of the Paschal full moon, that is, the full moon which Easter is the Sunday after.
+            // This is done in several stages. First we calculate two values called the solar correction, iSolar, and
+            // the lunar correction, iLunar.
+            Move (((iYear-1600)/100) - ((iYear-1600)/400)) to iSolar
+            Move ((((iYear-1400)/100) * 8) / 25)           to iLunar
+
+            // Next we calculate an uncorrected date for the Paschal full moon, iPprim; then we apply a minor correction to get the exact date, p,
+            // as the Number of days after 21st March.
+            Move (3 - (11 * iGolden) + iSolar - iLunar) to nTmp
+            Move (Mod(nTmp, 30))                        to iPfm
+
+            // Now we need to determine the date of the following Sunday. First we calculate the 'Dominical number', iDom:
+            Move (iYear + (iYear/4) - (iYear/100) + (iYear/400)) to nTmp
+            Move (Mod(nTmp, 7))                                  to iDom // iDom is the Dominical number.
+        End
+
+        If (iDom < 0) Begin
+            Move (iDom + 7)  to iDom
+        End
+        If (iPfm < 0) Begin
+            Move (iPfm + 30) to iPfm
+        End
+
+        // Correct the Paschal Full Moon date, i.e. number of days after the 21st of March:
+        If (iPfm = 29 or (iPfm = 28 and iGolden > 11)) Begin
+            Move (iPfm - 1) to iPfm
+        End
+
+        Move (4 - iPfm - iDom) to nTmp
+        Move (Mod(nTmp, 7))    to iTmp
+        If (iTmp < 0) Begin
+            Move (iTmp + 7)  to iTmp
+        End
+
+        // Easter as the number of days after 21st March
+        Move (iPfm + iTmp + 1) to iEaster
+
+        If (iEaster < 11) Begin
+            Move (iEaster + 21) to iEaster
+            Move "03" to sMonth // March
+        End
+        Else Begin
+            Move (iEaster - 10) to iEaster
+            Move "04" to sMonth // April
+        End
+
+        Get DateSetDate iYear sMonth iEaster to dReturn
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description  = """
+      Palm Sunday is a Christian moveable feast which always falls on the Sunday before Easter Sunday (Easter Day).
+      Returns: The Palm Sunday, according to the Gregorian calendar (for years after 1752)
+      or the Julian calendar (for years before 1753) as a Date variable.
+      \nThis is not a national holiday, but put here for consistency.
+      """ }
+    Function PalmSunday Integer iYear Returns Date
+        Date dReturn
+        Get EasterDay iYear to dReturn
+        Function_Return (dReturn - 7)
+    End_Function
+
+    {Published=True} 
+    { Description  = """
+      Maundy Thursday, also known as Holy Thursday, Great and Holy Thursday, and Thursday of Mysteries.
+      HoMaundyly Thursday is a holiday in Denmark and Norway.
+      \nReturns: The Maundy Thursday, according to the Gregorian calendar (for years after 1752)
+      or the Julian calendar (for years before 1753) as a Date variable.
+      """ }
+    Function MaundyThursday Integer iYear Returns Date
+        Date dReturn
+        Get EasterDay iYear to dReturn
+        Function_Return (dReturn - 3)
+    End_Function
+
+    {Published=True} 
+    { Description  = """
+      Good Friday, also called Holy Friday, Black Friday, or Great Friday.
+      In most Christian countries it's a national holiday.
+      \nIn the US it is not a govermental holiday at federal level; individual states and municipalities may observe the holiday.
+      \nReturns: The Good Friday, according to the Gregorian calendar (for years after 1752)
+      or the Julian calendar (for years before 1753) as a Date variable.
+      """ }
+    Function GoodFriday Integer iYear Returns Date
+        Date dReturn
+        Get EasterDay iYear to dReturn
+        Function_Return (dReturn - 2)
+    End_Function
+
+    {Published=True} 
+    { Description  = """
+      Holy Saturday, is the day after Good Friday and day before Easter Day.
+      This is not a national holiday, but put here for consistency.
+      \nReturns: The Holy Saturday, according to the Gregorian calendar (for years after 1752)
+      or the Julian calendar (for years before 1753) as a Date variable.
+      """ }
+    Function HolySaturday Integer iYear Returns Date
+        Date dReturn
+        Get EasterDay iYear to dReturn
+        Function_Return (dReturn - 1)
+    End_Function
+
+    {Published=True} 
+    { Description  = """
+      Easter Monday is the day after Easter Sunday and is celebrated as a holiday in some largely Christian cultures,
+      especially Roman Catholic cultures.
+      \nReturns: The Easter Monday, according to the Gregorian calendar (for years after 1752)
+      or the Julian calendar (for years before 1753) as a Date variable.
+      """ }
+    Function EasterMonday Integer iYear Returns Date
+        Date dReturn
+        Get EasterDay iYear to dReturn
+        Function_Return (dReturn + 1)
+    End_Function
+
+    {Published=True} 
+    { Description  = """
+      Whit Sunday or Pentecost is one of the prominent feasts in the Christian liturgical year.
+      It is celebrated 7 weeks (49 days) after Easter Sunday - hence its name.;
+      \nPentecost is a public holiday in many European countries including Austria, Belgium, Cyprus,
+      Denmark, Estonia, France, Spain, Germany, Hungary, Luxemburg, The Netherlands, Norway, Poland,
+      Romania, and (most parts of) Switzerland. \nIn Sweden it is no longer (as of 2005) a holiday,
+      While Italy is discussing whether to re-establish it.
+      \nReturns: The date of Whit Sunday, according to the Gregorian calendar (for years:
+      after 1752) or the Julian calendar (for years before 1753) as a Date variable.
+      """ }
+    Function WhitSunday Integer iYear Returns Date
+        Date dReturn
+        Get EasterDay iYear to dReturn
+        Function_Return (dReturn + 49)
+    End_Function
+
+    {Published=True} 
+    { Description = "See: WhitSunday (This function is equal to WhitSunday)" }
+    Function Pentecost Integer iYear Returns Date
+        Date dReturn
+        Get WhitSunday iYear to dReturn
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description  = """
+      Whit Monday or Day after Pentecost (Whit Sunday).
+      It is a public holiday in many European countries including Austria, Belgium,
+      Denmark, France, Germany, Hungary, Luxemburg, The Netherlands, Norway and Switzerland.
+      \nReturns: The Date of Whit Monday, according to the Gregorian calendar (for years
+      after 1752) or the Julian calendar (for years before 1753) as a Date variable.
+      """ }
+    Function WhitMonday Integer iYear Returns Date
+        Date dReturn
+        Get EasterDay iYear to dReturn
+        Function_Return (dReturn + 50)
+    End_Function
+
+    {Published=True} 
+    { Description  = """
+      Martin Luther King's Day is the third Monday in January.
+      Holiday in the US.
+      """ }
+    Function MLKDay Integer iYear String sOfficial_Short Returns Date
+        Integer iDayNumber
+        Date dReturn
+        
+        If (sOfficial_Short = "US") Begin
+            // Start with the 1st of January and find the first Monday.
+            Get DateSetDate iYear 1 1 to dReturn
+            Get DateGetISODayOfWeek dReturn to iDayNumber
+    
+            // If iDayNumber is greater then Monday, add number of days to next Monday.
+            If (DateGetDayOfWeek(dReturn) > 1) Begin
+                Move ((8 - iDayNumber) + dReturn) to dReturn
+            End
+    
+            // Add two more weeks to get the third Monday.
+            Move (dReturn + 14) to dReturn
+        End
+
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description  = """
+      President's Day is the third Monday in February.
+      Holiday in the US.
+      """ }
+    Function PresidentsDay Integer iYear String sOfficial_Short Returns Date
+        Date dReturn
+        Integer iDayNumber
+
+        If (sOfficial_Short = "US") Begin
+            // Start with the 1st of February and find the first Monday.
+            Get DateSetDate iYear 2 1 to dReturn
+            Get DateGetISODayOfWeek dReturn to iDayNumber
+    
+            // If iDayNumber is greater then Monday, add number of days to next Monday.
+            If (iDayNumber > 1) Begin
+                Move ((8 - iDayNumber) + dReturn) to dReturn
+            End
+    
+            // Add two more weeks to get the third Monday.
+            Move (dReturn + 14) to dReturn
+        End
+        
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description  = """
+      May Day Bank Holiday.
+      Brittish holiday on the first Monday in May.
+      In the year 2012 this date is moved to June 4 to mark the Queen's
+      diamond jubilee and an extra bank holiday added on June 5 (GB).
+      """ }
+    Function MayBankDay Integer iYear String sOfficial_Short Returns Date
+        Date dReturn
+        Integer iDayNumber
+
+        If (sOfficial_Short = "GB") Begin
+            If (iYear <> 2012) Begin
+                // Start with the 1st of May and find the first Monday.
+                Get DateSetDate iYear 5 1 to dReturn
+                Get DateGetISODayOfWeek dReturn to iDayNumber
+    
+                // If iDayNumber is greater then Monday, add number of days to first Monday.
+                If (iDayNumber > 1) Begin
+                    Move ((8- iDayNumber) + dReturn) to dReturn
+                End
+            End
+    
+            // Special handling 2012 due to Queens jubilee.
+            Else If (iYear = 2012) Begin
+                Get DateSetDate iYear 6 4 to dReturn
+            End
+        End
+
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description  = """
+      In the year 2012 the MayBankDay date is moved to June 4 to mark the Brittish Queen's
+      diamond jubilee and an extra bank holiday is added on June 5 (GB).
+      """ }
+    Function ExtraBankHoliday Integer iYear String sOfficial_Short Returns Date
+        Date dReturn
+        String sHelp
+
+        If (sOfficial_Short = "GB") Begin
+            If (iYear = 2012) Begin
+                Get DateSetDate iYear 6 5 to dReturn
+            End
+        End
+        
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description  = """
+      Late Summer Bank Holiday.
+      Brittish holiday on the last Monday in August (GB).
+      """ }
+    Function LateSummerBankDay Integer iYear String sOfficial_Short Returns Date
+        Date dReturn
+        Integer iDayNumber
+
+        If (sOfficial_Short = "GB") Begin
+            // Start with the 1st of August and find the first Monday.
+            Get DateSetDate iYear 8 1 to dReturn
+            Get DateGetISODayOfWeek dReturn to iDayNumber
+    
+            // If iDayNumber is greater then Monday, add number of days to first Monday.
+            If (iDayNumber > 1) Begin
+                Move ((8- iDayNumber) + dReturn) to dReturn
+            End
+    
+            // Add three more weeks to get the forth Monday.
+            Move (dReturn + 21) to dReturn
+        End
+
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description  = """
+      Memorial Day is the last Monday in May.
+      Holiday in the US.
+      """ }
+    Function MemorialDay Integer iYear String sOfficial_Short Returns Date
+        Date dReturn
+        Integer iDayNumber
+
+        If (sOfficial_Short = "GB") Begin
+            // Start with the 1st of May and find the first Monday.
+            Get DateSetDate iYear 5 1 to dReturn
+            Get DateGetISODayOfWeek dReturn to iDayNumber
+    
+            // If iDayNumber is greater then Monday, add number of days to first Monday.
+            If (iDayNumber > 1) Begin
+                Move ((8 - iDayNumber) + dReturn) to dReturn
+            End
+    
+            // Add three more weeks to get the forth Monday.
+            Move (dReturn + 21) to dReturn
+        End
+
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description  = """
+      Father's Day falls mostly on the second Sunday in June, but it differs for many countries.
+      In Sweden it falls on the second Sunday of November
+      In Denmark it is fixed and always falls on the fifth of June.
+      In Austria and New Zealand it falls on the first Sunday of September
+      In Germany it is celebrated on Ascension Day (forty days after Easter)
+      In Brazil it falls on the second Sunday of August
+      In Argentina,United Kingdom, Netherlands and United States it falls on the third Sunday in June.
+      \nElse: The most common day is the second Sunday of June.
+      It is however, not a holiday.
+      """ }
+    Function FathersDay Integer iYear String sOfficial_Short Returns Date
+        Date dReturn
+        Integer iDayNumber
+
+        Move (Uppercase(sOfficial_Short)) to sOfficial_Short
+
+        If (sOfficial_Short = "SE") Begin
+            Get DateSetDate iYear 11 1 to dReturn
+        End
+
+        Else If (sOfficial_Short = "DK") Begin
+            get DateSetDate iYear 6 5 to dReturn
+            Function_Return dReturn
+        End
+
+        Else If (sOfficial_Short = "AT" or sOfficial_Short = "NZ") Begin
+            Get DateSetDate iYear 9 1 to dReturn
+            // Adjust for the addition of seven days below.
+            Move (dReturn -7) to dReturn
+        End
+
+        Else If (sOfficial_Short = "DE") Begin
+            Get AscensionDay iYear to dReturn
+            Function_Return dReturn
+        End
+
+        Else If (sOfficial_Short = "BR") Begin
+            Get DateSetDate iYear 8 1 to dReturn
+        End
+
+        Else Begin
+            Get DateSetDate iYear 6 1 to dReturn
+        End
+
+        Get DateGetISODayOfWeek dReturn to iDayNumber
+        // If iDayNumber < Sunday, add number of days to first Sunday.
+        If (iDayNumber < 7) Begin
+            Move ((7 - iDayNumber) + dReturn) to dReturn
+        End
+
+        // Add another week.
+        Move (dReturn + 7) to dReturn // Second Sunday.
+        
+        If (sOfficial_Short = "AR" or sOfficial_Short = "GB" or sOfficial_Short = "NL" or sOfficial_Short = "US") Begin
+            Move (7 + dReturn) to dReturn
+        End
+
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description  = """
+      LaborDay always falls on the 1st of May and is also known as the International Workers Day or May Day.
+      In most countries it is on the 1st of May.
+      In the US it falls on the first Monday of September.
+      """ }
+    Function LaborDay Integer iYear String sOfficial_Short Returns Date
+        Date dReturn
+        Integer iDayNumber
+
+        Move (Uppercase(sOfficial_Short)) to sOfficial_Short
+
+        If (sOfficial_Short = "US") Begin        // First Monday in September
+            Get DateSetDate iYear 9 1 to dReturn
+            Get DateGetISODayOfWeek dReturn to iDayNumber
+            If (iDayNumber > 1) Begin
+                Move (dReturn + (8 - iDayNumber)) to dReturn
+            End
+        End
+
+        Else If (sOfficial_Short <> "US") Begin
+            Get DateSetDate iYear 5 1 to dReturn
+        End
+
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "Feast of Christ the King the last holy Sunday in the western liturgical calendar. Falls on a Sunday 20-26 November." }
+    Function FeastOfChristTheKing Integer iYear Returns Date
+        Date dReturn
+        Integer iDayNumber
+
+        // Start with the 20th of November:
+        Get DateSetDate iYear 11 20 to dReturn
+        Get DateGetISODayOfWeek dReturn to iDayNumber
+
+        // If iDayNumber is less then Sunday, add number of days to next Sunday.
+        If (iDayNumber < 7) Begin
+            Move ((7 - iDayNumber) + dReturn) to dReturn
+        End
+        // Else the iDayNumber was = 7 which is the Sunday.
+
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description  = """
+      Midsummer day in Sweden is the Saturday that falls between 20-26th of June.
+      Holiday in Sweden. In Norway, Denmark, Estonia and Lithuania the Midsummer day always falls on the 24th of June.
+      \nIn Norway and Denmark it is called Sankt Hans, and there is also a function doing the same thing, named 'SanktHans'.
+      """ }
+    Function MidsummerDay Integer iYear String sOfficial_Short Returns Date
+        Date dReturn
+        Integer iDayNumber
+
+        Move (Uppercase(sOfficial_Short)) to sOfficial_Short
+
+        If (sOfficial_Short = "SE") Begin
+            // Start with the 20th of June:
+            Get DateSetDate iYear 6 20 to dReturn
+            Get DateGetISODayOfWeek dReturn to iDayNumber
+
+            // If iDayNumber = Sunday, add 6 days to next Saturday.
+            If (iDayNumber = 7) Begin
+                Move (6 + dReturn) to dReturn
+            End
+            // Else if iDayNumber is less then Saturday, add number of days to next Saturday.
+            Else If (iDayNumber < 5) Begin
+                Move ((6 - iDayNumber) + dReturn) to dReturn
+            End
+            // Else the iDayNumber was = 6 which is the Saturday.
+        End
+
+        // This is probably only correct for Norway, Denmark, Estonia and Lithuania only. But are there
+        // other countries that uses yet another date?
+        Else Begin
+            Get DateSetDate iYear 6 24 to dReturn
+        End
+
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description  = """
+      Same as function: MidsummerDay. In Sweden it is the Saturday that falls between 20-26th of June.
+      Holiday in Sweden. In Norway, Denmark, Estonia and Lithuania the Midsummer day always falls on the 24th of June.
+      \nIn Norway and Denmark MidsummerDay is called SanktHans.
+      """ }
+    Function SanktHans Integer iYear String sOfficial_Short Returns Date
+        Date dReturn
+        Get MidsummerDay iYear sOfficial_Short to dReturn
+        Function_Return dReturn
+    End_Function
+    
+    {Published=True} 
+    { Description  = """
+      Midsummer eve is the Friday that falls between 19-25th of June.
+      'Half a Holiday' in Sweden.
+      """ }
+    Function MidsummerEve Integer iYear String sOfficial_Short Returns Date
+        Date dReturn
+        Get MidsummerDay iYear sOfficial_Short to dReturn
+        Function_Return (dReturn -1)
+    End_Function
+
+    {Published=True} 
+    { Description = """
+      Independence Day always falls on the 4th of July - which is always returned by the NationalDay
+      Function when the "US" Official_Short ISO_Short is passed. The difference to this Function is that it takes
+      into account if 4th of July falls on a Saturday or Sunday - in case it is adjusted - and returns
+      the day off work.
+      """ }
+    Function IndependenceDay Integer iYear String sOfficial_Short Returns Date
+        Date dReturn
+        Integer iDayNumber
+
+        If (sOfficial_Short = "US") Begin            
+            Get DateSetDate iYear 7 4 to dReturn
+            Get DateGetISODayOfWeek dReturn to iDayNumber
+            If (iDayNumber = 6) Begin
+                Move (dReturn - 1) to dReturn // If a Saturday, preceding Friday is day off work.
+            End
+            If (iDayNumber = 7) Begin
+                Move (dReturn + 1) to dReturn // If a Sunday, next Monday is day off work.
+            End
+        End
+        
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description  = """
+      Columbus Day falls on the second Monday of October.
+      Holiday in the US.
+      """ }
+    Function ColumbusDay Integer iYear String sOfficial_Short Returns Date
+        Date dReturn
+        Integer iDayNumber
+
+        If (sOfficial_Short = "US") Begin            
+            // Start with the 1st of October and find the first Monday.
+            Get DateSetDate iYear 10 1 to dReturn
+            Get DateGetISODayOfWeek dReturn to iDayNumber
+    
+            // If iDayNumber is greater then Monday, add number of days to next Monday.
+            If (iDayNumber > 1) Begin
+                Move ((8 - iDayNumber) + dReturn) to dReturn
+            End
+    
+            // Add two more weeks to get the second Monday.
+            Move (dReturn + 7) to dReturn
+        End
+
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "Thanksgiving Day falls on the fourth Thursday of November in the US - and on Columbus day in Canada." }
+    Function Thanksgiving Integer iYear String sOfficial_Short Returns Date
+        Date dReturn
+        Integer iDayNumber
+
+        If (sOfficial_Short = "CA") Begin
+            Get ColumbusDay to dReturn
+        End
+
+        Else Begin
+            // Start with the 1st of November and find the first Thursday.
+            Get DateSetDate iYear 11 1 to dReturn
+            Get DateGetISODayOfWeek dReturn to iDayNumber  // 1=Monday.
+
+            // If iDayNumber is less then Thursday, add number of days to next Thursday.
+            If (iDayNumber < 4) Begin
+                Move ((7 - iDayNumber) + dReturn) to dReturn
+            End
+            Else If (iDayNumber > 4) Begin
+                Move (dReturn - iDayNumber) to dReturn
+            End
+
+            // Add three more weeks to get the fourth Thursday.
+            Move (dReturn + 21) to dReturn
+        End
+
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = """
+      Black Friday falls on the day after Thanksgiving Day and traditionally is the beginning
+      of the Christmas shopping season. Especially popular in the United States, the event is spreading to
+      other nations such as Canada and Australia. Black Friday is not actually a holiday, but many employers give their;
+      employees the day off, increasing the Number of potential shoppers.
+      Returns: The date of Thanksgiving + one day = 'Black Friday'
+      """ }
+    Function BlackFriday Integer iYear Returns Date
+        Date dReturn
+        Get Thanksgiving iYear "US" to dReturn
+        Move (dReturn + 1) to dReturn
+        Function_Return dReturn
+    End_Function
+
+    // *************************** FIXED HOLIDAYS ******************************
+    // These are functions for holidays that occur on the same calendar days
+    // each year. The other group of holidays are movable, they always occcur on
+    // different dates each year.
+    //
+    //****************************************************************************
+
+    {Published=True} 
+    { Description = "Epiphany is twelve days after Christmas Day and always falls on January 6." }
+    Function Epiphany Integer iYear Returns Date
+        Date dReturn
+        Get DateSetDate iYear 1 6 to dReturn
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "Epiphany eve is eleven days after Christmas Day and always falls on January 5." }
+    Function EpiphanyEve Integer iYear Returns Date
+        Date dReturn
+        Get Epiphany iYear to dReturn
+        Move (dReturn - 1) to dReturn
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "GroundHogDay always falls on February 2." }
+    Function GroundHogDay Integer iYear Returns Date
+        Date dReturn
+        Get DateSetDate iYear 2 2 to dReturn
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "ValentinesDay always falls on February 14." }
+    Function ValentinesDay Integer iYear Returns Date
+        Date dReturn
+        Get DateSetDate iYear 2 14 to dReturn
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "SaintPatricksDay always falls on March 17." }
+    Function SaintPatricksDay Integer iYear Returns Date
+        Date dReturn
+        Get DateSetDate iYear 3 17 to dReturn
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "AprilFoolsDay always falls on April 1." }
+    Function AprilFoolsDay Integer iYear Returns Date
+        Date dReturn
+        Get DateSetDate iYear 4 1 to dReturn
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "FlagDay always falls on the June 14. Commemorates the adoption of the flag of the United States, in 1777." }
+    Function FlagDay Integer iYear String sOfficial_Short Returns Date
+        Date dReturn
+        If (sOfficial_Short = "US") Begin
+            Get DateSetDate iYear 6 14 to dReturn            
+        End
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "PatriotsDay falls on the September 11. (US)" }
+    Function PatriotsDay Integer iYear String sOfficial_Short Returns Date
+        Date dReturn
+        If (sOfficial_Short = "US") Begin            
+            Get DateSetDate iYear 9 11 to dReturn
+        End
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "ConstitutionDay falls on September 17. (US)" }
+    Function ConstitutionDay Integer iYear String sOfficial_Short Returns Date
+        Date dReturn
+        If (sOfficial_Short = "US") Begin            
+            Get DateSetDate iYear 9 17 to dReturn
+        End
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "LeifEriksonDay falls on October 9. (US)" }
+    Function LeifEriksonDay Integer iYear String sOfficial_Short Returns Date
+        Date dReturn
+        If (sOfficial_Short = "US") Begin            
+            Get DateSetDate iYear 10 9 to dReturn
+        End
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "ValborgsEve is the last day of April. Big festive day in Sweden" }
+    Function ValborgsEve Integer iYear Returns Date
+        Date dReturn
+        Get DateSetDate iYear 4 30 to dReturn
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = """
+      Halloween is not to be confused with All Saints Day. Halloween always falls on October 31.
+      Halloween is originally the Celtic New Years Eve, and
+      All Saints Day is a Christian holiday in honour of all Saints.
+      Public Holiday in the USA (not national holiday).
+      Returns: The date of All Saints Day, according to the Gregorian calendar.
+      """ }
+    Function Halloween Integer iYear Returns Date
+        Date dReturn
+        Get DateSetDate iYear 10 31 to dReturn
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "Public Holiday in the USA (not national holiday). (US)" }
+    Function VeteransDay Integer iYear String sOfficial_Short Returns Date
+        Date dReturn
+        If (sOfficial_Short = "US") Begin
+            Get DateSetDate iYear 11 11 to dReturn            
+        End
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "Start of EU (European) Summer Time - last Sunday in March (at 1am)" }
+    Function EUSummerTimeStart Integer iYear Returns Date
+        Date dDate
+        Integer iDayOfWeek
+
+        // Start with the 31st of March and find the previous Sunday.
+        Move "1/1/1" to dDate
+        Move (DateSetDay(dDate,31))     to dDate
+        Move (DateSetMonth(dDate,3))    to dDate
+        Move (DateSetYear(dDate,iYear)) to dDate
+        Move (DateGetDayOfWeek(dDate))  to iDayOfWeek
+        If (iDayOfWeek > 1) Begin
+            Subtract (iDayOfWeek - 1) from dDate
+        End
+        Function_Return dDate
+    End_Function
+
+    {Published=True} 
+    { Description = "End of EU (European) Summer Time - last Sunday in October (at 1am)" }
+    Function EUSummerTimeEnd Integer iYear Returns Date
+        Integer iDayOfWeek
+        Date    dDate
+
+        // Start with the 31st of October and find the previous Sunday.
+        Move "1/1/1" to dDate
+        Move (DateSetDay(dDate,31))     to dDate
+        Move (DateSetMonth(dDate,10))   to dDate
+        Move (DateSetYear(dDate,iYear)) to dDate
+        Move (DateGetDayOfWeek(dDate))  to iDayOfWeek
+        If (iDayOfWeek > 1) Begin
+            Subtract (iDayOfWeek - 1) from dDate
+        End
+
+        Function_Return dDate
+    End_Function
+
+    {Published=True} 
+    { Description = "ChristmasEve - Always falls on 24th of December." }
+    Function ChristmasEve Integer iYear Returns Date
+        Date dReturn
+        Get DateSetDate iYear 12 24 to dReturn
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "ChristmasDay - Always falls on 25th of December." }
+    Function ChristmasDay Integer iYear Returns Date
+        Date dReturn
+        Get DateSetDate iYear 12 25 to dReturn
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "SecondDayChristmas - Always falls on 26th of December." }
+    Function SecondDayChristmas Integer iYear Returns Date
+        Date dReturn
+        Get DateSetDate iYear 12 26 to dReturn
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "NewYearsEve - Always falls on December 31." }
+    Function NewYearsEve Integer iYear Returns Date
+        Date dReturn
+        Get DateSetDate iYear 12 31 to dReturn
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "NewYearsDay - Always falls on January 1." }
+    Function NewYearsDay Integer iYear Returns Date
+        Date dReturn
+        Get DateSetDate iYear 1 1 to dReturn
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "Always falls on January 2. Scottish holiday (GB)" }
+    Function NewYearHoliday Integer iYear String sOfficial_Short Returns Date
+        Date dReturn
+        If (sOfficial_Short = "GB") Begin
+            Get DateSetDate iYear 1 2 to dReturn            
+        End
+        Function_Return dReturn
+    End_Function
+
+    {Published=False}
+    { Description = "Chinese Lunar. Returns a tLunar struct (Integer iYear, Integer iMonth, Integer iDay, Boolean bLeap)" }
+    Function ChineseLunar Date dDate Returns tLunar
+        Integer iOffset iLoop iTemp iLeapMonth
+        tLunar Lunar
+        Date dSetDate
+        
+        Get DateSetDate 1900 1 31 to dSetDate
+        Move (dDate - dSetDate - 1) to iOffset
+
+        For iLoop from 1900 to 2050
+            If (iOffset>0) Begin
+                Get HexYearDays iLoop to iTemp
+                Subtract iTemp from iOffset
+            End
+            Else Begin
+                Move iLoop to Lunar.iYear
+                Move 2050 to iLoop
+            End
+        Loop
+        If (iOffset<0) Begin
+            Add iTemp to iOffset
+            Subtract 1 from Lunar.iYear
+        End
+        Get HexLeapMonth Lunar.iYear to iLeapMonth
+        Move False to Lunar.bLeap
+
+        For iLoop from 1 to 13
+            If (iOffset>0) Begin
+                If (iLeapMonth>0 and iLoop=(iLeapMonth+1) and Lunar.bLeap=False) Begin
+                    Subtract 1 from iLoop
+                    Move True to Lunar.bLeap
+                    Get HexLeapDays Lunar.iYear to iTemp
+                End
+                Else Begin
+                    Get HexMonthDays Lunar.iYear iLoop to iTemp
+                End
+                If (Lunar.bLeap=True and iLoop=(iLeapMonth+1)) Begin
+                    Move False to Lunar.bLeap
+                End
+                Subtract iTemp from iOffset
+            End
+            Else Begin
+                Move iLoop to Lunar.iMonth
+                Move 13 to iLoop
+            End
+        Loop
+        If (iOffset=0 and iLeapMonth>0 and iLoop=(iLeapMonth+1)) Begin
+            If (Lunar.bLeap) Begin
+                Move False to Lunar.bLeap
+            End
+            Else Begin
+                Move True to Lunar.bLeap
+                Subtract 1 from Lunar.iMonth
+            End
+        End
+        If (iOffset<0) Begin
+            Add iTemp to iOffset
+            Subtract 1 from Lunar.iMonth
+        End
+        Move (iOffset+1) to Lunar.iDay
+        Function_Return Lunar
+    End_Function
+
+    {Published=False} 
+    { Description = "Islamic Calendar, Kuwaiti Algorithm" }
+    Function IslamicCalendar Date dDate Returns tLunar
+        Integer iYear iMonth iDay iAlpha iBeta iJD iDD iJJ iZZ iCyc
+        Number  nShift nYear
+        tLunar Lunar
+
+        Move (DateGetYear(dDate))  to iYear
+        Move (DateGetMonth(dDate)) to iMonth
+        Move (DateGetDay(dDate))   to iDay
+
+        If (iMonth<3) Begin
+            Subtract 1 from iYear
+            Add 12 to iMonth
+        End
+        Move (Integer(iYear/100.0)) to iAlpha
+        Move (2-iAlpha+Integer(iAlpha/4.0)) to iBeta
+        If (iYear<1583) Begin
+            Move 0 to iBeta
+        End
+        If (iYear=1582) Begin
+            If (iMonth>10) Begin
+                Move -10 to iBeta
+            End
+            If (iMonth=10) Begin
+                Move 0 to iBeta
+                If (iDay>4) Begin
+                    Move -10 to iBeta
+                End
+            End
+        End
+        Move (Integer(365.25*(iYear+4716))+Integer(30.6001*(iMonth+1))+iDay+iBeta-1524) to iJD
+        Move 0 to iBeta
+        If (iJD>2299160) Begin
+            Move (Integer((iJD-1867216.25)/36524.25)) to iAlpha
+            Move (1+iAlpha-Integer(iAlpha/4.0)) to iBeta
+        End
+        Move (iJD+iBeta+1524) to iBeta
+        Move (Integer(365.25*Integer((iBeta-122.1)/365.25))) to iDD
+        Move (iBeta-iDD-Integer(30.6001*Integer((iBeta-iDD)/30.6001))) to iDay
+        Move (10631.0/30.0) to nYear
+        Move (8.01/60.0) to nShift // results in years 2, 5, 7, 10, 13, 15, 18, 21, 24, 26 & 29 as leap years
+        Move (iJD-1948084) to iZZ
+        Move (iZZ/10631.0) to iCyc
+        Move (iZZ-(10631*iCyc)) to iZZ
+        Move (Integer((iZZ-nShift)/nYear)) to iJJ
+        Move (30*iCyc+iJJ) to Lunar.iYear
+        Move (iZZ-Integer(iJJ*nYear+nShift)) to iZZ
+        Move (Integer((iZZ+28.5001)/29.5)) to Lunar.iMonth
+        If (Lunar.iMonth=13) Begin
+            Move 12 to Lunar.iMonth
+        End
+        Move (iZZ-Integer(29.5001*Lunar.iMonth-29)) to Lunar.iDay
+        Function_Return Lunar
+    End_Function
+    
+    // ToDo: This should be changed to accept a iYear, and return the dDate.
+    {Published=True} 
+    { Description = "Chinese New Year" }
+    Function ChineseNewYear Date dDate Returns Date
+        Date dReturn
+        tLunar Lunar
+
+        If (DateGetYear(dDate) <2050) Begin
+            Get ChineseLunar dDate to Lunar
+        End
+        If (Lunar.bLeap=False and Lunar.iMonth=1 and (Lunar.iDay=1 or Lunar.iDay=2)) Begin
+            Move dDate to dReturn
+        End
+        Function_Return dReturn
+    End_Function
+
+    {Published=False} 
+    { Description = "" }
+    Function VesakDay Date dDate Returns Date
+        Date dReturn
+        tLunar Lunar
+
+        If (DateGetYear(dDate)<2050) Begin
+            Get ChineseLunar dDate to Lunar
+        End
+        If (Lunar.bLeap=False and Lunar.iMonth=4 and Lunar.iDay=15) Begin
+            Move dDate to dReturn
+        End
+        Function_Return dReturn
+    End_Function
+
+    {Published=False} 
+    { Description = "" }
+    Function ProphetMuhammadBirthday Date dDate Returns Date
+        Date dReturn
+        tLunar Lunar
+
+        Get IslamicCalendar dDate to Lunar
+        If (Lunar.iMonth=3 and Lunar.iDay=12) Begin
+            Move dDate to dReturn
+        End
+        Function_Return dReturn
+    End_Function
+
+    {Published=False} 
+    { Description = "" }
+    Function HariRayaPuasa Date dDate String sOfficial_Short Returns Date
+        Date dReturn
+        tLunar Lunar
+
+        Get IslamicCalendar dDate to Lunar
+        If (Lunar.iMonth=10) Begin
+            If (sOfficial_Short="MY") Begin
+                If (Lunar.iDay=1 or Lunar.iDay=2) Begin
+                    Move dDate to dReturn
+                End
+            End
+            Else If (sOfficial_Short = "SG") Begin
+                If (Lunar.iDay=1) Begin
+                    Move dDate to dReturn
+                End
+            End
+        End
+        Function_Return dReturn
+    End_Function
+
+    {Published=False} 
+    { Description = "" }
+    Function HariRayaHaji Date dDate Returns Date
+        Date dReturn
+        tLunar Lunar
+
+        Get IslamicCalendar dDate to Lunar
+        If (Lunar.iMonth=12 and Lunar.iDay=10) Begin
+            Move dDate to dReturn
+        End
+        Function_Return dReturn
+    End_Function
+
+    {Published=False} 
+    { Description = "" }
+    Function HariRayaHaji2ndDay Date dDate Returns Date
+        Date dReturn
+        tLunar Lunar
+
+        Get IslamicCalendar dDate to Lunar
+        If (Lunar.iMonth=12 and Lunar.iDay=11) Begin
+            Move dDate to dReturn
+        End
+        Function_Return dReturn
+    End_Function
+
+    {Published=False} 
+    { Description = "" }
+    Function AwalMuharram Date dDate Returns Date
+        Date dReturn
+        tLunar Lunar
+
+        Get IslamicCalendar dDate to Lunar
+        If (Lunar.iMonth=1 and Lunar.iDay=1) Begin
+            Move dDate to dReturn
+        End
+        Function_Return dReturn
+    End_Function
+
+    {Published=False} 
+    { Description = "" }
+    Function IsrakMikraj Date dDate Returns Date
+        Date dReturn
+        tLunar Lunar
+
+        Get IslamicCalendar dDate to Lunar
+        If (Lunar.iMonth=7 and Lunar.iDay=28) Begin
+            Move dDate to dReturn
+        End
+        Function_Return dReturn
+    End_Function
+
+    {Published=False} 
+    { Description = "" }
+    Function AwalRamadan Date dDate Returns Date
+        Date dReturn
+        tLunar Lunar
+
+        Get IslamicCalendar dDate to Lunar
+        If (Lunar.iMonth=9 and Lunar.iDay=2) Begin
+            Move dDate to dReturn
+        End
+        Function_Return dReturn
+    End_Function
+
+    {Published=False} 
+    { Description = "" }
+    Function NuzulAlQuran Date dDate Returns Date
+        Date dReturn
+        tLunar Lunar
+
+        Get IslamicCalendar dDate to Lunar
+        If (Lunar.iMonth=9 and Lunar.iDay=18) Begin
+            Move dDate to dReturn
+        End
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "Agong's Birthday is the first Saturday in June" }
+    Function AgongBirthDay Integer iYear Returns Date
+        Date dReturn
+        Integer iDayNumber
+
+        Get DateSetDate iYear 6 1 to dReturn
+        Get DateGetISODayOfWeek dReturn to iDayNumber
+        // Start with the 1st of June.
+        // If iDayNumber = Sunday, add 6 days to next Saturday.
+        If (iDayNumber = 7) Begin
+            Move (6 + dReturn) to dReturn
+        End
+        // Else if iDayNumber is less then Saturday, add number of days to next Saturday.
+        Else If (iDayNumber < 5) Begin
+            Move ((6 - iDayNumber) + dReturn) to dReturn
+        End
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "Malaysia day always falls on the 16th of September" }
+    Function MalaysiaDay Integer iYear Returns Date
+        Date dReturn
+        Get DateSetDate iYear 9 16 to dReturn
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "Sultan of Kedah's Birthday is third Sunday in January" }
+    Function SultanKeday Integer iYear Returns Date
+        Date dReturn
+        Integer iDayNumber
+
+        Get DateSetDate iYear 6 1  to dReturn
+        Get DateGetISODayOfWeek dReturn to iDayNumber
+        // If iDayNumber < Sunday, add number of days to first Sunday.
+        If (iDayNumber < 7) Begin
+            Move ((7 - iDayNumber) + dReturn) to dReturn
+        End
+
+        // Add 2 weeks.
+        Move (dReturn + 14) to dReturn // Third Sunday.
+        Function_Return dReturn
+    End_Function
+
+    {Published=True} 
+    { Description = "Penang Governor's Birthday is the Second Saturday in July" }
+    Function PenangGovernorBirthday Integer iYear Returns Date
+        Date dReturn
+        Integer iDayNumber
+
+        Get DateSetDate iYear 7 1 to dReturn
+        Get DateGetISODayOfWeek dReturn to iDayNumber
+        // Start with the 1st of June.
+        // If iDayNumber = Sunday, add 6 days to next Saturday.
+        If (iDayNumber = 7) Begin
+            Move (6 + dReturn) to dReturn
+        End
+        // Else if iDayNumber is less then Saturday, add number of days to next Saturday.
+        Else If (iDayNumber < 5) Begin
+            Move ((6 - iDayNumber) + dReturn) to dReturn
+        End
+        // Add 1 weeks.
+        Move (dReturn + 7) to dReturn // Second Saturday.
+        Function_Return dReturn
+    End_Function
+
+    {Published=True}
+    { Description = "Malacca Governor's Birthday is the Second Saturday in July" }
+    Function MalaccaGovernorBirthday Integer iYear Returns Date
+        Date dReturn
+        Integer iDayNumber
+
+        Get DateSetDate iYear 10 1 to dReturn
+        Get DateGetISODayOfWeek dReturn to iDayNumber
+        // Start with the 1st of June.
+        // If iDayNumber = Sunday, add 6 days to next Saturday.
+        If (iDayNumber = 7) Begin
+            Move (6 + dReturn) to dReturn
+        End
+        // Else if iDayNumber is less then Saturday, add number of days to next Saturday.
+        Else If (iDayNumber < 5) Begin
+            Move ((6 - iDayNumber) + dReturn) to dReturn
+        End
+        // Add 1 weeks.
+        Move (dReturn + 7) to dReturn // Second Saturday.
+        Function_Return dReturn
+    End_Function
+
+    {Published=True}
+    { Description = "Christmas Day bank holiday - the Monday following Christmas Day if the latter is at a weekend. (GB)" }
+    Function ChristmasDayBH Integer iYear String sOfficial_Short Returns Date
+        Integer iDayOfWeek
+        Date    dDate
+        
+        If (sOfficial_Short = "GB") Begin            
+            Move "1/1/1" to dDate
+            Move (DateSetDay(dDate,25))     to dDate
+            Move (DateSetMonth(dDate,12))   to dDate
+            Move (DateSetYear(dDate,iYear)) to dDate
+            Move (DateGetDayOfWeek(dDate))  to iDayOfWeek
+            If      (iDayOfWeek = 7) Begin
+                Move (dDate + 2) to dDate      // Saturday
+            End
+            Else If (iDayOfWeek = 1) Begin
+                Move (dDate + 1) to dDate      // Sunday
+            End
+        End
+
+        Function_Return dDate
+    End_Function
+
+    {Published=True}
+    { Description = """
+      Boxing Day bank holiday - the Monday (if Boxing Day is on a Saturday) or Tuesday 
+      (if on a Sunday) following. (GB)
+      """ }
+    Function BoxingDayBH Integer iYear String sOfficial_Short Returns Date
+        Integer iDayOfWeek
+        Date    dDate
+        
+        If (sOfficial_Short = "GB") Begin            
+            Move "1/1/1" to dDate
+            Move (DateSetDay(dDate,26))     to dDate
+            Move (DateSetMonth(dDate,12))   to dDate
+            Move (DateSetYear(dDate,iYear)) to dDate
+            Move (DateGetDayOfWeek(dDate))  to iDayOfWeek
+            // If it falls on a Saturday move it to the Monday
+            // If it falls on a Sunday or Monday move it to the Tuesday (Monday will be the Christmas Day BH)
+            If      (iDayOfWeek = 7 or iDayOfWeek = 1) Begin
+                Move (dDate + 2) to dDate   // Saturday or Sunday
+            End
+            Else If (iDayOfWeek = 2) Begin
+                Move (dDate + 1) to dDate   // Monday
+            End
+        End
+
+        Function_Return dDate
+    End_Function
+
+    {Published=True}
+    { Description = """
+      New Year's Day bank holiday - the Monday following New Year's Day if 
+      the latter is at a weekend. (GB)
+      """ }
+    Function NewYearsDayBH Integer iYear String sOfficial_Short Returns Date
+        Integer iDayOfWeek
+        Date    dDate
+        
+        If (sOfficial_Short = "GB") Begin
+            Move "1/1/1" to dDate
+            Move (DateSetYear(dDate,iYear)) to dDate
+            Move (DateGetDayOfWeek(dDate))  to iDayOfWeek
+            If      (iDayOfWeek = 7) Begin
+                Move (dDate + 2) to dDate      // Saturday
+            End
+            Else If (iDayOfWeek = 1) Begin
+                Move (dDate + 1) to dDate      // Sunday
+            End
+        End
+
+        Function_Return dDate
+    End_Function
+
+    {Published=True}
+    { Description = """
+      The Scots get an extra day at New Year on 2nd January.
+      But if that is a Saturday or Sunday it will be the following Monday or
+      Tuesday (i.e. the day after the New Year's Day bank holiday) (GB).
+      """ }
+    Function ScotishNewYearHoliday Integer iYear String sOfficial_Short Returns Date
+        Integer iDayOfWeek
+        Date  dDate
+
+        If (sOfficial_Short = "GB") Begin        
+            Move "1/1/1" to dDate
+            Move (DateSetDay(dDate,2))      to dDate
+            Move (DateSetMonth(dDate,1))    to dDate
+            Move (DateSetYear(dDate,iYear)) to dDate
+            Move (DateGetDayOfWeek(dDate))  to iDayOfWeek
+            // If it falls on a Saturday move it to the Monday
+            // If it falls on a Sunday or Monday move it to the Tuesday (Monday will be the New Year's Day BH)
+            If      (iDayOfWeek = 7 or iDayOfWeek = 1) Begin
+                Move (dDate + 2) to dDate   // Saturday or Sunday
+            End
+            Else If (iDayOfWeek = 2) Begin
+                Move (dDate + 1) to dDate   // Monday
+            End
+        End
+        
+        Function_Return dDate
+    End_Function
+
+    {Published=True}
+    { Description = """
+      St.Patrick' Day bank holiday - the Monday after St.Patrick's Day if the latter
+      falls at a weekend (GB)
+      """ }
+    Function StPatricksDayBH Integer iYear String sOfficial_Short Returns Date
+        Integer iDayOfWeek
+        Date    dDate
+
+        If (sOfficial_Short = "GB") Begin        
+            Move "1/1/1" to dDate
+            Move (DateSetDay(dDate,17))     to dDate
+            Move (DateSetMonth(dDate,3))    to dDate
+            Move (DateSetYear(dDate,iYear)) to dDate
+            Move (DateGetDayOfWeek(dDate))  to iDayOfWeek
+            If      (iDayOfWeek = 7) Begin
+                Move (dDate + 2) to dDate    // Saturday
+            End
+            Else If (iDayOfWeek = 1) Begin
+                Move (dDate + 1) to dDate    // Sunday
+            End
+        End
+        
+        Function_Return dDate
+    End_Function
+
+    {Published=True}
+    { Description = """
+      Early May Bank Holiday.
+      The first Monday in May.
+      In the year 2012 this date is moved to June 4 to mark the Queen's
+      diamond jubilee and an extra bank holiday added on June 5 (GB).
+      """ }
+    Function EarlyMayBH Integer iYear String sOfficial_Short Returns Date
+        Integer iDayOfWeek
+        Date    dDate
+
+        If (sOfficial_Short = "GB") Begin        
+            If (iYear <> 2012) Begin
+                // Start with the 1st of May and find the first Monday.
+                Move "1/1/1" to dDate
+                Move (DateSetMonth(dDate,5))    to dDate
+                Move (DateSetYear(dDate,iYear)) to dDate
+                Move (DateGetDayOfWeek(dDate))  to iDayOfWeek
+                If (iDayOfWeek = 1) Begin
+                    Add 1                to dDate   // Sunday
+                End
+                If (iDayOfWeek > 2) Begin
+                    Add (9 - iDayOfWeek) to dDate
+                End
+            End
+    
+            // Special handling for 2012 for Queen's jubilee.
+            Else If (iYear = 2012) Begin
+                Move "1/1/1" to dDate
+                Move (DateSetDay(dDate,4))      to dDate
+                Move (DateSetMonth(dDate,6))    to dDate
+                Move (DateSetYear(dDate,iYear)) to dDate
+            End
+        End
+        
+        Function_Return dDate
+    End_Function
+
+    {Published=True}
+    { Description = "Summer Bank Holiday (Scotland). The first Monday in August (GB)" }
+    Function SummerBHScot Integer iYear String sOfficial_Short Returns Date
+        Integer iDayOfWeek
+        Date    dDate
+
+        If (sOfficial_Short = "GB") Begin        
+            // Start with the 1st of August and find the first Monday.
+            Move "1/1/1" to dDate
+            Move (DateSetMonth(dDate,8))    to dDate
+            Move (DateSetYear(dDate,iYear)) to dDate
+            Move (DateGetDayOfWeek(dDate))  to iDayOfWeek
+            If (iDayOfWeek = 1) Begin
+                Add 1                to dDate
+            End
+            If (iDayOfWeek > 2) Begin
+                Add (9 - iDayOfWeek) to dDate
+            End
+        End
+        
+        Function_Return dDate
+    End_Function
+
+    {Published=True}
+    { Description = "Summer Bank Holiday (England). The last Monday in August. (GB)" }
+    Function SummerBHEngNI Integer iYear String sOfficial_Short Returns Date
+        Integer iDayOfWeek
+        Date    dDate
+
+        If (sOfficial_Short = "GB") Begin        
+            // Start with the 31st of August and find the previous Monday.
+            Move "1/1/1" to dDate
+            Move (DateSetDay(dDate,31))     to dDate
+            Move (DateSetMonth(dDate,8))    to dDate
+            Move (DateSetYear(dDate,iYear)) to dDate
+            Move (DateGetDayOfWeek(dDate))  to iDayOfWeek
+            If      (iDayOfWeek = 1) Begin
+                Subtract 6 from dDate
+            End
+            Else If (iDayOfWeek > 2) Begin
+                Subtract (iDayOfWeek - 2) from dDate
+            End
+        End
+        
+        Function_Return dDate
+    End_Function
+
+    {Published=True}
+    { Description = "Battle of the Boyne Day (Orangemen's Day) - Northern Ireland, 12th July (GB)" }
+    Function BattleOfTheBoyne Integer iYear String sOfficial_Short Returns Date
+        Date dDate
+        
+        If (sOfficial_Short = "GB") Begin
+            Move "1/1/1" to dDate
+            Move (DateSetDay(dDate,12))     to dDate
+            Move (DateSetMonth(dDate,7))    to dDate
+            Move (DateSetYear(dDate,iYear)) to dDate
+        End
+
+        Function_Return dDate
+    End_Function
+
+    {Published=True}
+    { Description = "Battle of the Boyne Day bank holiday - Northern Ireland, 12th July unless that is a Saturday or Sunday (GB)" }
+    Function BattleOfTheBoyneBH Integer iYear String sOfficial_Short Returns Date
+        Integer iDayOfWeek
+        Date dDate
+
+        If (sOfficial_Short = "GB") Begin
+            Move "1/1/1" to dDate
+            Move (DateSetDay(dDate,12))     to dDate
+            Move (DateSetMonth(dDate,7))    to dDate
+            Move (DateSetYear(dDate,iYear)) to dDate
+            Move (DateGetDayOfWeek(dDate)) to iDayOfWeek
+            If      (iDayOfWeek = 7) Begin
+                Move (dDate + 2) to dDate          // Saturday
+            End
+            Else If (iDayOfWeek = 1) Begin
+                Move (dDate + 1) to dDate          // Sunday
+            End
+        End
+        
+        Function_Return dDate
+    End_Function
+
+    {Published=True}
+    { Description = "Remembrance Sunday - the first Sunday on or after 11th November (GB)." }
+    Function RemembranceSunday Integer iYear String sOfficial_Short Returns Date
+        Integer iDayOfWeek
+        Date dDate
+
+        If (sOfficial_Short = "GB") Begin
+            Move "1/1/1" to dDate
+            Move (DateSetDay(dDate,11))     to dDate
+            Move (DateSetMonth(dDate,11))   to dDate
+            Move (DateSetYear(dDate,iYear)) to dDate
+            Move (DateGetDayOfWeek(dDate))  to iDayOfWeek
+            If (iDayOfWeek > 1) Begin
+                Add (8 - iDayOfWeek) to dDate
+            End
+        End
+        
+        Function_Return dDate
+    End_Function
+
+    {Published=True}
+    { Description = "St.Andrew's Day (Scotland) - 30th November. (GB)" }
+    Function StAndrewsDay Integer iYear String sOfficial_Short Returns Date
+        Date dDate
+
+        If (sOfficial_Short = "GB") Begin
+            Move "1/1/1" to dDate
+            Move (DateSetDay(dDate,30))     to dDate
+            Move (DateSetMonth(dDate,11))   to dDate
+            Move (DateSetYear(dDate,iYear)) to dDate
+        End
+        
+        Function_Return dDate
+    End_Function
+
+    {Published=True}
+    { Description = "St.Andrew's Day bank holiday (Scotland) - 30th November unless that is a Saturday or Sunday (GB)" }
+    Function StAndrewsDayBH Integer iYear String sOfficial_Short Returns Date
+        Integer iDayOfWeek
+        Date dDate
+
+        If (sOfficial_Short = "GB") Begin
+            Move "1/1/1" to dDate
+            Move (DateSetDay(dDate,30))     to dDate
+            Move (DateSetMonth(dDate,11))   to dDate
+            Move (DateSetYear(dDate,iYear)) to dDate
+            Move (DateGetDayOfWeek(dDate)) to iDayOfWeek
+            If (iDayOfWeek = 7) Begin
+                Move (dDate + 2) to dDate          // Saturday
+            End
+            Else If (iDayOfWeek = 1) Begin
+                Move (dDate + 1) to dDate          // Sunday
+            End
+        End
+        
+        Function_Return dDate
+    End_Function
+
+End_Object

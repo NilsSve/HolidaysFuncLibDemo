@@ -1,0 +1,60 @@
+// f_FindFile_Global.pkg
+
+// Find the given name in DFPath. If it exists, return the full name.
+Function FindFile Global String sFileName Returns String
+    String  sFullName sPath sPathSep sDir
+    Integer iSeparator iSepPos
+    Boolean bFileExists
+
+    // Only check if there are no sDirectory iSeparators in the name.
+    Move "" to sFullName
+    Move 0  to iSeparator
+    If (Sysconf(SYSCONF_Dir_Separator)) In sFileName Begin
+        Move 1 to iSeparator
+    End
+    If (not(iSeparator)) Begin
+        Move 0 to bFileExists
+        Move (Sysconf(SYSCONF_Path_Separator)) to sPathSep
+        Get_Attribute DF_OPEN_Path to sPath
+        If (Length(sPath)) Begin
+            Repeat
+                Move (Pos(sPathSep, sPath)) to iSepPos
+                If iSepPos Begin
+                    Move (Left(sPath, (iSepPos - 1))) to sDir
+                    Move (Right(sPath, (Length(sPath) - iSepPos))) to sPath
+                    If (Length(sDir)) Begin
+                        Append sDir (Sysconf(SYSCONF_Dir_Separator)) sFileName
+                        File_Exist sDir bFileExists
+                        If bFileExists Begin
+                            Move sDir to sFullName
+                        End
+                    End
+                End
+            Until ((not(iSepPos)) or bFileExists)
+
+            If (not(bFileExists)) Begin
+                If (Length(sPath)) Begin
+                    Move sPath to sDir
+                    Append sDir (Sysconf(SYSCONF_Dir_Separator)) sFileName
+                    File_Exist sDir bFileExists
+                    If bFileExists Begin
+                        Move sDir to sFullName
+                    End
+                End
+            End
+        End
+        Else Begin
+            Move "." to sDir
+            Append sDir (Sysconf(SYSCONF_Dir_Separator)) sFileName
+            File_Exist sDir bFileExists
+            If bFileExists Begin
+                Move sDir to sFullName
+            End
+        End
+    End
+    Else Begin
+        Move sFileName to sFullName
+    End
+
+    Function_Return sFullName
+End_Function

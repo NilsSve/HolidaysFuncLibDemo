@@ -1,0 +1,6 @@
+#REPLACE FILE2 Holidays
+#REPLACE Holidays.Recnum |FN2,0
+#REPLACE Holidays.ISO_Short |FS2,1
+#REPLACE Holidays.DateNo |FD2,2
+#REPLACE Holidays.IsNatHoliday |FN2,3
+#REPLACE Holidays.HolidayName |FS2,4

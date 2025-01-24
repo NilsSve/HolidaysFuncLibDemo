@@ -1,0 +1,833 @@
+﻿//****************************************************************************
+// $Module type: Package file
+// $Module name: NationalDays.pkg
+// $Author     : Nils Svedmyr, RDC Tools International. nils.svedmyr@rdctools.com
+// Created     : 2009-07-28 @ 12:53
+//
+// Description : Function to return the National Day for the passed year and
+//               ISO official 2-character country code.
+//               The Official_Short ISO_Short should consist of two characters as defined by the ISO -
+//               https://www.iso.org/obp/ui/#search/code/
+//
+//               This package is part of the CalendarHolidays "package" but put in its own
+//               file due to the size.
+//
+// $Rev History:
+//    2009-07-28  Module header created
+//    2011-02-23  PDC HolidayDateCompose function replaced with DateSetDate.
+//
+//****************************************************************************
+
+{Published=True} 
+{ Description = """
+  The National Day for the passed year and Official_Short ISO_Short.
+  Returns: The Date of the National Day for the passed year and Official_Short ISO_Short.
+  Returns the 1st of January year 1000 - if Official_Short ISO_Short doesn't exist.
+  """ }
+Function NationalDay Integer iYear String sOfficial_Short Returns Date
+    Date dReturn
+    String sDate
+
+    Move (Uppercase(sOfficial_Short)) to sOfficial_Short
+
+    // Adjust if "UK" mistacingly was used as the Official_Short ISO_Short for Great Britain - as apposed to "GB".
+    If (sOfficial_Short = "UK") Begin
+        Move "GB" to sOfficial_Short
+    End
+
+    Case Begin
+            // *** A ***
+        Case (sOfficial_Short = "AF") // Afghanistan
+            Move "0819" to sDate // Month and day number.
+            Case Break
+        Case (sOfficial_Short = "AX") // Aaland Islands (Between Finland and Sweden)
+            Move "0709" to sDate
+            Case Break
+        Case (sOfficial_Short = "AL") // Albania
+            Move "1128" to sDate
+            Case Break
+        Case (sOfficial_Short = "DZ") // Algeria
+            Move "1101" to sDate
+            Case Break
+        Case (sOfficial_Short = "AS") // American Samoa
+            Move "0417" to sDate
+            Case Break
+        Case (sOfficial_Short = "AD") // Andorra
+            Move "0908" to sDate
+            Case Break
+        Case (sOfficial_Short = "AO") // Angola
+            Move "1111" to sDate
+            Case Break
+        Case (sOfficial_Short = "AI") // Anguilla
+            Move "0530" to sDate
+            Case Break
+        Case (sOfficial_Short = "AG") // Antigua and Barbuda
+            Move "1101" to sDate
+            Case Break
+        Case (sOfficial_Short = "AR") // Argentina
+            Move "0525" to sDate
+            Case Break
+        Case (sOfficial_Short = "AM") // Armenia
+            Move "0528" to sDate
+            Case Break
+        Case (sOfficial_Short = "AW") // Aruba
+            Move "0318" to sDate
+            Case Break
+        Case (sOfficial_Short = "AU") // Australia
+            Move "0126" to sDate
+            Case Break
+        Case (sOfficial_Short = "AT") // Austria
+            Move "1026" to sDate
+            Case Break
+        Case (sOfficial_Short = "AZ") // Azerbaijan
+            Move "0528" to sDate
+            Case Break
+
+            // *** B ***
+        Case (sOfficial_Short = "BS") // Bahamas
+            Move "0710" to sDate
+            Case Break
+        Case (sOfficial_Short = "BH") // Bahrain
+            Move "1216" to sDate
+            Case Break
+        Case (sOfficial_Short = "BD") // Bangladesh
+            Move "0326" to sDate
+            Case Break
+        Case (sOfficial_Short = "BB") // Barbados
+            Move "1130" to sDate
+            Case Break
+        Case (sOfficial_Short = "BY") // Belarus
+            Move "0703" to sDate
+            Case Break
+        Case (sOfficial_Short = "BE") // Belgium
+            Move "0721" to sDate
+            Case Break
+        Case (sOfficial_Short = "BZ") // Belize
+            Move "0921" to sDate
+            Case Break
+        Case (sOfficial_Short = "BJ") // Benin
+            Move "0801" to sDate
+            Case Break
+        Case (sOfficial_Short = "BM") // Bermuda
+            Move "0524" to sDate
+            Case Break
+        Case (sOfficial_Short = "BT") // Bhutan
+            Move "1217" to sDate
+            Case Break
+        Case (sOfficial_Short = "BO") // Bolivia, Plurinational State Of
+            Move "0806" to sDate
+            Case Break
+        Case (sOfficial_Short = "BA") // Bosnia and Herzegovinia
+            Move "0301" to sDate
+            Case Break
+        Case (sOfficial_Short = "BW") // Botswana
+            Move "0930" to sDate
+            Case Break
+        Case (sOfficial_Short = "BR") // Brazil
+            Move "0907" to sDate
+            Case Break
+        Case (sOfficial_Short = "BN") // Brunei Darussalam
+            Move "0223" to sDate
+            Case Break
+        Case (sOfficial_Short = "BG") // Bulgaria
+            Move "0303" to sDate
+            Case Break
+        Case (sOfficial_Short = "BF") // Burkina Faso
+            Move "0804" to sDate
+            Case Break
+        Case (sOfficial_Short = "BI") // Burundi
+            Move "0701" to sDate
+            Case Break
+
+            // *** C ***
+        Case (sOfficial_Short = "KH") // Cambodia
+            Move "1109" to sDate
+            Case Break
+        Case (sOfficial_Short = "CM") // Cameroon
+            Move "0520" to sDate
+            Case Break
+        Case (sOfficial_Short = "CA") // Canada
+            Move "0701" to sDate
+            Case Break
+        Case (sOfficial_Short = "CV") // Cap Verde
+            Move "0912" to sDate
+            Case Break
+        Case (sOfficial_Short = "KY") // Cayman Islands
+            Get UKNationalDay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "CF") // Central African Republic
+            Move "1201" to sDate
+            Case Break
+        Case (sOfficial_Short = "TD") // Chad
+            Move "0811" to sDate
+            Case Break
+        Case (sOfficial_Short = "CL") // Chile
+            Move "0918" to sDate
+            Case Break
+        Case (sOfficial_Short = "CN") // China
+            Move "0901" to sDate
+            Case Break
+        Case (sOfficial_Short = "CX") // Christmas Islands
+            Move "0126" to sDate
+            Case Break
+        Case (sOfficial_Short = "CC") // Cocos (Keeling) Islands
+            Move "0126" to sDate
+            Case Break
+        Case (sOfficial_Short = "CO") // Columbia
+            Move "0720" to sDate
+            Case Break
+        Case (sOfficial_Short = "KM") // Comoros
+            Move "0706" to sDate
+            Case Break
+        Case (sOfficial_Short = "CG") // Congo
+            Move "0630" to sDate
+            Case Break
+        Case (sOfficial_Short = "CD") // Congo, The Democratic Republic Of
+            Move "0630" to sDate
+            Case Break
+        Case (sOfficial_Short = "CK") // Cook Islands
+            Move "0804" to sDate
+            Case Break
+        Case (sOfficial_Short = "CR") // Costa Rica
+            Move "0915" to sDate
+            Case Break
+        Case (sOfficial_Short = "CI") // Côte d'Ivoire
+            Move "0807" to sDate
+            Case Break
+        Case (sOfficial_Short = "HR") // Croatia
+            Move "0625" to sDate
+            Case Break
+        Case (sOfficial_Short = "CU") // Cuba
+            Move "0101" to sDate
+            Case Break
+        Case (sOfficial_Short = "CY") // Cyprus
+            Move "1001" to sDate
+            Case Break
+        Case (sOfficial_Short = "CZ") // Czeck Republic
+            Move "1028" to sDate
+            Case Break
+
+            // *** D ***
+        Case (sOfficial_Short = "DK") // Denmark
+            Move "0605" to sDate
+            Case Break
+        Case (sOfficial_Short = "DJ") // Djibouti
+            Move "0527" to sDate
+            Case Break
+        Case (sOfficial_Short = "DM") // Dominica
+            Move "1103" to sDate
+            Case Break
+        Case (sOfficial_Short = "DO") // Dominican Republic
+            Move "0227" to sDate
+            Case Break
+
+            // *** E ***
+        Case (sOfficial_Short = "EC") // Ecuador
+            Move "0810" to sDate
+            Case Break
+        Case (sOfficial_Short = "  EG") // Egypt
+            Move "0723" to sDate
+            Case Break
+        Case (sOfficial_Short = "SV") // El Salvador
+            Move "0915" to sDate
+            Case Break
+        Case (sOfficial_Short = "GQ") // Equatorial Guinea
+            Move "1012" to sDate
+            Case Break
+        Case (sOfficial_Short = "ER") // Eritrea
+            Move "0524" to sDate
+            Case Break
+        Case (sOfficial_Short = "EE") // Estonia
+            Move "0224" to sDate
+            Case Break
+        Case (sOfficial_Short = "ET") // Ethiopia
+            Move "0528" to sDate
+            Case Break
+
+            // *** F ***
+        Case (sOfficial_Short = "FK") // Falklands Islands (Malvinas)
+            Move "0614" to sDate
+            Case Break
+        Case (sOfficial_Short = "FO") // Faroe Islands
+            Move "0729" to sDate
+            Case Break
+        Case (sOfficial_Short = "FJ") // Fiji
+            Move "1010" to sDate
+            Case Break
+        Case (sOfficial_Short = "FI") // Finland
+            Move "1206" to sDate
+            Case Break
+        Case (sOfficial_Short = "FR") // France
+            Move "0714" to sDate
+            Case Break
+        Case (sOfficial_Short = "GF") // French Guyana
+            Move "0714" to sDate
+            Case Break
+        Case (sOfficial_Short = "PF") // French Polynesia
+            Move "0714" to sDate
+            Case Break
+        Case (sOfficial_Short = "TF") // French Southern Territories
+            Move "0714" to sDate
+            Case Break
+
+            // *** G ***
+        Case (sOfficial_Short = "GA") // Gabon
+            Move "0817" to sDate
+            Case Break
+        Case (sOfficial_Short = "GM") // Gambia
+            Move "0218" to sDate
+            Case Break
+        Case (sOfficial_Short = "GE") // Georgia
+            Move "0526" to sDate
+            Case Break
+        Case (sOfficial_Short = "DE") // Germany
+            Move "1003" to sDate
+            Case Break
+        Case (sOfficial_Short = "GH") // Ghana
+            Move "0306" to sDate
+            Case Break
+        Case (sOfficial_Short = "GI") // Gibraltar
+            Move "0910" to sDate
+            Case Break
+        Case (sOfficial_Short = "GR") // Greece
+            Move "0325" to sDate
+            Case Break
+        Case (sOfficial_Short = "GL") // Greenland
+            Move "0621" to sDate
+            Case Break
+        Case (sOfficial_Short = "GD") // Grenada
+            Move "0207" to sDate
+            Case Break
+        Case (sOfficial_Short = "GP") // Guadeloupe
+            Move "0714" to sDate
+            Case Break
+        Case (sOfficial_Short = "GU") // Guam
+            Move "0721" to sDate
+            Case Break
+        Case (sOfficial_Short = "GT") // Guatemala
+            Move "0915" to sDate
+            Case Break
+        Case (sOfficial_Short = "GG") // Guernsey
+            Move "0509" to sDate
+            Case Break
+        Case (sOfficial_Short = "GN") // Guinea
+            Move "0403" to sDate
+            Case Break
+        Case (sOfficial_Short = "GW") // Guinea-Bissau
+            Move "0924" to sDate
+            Case Break
+        Case (sOfficial_Short = "GY") // Guyana
+            Move "0223" to sDate
+            Case Break
+
+            // *** H ***
+        Case (sOfficial_Short = "HT") // Haiti
+            Move "0101" to sDate
+            Case Break
+        Case (sOfficial_Short = "HM") // Heard Island and McDonald Islands
+            Move "0126" to sDate
+            Case Break
+        Case (sOfficial_Short = "VA") // Holy See (Vatican City State)
+            Move "0419" to sDate
+            Case Break
+        Case (sOfficial_Short = "HN") // Honduras
+            Move "0915" to sDate
+            Case Break
+        Case (sOfficial_Short = "HK") // Hong Kong
+            Move "0701" to sDate
+            Case Break
+        Case (sOfficial_Short = "HU") // Hungary
+            Move "0820" to sDate
+            Case Break
+
+            // *** I ***
+        Case (sOfficial_Short = "IS") // Iceland
+            Move "0617" to sDate
+            Case Break
+        Case (sOfficial_Short = "IN") // India
+            Move "0126" to sDate
+            Case Break
+        Case (sOfficial_Short = "ID") // Indonesia
+            Move "0817" to sDate
+            Case Break
+        Case (sOfficial_Short = "IR") // Iran, Islamic Republic Of
+            Move "0401" to sDate
+            Case Break
+        Case (sOfficial_Short = "IQ") // Iraq
+            Move "0717" to sDate
+            Case Break
+        Case (sOfficial_Short = "IE") // Ireland
+            Move "0317" to sDate
+            Case Break
+        Case (sOfficial_Short = "IM") // Isle Of Man
+            Move "0705" to sDate
+            Case Break
+        Case (sOfficial_Short = "IL") // Israel
+            Move "0514" to sDate
+            Case Break
+        Case (sOfficial_Short = "IT") // Italy
+            Move "0602" to sDate
+            Case Break
+
+            // *** J ***
+        Case (sOfficial_Short = "JM") // Jamaica
+            Move "0806" to sDate
+            Case Break
+        Case (sOfficial_Short = "JP") // Japan
+            Move "1223" to sDate
+            Case Break
+        Case (sOfficial_Short = "JE") // Jersey
+            Move "0509" to sDate
+            Case Break
+        Case (sOfficial_Short = "JO") // Jordan
+            Move "0525" to sDate
+            Case Break
+
+            // *** K ***
+        Case (sOfficial_Short = "KZ") // Kazakhstan
+            Move "1025" to sDate
+            Case Break
+        Case (sOfficial_Short = "KE") // Kenya
+            Move "1212" to sDate
+            Case Break
+        Case (sOfficial_Short = "KI") // Kiribati
+            Move "0712" to sDate
+            Case Break
+        Case (sOfficial_Short = "KP") // Korea, Democratic Republic Of (North Korea)
+            Move "0908" to sDate
+            Case Break
+        Case (sOfficial_Short = "KR") // Korea, Republic Of (South Korea)
+            Move "0815" to sDate
+            Case Break
+        Case (sOfficial_Short = "KW") // Kuwait
+            Move "0126" to sDate
+            Case Break
+        Case (sOfficial_Short = "KG") // Kyrgyzstan
+            Move "0831" to sDate
+            Case Break
+
+            // *** L ***
+        Case (sOfficial_Short = "LA") // Lao People's Democratic Republic (Laos)
+            Move "1202" to sDate
+            Case Break
+        Case (sOfficial_Short = "LV") // Latvia
+            Move "1118" to sDate
+            Case Break
+        Case (sOfficial_Short = "LB") // Lebanon
+            Move "1122" to sDate
+            Case Break
+        Case (sOfficial_Short = "LS") // Lesotho
+            Move "1004" to sDate
+            Case Break
+        Case (sOfficial_Short = "LR") // Liberia
+            Move "0726" to sDate
+            Case Break
+        Case (sOfficial_Short = "LY") // Libyan Arab Jamahiriya
+            Move "0901" to sDate
+            Case Break
+        Case (sOfficial_Short = "LI") // Liechtenstein
+            Move "0815" to sDate
+            Case Break
+        Case (sOfficial_Short = "LT") // Lithuania
+            Move "0216" to sDate
+            Case Break
+        Case (sOfficial_Short = "LU") // Luxembourg
+            Move "0623" to sDate
+            Case Break
+
+            // *** M ***
+        Case (sOfficial_Short = "MO") // Macao
+            Move "1220" to sDate
+            Case Break
+        Case (sOfficial_Short = "MK") // Macedonia, The Former Yugoslav Republic Of
+            Move "0908" to sDate
+            Case Break
+        Case (sOfficial_Short = "MG") // Madagascar
+            Move "0626" to sDate
+            Case Break
+        Case (sOfficial_Short = "MW") // Malawi
+            Move "0706" to sDate
+            Case Break
+        Case (sOfficial_Short = "MY") // Malaysia
+            Move "0831" to sDate
+            Case Break
+        Case (sOfficial_Short = "MV") // Maldives
+            Move "0726" to sDate
+            Case Break
+        Case (sOfficial_Short = "ML") // Mali
+            Move "0922" to sDate
+            Case Break
+        Case (sOfficial_Short = "MT") // Malta
+            Move "0921" to sDate
+            Case Break
+        Case (sOfficial_Short = "MH") // Marshall Islands
+            Move "0501" to sDate
+            Case Break
+        Case (sOfficial_Short = "MQ") // Martinique
+            Move "0714" to sDate
+            Case Break
+        Case (sOfficial_Short = "MR") // Mauritania
+            Move "1128" to sDate
+            Case Break
+        Case (sOfficial_Short = "MU") // Mauritius
+            Move "0312" to sDate
+            Case Break
+        Case (sOfficial_Short = "YT") // Mayotte
+            Move "0714" to sDate
+            Case Break
+        Case (sOfficial_Short = "MX") // Mexico
+            Move "0916" to sDate
+            Case Break
+        Case (sOfficial_Short = "FM") // Micronesia, Federated States Of
+            Move "0510" to sDate
+            Case Break
+        Case (sOfficial_Short = "MD") // Moldovia, Republic Of
+            Move "0827" to sDate
+            Case Break
+        Case (sOfficial_Short = "MC") // Monaco
+            Move "1119" to sDate
+            Case Break
+        Case (sOfficial_Short = "MN") // Mongolia
+            Move "0711" to sDate
+            Case Break
+        Case (sOfficial_Short = "ME") // Montenegro
+            Move "0713" to sDate
+            Case Break
+        Case (sOfficial_Short = "MS") // Montserrat
+            Get UKNationalDay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "MA") // Morocco
+            Move "0302" to sDate
+            Case Break
+        Case (sOfficial_Short = "MZ") // Mozambique
+            Move "0625" to sDate
+            Case Break
+        Case (sOfficial_Short = "MM") // Myanmar (Burma)
+            Move "" to sDate
+            Case Break
+
+            // *** N ***
+        Case (sOfficial_Short = "NA") // Namibia
+            Move "0321" to sDate
+            Case Break
+        Case (sOfficial_Short = "NR") // Nauru
+            Move "0131" to sDate
+            Case Break
+        Case (sOfficial_Short = "NP") // Nepal
+            Move "0707" to sDate
+            Case Break
+        Case (sOfficial_Short = "NL") // Netherlands
+            If (iYear <= 2013) Begin
+                Move "0430" to sDate
+            End
+            Else Begin
+                Move "0427" to sDate
+            End
+            Case Break
+        Case (sOfficial_Short = "AN") // Netherlands Antilles
+            Move "0430" to sDate
+            Case Break
+        Case (sOfficial_Short = "NC") // New Caledonia
+            Move "0714" to sDate
+            Case Break
+        Case (sOfficial_Short = "NZ") // New Zealand
+            Move "0206" to sDate
+            Case Break
+        Case (sOfficial_Short = "NI") // Nicaragua
+            Move "0915" to sDate
+            Case Break
+        Case (sOfficial_Short = "NE") // Niger
+            Move "1218" to sDate
+            Case Break
+        Case (sOfficial_Short = "NG") // Nigeria
+            Move "1001" to sDate
+            Case Break
+        Case (sOfficial_Short = "NU") // Niue
+            Move "0206" to sDate
+            Case Break
+        Case (sOfficial_Short = "NF") // Norfolk Islands
+            Move "0608" to sDate
+            Case Break
+        Case (sOfficial_Short = "MP") // Northern Mariana Islands
+            Move "0108" to sDate
+            Case Break
+        Case (sOfficial_Short = "NO") // Norway
+            Move "0517" to sDate
+            Case Break
+
+            // *** O ***
+        Case (sOfficial_Short = "OM") // Oman
+            Move "1118" to sDate
+            Case Break
+
+        Case (sOfficial_Short = "PK") // Pakistan
+            Move "0323" to sDate
+            Case Break
+        Case (sOfficial_Short = "PW") // Palau
+            Move "0709" to sDate
+            Case Break
+        Case (sOfficial_Short = "PS") // Palestinian Territory, Occupied
+            Move "1115" to sDate
+            Case Break
+        Case (sOfficial_Short = "PA") // Panama
+            Move "1103" to sDate
+            Case Break
+        Case (sOfficial_Short = "PG") // Papua New Guinea
+            Move "0916" to sDate
+            Case Break
+        Case (sOfficial_Short = "PY") // Paraguay
+            Move "0514" to sDate
+            Case Break
+        Case (sOfficial_Short = "PE") // Peru
+            Move "0728" to sDate
+            Case Break
+        Case (sOfficial_Short = "PH") // Philippines
+            Move "0612" to sDate
+            Case Break
+        Case (sOfficial_Short = "PN") // Pitcairn
+            Move "0123" to sDate
+            Case Break
+        Case (sOfficial_Short = "PL") // Poland
+            Move "0503" to sDate
+            Case Break
+        Case (sOfficial_Short = "PT") // Portugal
+            Move "0610" to sDate
+            Case Break
+        Case (sOfficial_Short = "PR") // Puerto Rico
+            Move "0725" to sDate
+            Case Break
+
+            // *** Q ***
+        Case (sOfficial_Short = "QA") // Quatar
+            Move "0903" to sDate
+            Case Break
+
+            // *** R ***
+        Case (sOfficial_Short = "RE") // Réunion
+            Move "0714" to sDate
+            Case Break
+        Case (sOfficial_Short = "RO") // Romania
+            Move "1201" to sDate
+            Case Break
+        Case (sOfficial_Short = "RU") // Russian Federation
+            Move "0612" to sDate
+            Case Break
+        Case (sOfficial_Short = "RW") // Rwanda
+            Move "0701" to sDate
+            Case Break
+
+            // *** S ***
+        Case (sOfficial_Short = "BL") // Saint Barthélemy
+            Move "0824" to sDate
+            Case Break
+        Case (sOfficial_Short = "SH") // Saint Helena
+            Get UKNationalDay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "KN") // Saint Kitts and Nevis
+            Move "0919" to sDate
+            Case Break
+        Case (sOfficial_Short = "LC") // Saint Lucia
+            Move "0222" to sDate
+            Case Break
+        Case (sOfficial_Short = "MF") // Saint Martin
+            Move "0712" to sDate
+            Case Break
+        Case (sOfficial_Short = "PM") // Saint Pierre and Miquolon
+            Move "0714" to sDate
+            Case Break
+        Case (sOfficial_Short = "VC") // Saint Vincent and Grenadines
+            Move "1027" to sDate
+            Case Break
+        Case (sOfficial_Short = "WS") // Samoa
+            Move "0601" to sDate
+            Case Break
+        Case (sOfficial_Short = "SM") // San Marino
+            Move "0903" to sDate
+            Case Break
+        Case (sOfficial_Short = "ST") // Sao Tome and Principe
+            Move "0712" to sDate
+            Case Break
+        Case (sOfficial_Short = "SA") // Saudi Arabia
+            Move "0923" to sDate
+            Case Break
+        Case (sOfficial_Short = "SN") // Senegal
+            Move "0404" to sDate
+            Case Break
+        Case (sOfficial_Short = "RS") // Serbia
+            Move "0215" to sDate
+            Case Break
+        Case (sOfficial_Short = "SC") // Seychelles
+            Move "0618" to sDate
+            Case Break
+        Case (sOfficial_Short = "SL") // Sierra Leone
+            Move "0427" to sDate
+            Case Break
+        Case (sOfficial_Short = "SG") // Singapore
+            Move "0809" to sDate
+            Case Break
+        Case (sOfficial_Short = "SK") // Slovakia
+            Move "0901" to sDate
+            Case Break
+        Case (sOfficial_Short = "SI") // Slovenia
+            Move "0625" to sDate
+            Case Break
+        Case (sOfficial_Short = "SB") // Solomon Islands
+            Move "0707" to sDate
+            Case Break
+        Case (sOfficial_Short = "SO") // Somalia
+            Move "0701" to sDate
+            Case Break
+        Case (sOfficial_Short = "ZA") // South Africa
+            Move "0427" to sDate
+            Case Break
+        Case (sOfficial_Short = "GS") // South Georgia and the South Sandwich Islands
+            Move "0614" to sDate
+            Case Break
+        Case (sOfficial_Short = "ES") // Spain
+            Move "1012" to sDate
+            Case Break
+        Case (sOfficial_Short = "LK") // Sri Lanka
+            Move "0204" to sDate
+            Case Break
+        Case (sOfficial_Short = "SD") // Sudan
+            Move "0101" to sDate
+            Case Break
+        Case (sOfficial_Short = "SR") // Suriname
+            Move "1125" to sDate
+            Case Break
+        Case (sOfficial_Short = "SJ") // Svalbard and Jan Mayen
+            Move "0517" to sDate
+            Case Break
+        Case (sOfficial_Short = "SZ") // Swaziland
+            Move "0906" to sDate
+            Case Break
+        Case (sOfficial_Short = "SE") // Sweden
+            Move "0606" to sDate
+            Case Break
+        Case (sOfficial_Short = "CH") // Switzerland
+            Move "0801" to sDate
+            Case Break
+        Case (sOfficial_Short = "SY") // Syrian Arabic Republic
+            Move "0417" to sDate
+            Case Break
+
+            // *** T ***
+        Case (sOfficial_Short = "TW") // Taiwan, Province Of China
+            Move "1010" to sDate
+            Case Break
+        Case (sOfficial_Short = "TJ") // Tajikistan
+            Move "0909" to sDate
+            Case Break
+        Case (sOfficial_Short = "TZ") // Tanzania, United Republic Of
+            Move "0426" to sDate
+            Case Break
+        Case (sOfficial_Short = "TH") // Thailand
+            Move "1205" to sDate
+            Case Break
+        Case (sOfficial_Short = "TL") // Timor-Leste
+            Move "1128" to sDate
+            Case Break
+        Case (sOfficial_Short = "TG") // Togo
+            Move "0427" to sDate
+            Case Break
+        Case (sOfficial_Short = "TK") // Tokelau
+            Move "0206" to sDate
+            Case Break
+        Case (sOfficial_Short = "TO") // Tonga
+            Move "0604" to sDate
+            Case Break
+        Case (sOfficial_Short = "TT") // Trinidad and Tobago
+            Move "0831" to sDate
+            Case Break
+        Case (sOfficial_Short = "TN") // Tunisia
+            Move "0320" to sDate
+            Case Break
+        Case (sOfficial_Short = "TR") // Turkey
+            Move "1029" to sDate
+            Case Break
+        Case (sOfficial_Short = "TM") // Turkmenistan
+            Move "1027" to sDate
+            Case Break
+        Case (sOfficial_Short = "TC") // Turks and Caicas Islands
+            Move "0830" to sDate
+            Case Break
+        Case (sOfficial_Short = "TV") // Tuvalu
+            Move "1001" to sDate
+            Case Break
+
+            // *** U ***
+        Case (sOfficial_Short = "UG") // Uganda
+            Move "1009" to sDate
+            Case Break
+        Case (sOfficial_Short = "UA") // Ukraine
+            Move "0824" to sDate
+            Case Break
+        Case (sOfficial_Short = "AE") // United Arab Emirates
+            Move "1202" to sDate
+            Case Break
+        Case (sOfficial_Short = "GB") // United Kingdom
+            Get UKNationalDay iYear to sDate
+            Case Break
+        Case (sOfficial_Short = "US") // USA
+            //Note:  Independence Day always falls on the 4th of July - which is always returned by the NationalDay
+            //       function when the "US" Official_Short ISO_Short is passed. See also the Independence function. It takes
+            //       into account if the 4th of July falls on a Saturday or Sunday - in Case it is adjusted - and Returns
+            //       the day off work (Either Monday or Friday).
+            Move "0704" to sDate // 4th of July.
+            Case Break
+        Case (sOfficial_Short = "UM") // United States Minor Outlying Islands
+            Move "" to sDate
+            Case Break
+        Case (sOfficial_Short = "UY") // Uruguay
+            Move "0825" to sDate
+            Case Break
+        Case (sOfficial_Short = "UZ") // Uzbekistan
+            Move "0901" to sDate
+            Case Break
+
+            // *** V ***
+        Case (sOfficial_Short = "VU") // Vanuatu
+            Move "0730" to sDate
+            Case Break
+        Case (sOfficial_Short = "VE") // Venezuela, Bolivarian Republic Of
+            Move "0705" to sDate
+            Case Break
+        Case (sOfficial_Short = "VN") // Vietnam
+            Move "0902" to sDate
+            Case Break
+        Case (sOfficial_Short = "VG") // Virgin Islands, British
+            Move "0701" to sDate
+            Case Break
+        Case (sOfficial_Short = "VI") // Virgin Islands, U.S.
+            Move "0331" to sDate
+            Case Break
+
+            // *** W ***
+        Case (sOfficial_Short = "WF") // Wallis and Futuna
+            Move "0714" to sDate
+            Case Break
+        Case (sOfficial_Short = "EH") // Western Sahara
+            Move "0227" to sDate
+            Case Break
+
+            // *** Y ***
+        Case (sOfficial_Short = "YE") // Yemen
+            Move "0522" to sDate
+            Case Break
+
+            // *** Z ***
+        Case (sOfficial_Short = "ZM") // Zambia
+            Move "1024" to sDate
+            Case Break
+        Case (sOfficial_Short = "ZW") // Zimbabwe
+            Move "0418" to sDate
+            Case Break
+
+        Case Else
+            Move 1000   to iYear
+            Move "0101" to sDate
+    Case End
+
+    Get DateSetDate of ghoCalendarHolidays iYear (Left(sDate,2)) (Mid(sDate,2,3)) to dReturn
+    Function_Return dReturn
+End_Function

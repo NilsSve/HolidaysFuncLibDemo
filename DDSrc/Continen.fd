@@ -1,0 +1,4 @@
+#REPLACE FILE3 Continen
+#REPLACE Continen.Recnum |FN3,0
+#REPLACE Continen.ID |FN3,1
+#REPLACE Continen.Name |FS3,2

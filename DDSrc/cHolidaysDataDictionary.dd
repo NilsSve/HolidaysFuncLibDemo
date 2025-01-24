@@ -1,0 +1,63 @@
+Use DataDict.pkg
+
+Open Holidays
+Open Nations
+
+Register_Object Holidays_sl
+
+Class cHolidaysDataDictionary is a DataDictionary
+
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Main_file to Holidays.File_Number
+
+        Set Add_Server_File to Nations.File_Number
+
+        Set Foreign_Field_Option DD_KEYFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_KEYFIELD DD_FINDREQ to True
+        Set Foreign_Field_Option DD_INDEXFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_DEFAULT DD_DISPLAYONLY to True
+
+        Set Field_Prompt_Object Field Holidays.ISO_Short to Holidays_sl
+
+        Set Field_Label_Long Field Holidays.DateNo to "Date"
+        Set Field_Label_Short Field Holidays.DateNo to "Date"
+        Set Key_Field_State Field Holidays.DateNo to True
+        Set Field_Option Field Holidays.DateNo DD_AUTOFIND to True
+        Set Field_Prompt_Object Field Holidays.DateNo to Holidays_sl
+        Set Field_Entry_msg Field Holidays.DateNo to Default_Todays_Date
+
+        Set Field_Label_Long Field Holidays.IsNatHoliday to "Holiday"
+        Set Field_Label_Short Field Holidays.IsNatHoliday to "Holiday"
+        Set Field_Class_Name Field Holidays.IsNatHoliday to "dbCheckBox"
+        Set Field_Prompt_Object Field Holidays.IsNatHoliday to Holidays_sl
+        Set Status_Help Field Holidays.IsNatHoliday to "Is this a holiday?"
+
+        Set Field_Label_Long Field Holidays.HolidayName to "Holiday Name"
+        Set Field_Label_Short Field Holidays.HolidayName to "Description"
+        Set Field_Prompt_Object Field Holidays.HolidayName to Holidays_sl
+
+    End_Procedure
+
+    Procedure Field_Defaults
+        Forward Send Field_Defaults
+
+        Set Field_Changed_Value Field Holidays.IsNatHoliday to 0
+    End_Procedure
+
+    // Add todays date as the default date if the field is blank
+    Procedure Default_Todays_Date Integer iField Date dDate
+
+        //         Get Field_Changed_State iField to iChanged
+        //         If (iChanged=0 and dDate=0) Begin
+        //            Sysdate dDate
+        //            Set Field_Default_Value iField to dDate
+        //         End
+    End_Procedure
+
+End_Class
+
+#IFDEF Is$WebApp
+#ELSE
+Use Holidays.sl
+#ENDIF
