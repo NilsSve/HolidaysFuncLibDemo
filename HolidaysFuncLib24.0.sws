@@ -13,5 +13,4 @@ Project2=WriteDateTimeHeaderFile.src
 Lib2=..\Libraries\DFAbout\DFAbout24.0.sws
 Lib3=..\Libraries\DigitalCert\DigitalCert24.0.sws
 Lib4=..\Libraries\RDCToolsLib\RDCToolsLib24.0.sws
-Lib5=..\Libraries\DUF\DUF24.0.sws
 Lib6=..\Libraries\vwin32fh\StudioLibrary\vWin32fh-Library-DF24.0.sws
