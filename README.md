@@ -8,4 +8,4 @@ See the collection of country specific libraries in CountryPackages.pkg. Use tho
 
 The workspace also contains a database and a view for showing Nations of the World. All kinds of facts about all nations in the world. This part is independent from the calendar holidays packages above.
 
-![Sample of how the HolidaysFuncLib.src program looks like:](Bitmaps/HolidaysFuncLib.png)
+![Sample of how the HolidaysFuncLib.src program looks like:](Bitmaps/HolidaysFuncLibTest.png.png)
