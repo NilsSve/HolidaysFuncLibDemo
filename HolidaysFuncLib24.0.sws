@@ -5,7 +5,7 @@ ConfigFile=.\Programs\Config.ws
 [TestProjects]
 [Conditionals]
 Is$WebApp=False
-Is$Win64=False
+Is$Win64=True
 [Projects]
 Project0=HolidaysFuncLibTest.src
 Project2=WriteDateTimeHeaderFile.src

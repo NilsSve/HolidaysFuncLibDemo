@@ -3,9 +3,6 @@ Version=25.0
 [WorkspacePaths]
 ConfigFile=.\Programs\Config.ws
 [TestProjects]
-[Conditionals]
-Is$WebApp=False
-Is$Win64=False
 [Libraries]
 Lib2=..\Libraries\DFAbout\DFAbout25.0.sws
 Lib3=..\Libraries\DigitalCert\DigitalCert25.0.sws
@@ -14,3 +11,8 @@ Lib6=..\Libraries\vwin32fh\StudioLibrary\vWin32fh-Library-DF25.0.sws
 [Projects]
 Project0=HolidaysFuncLibTest.src
 Project1=WriteDateTimeHeaderFile.src
+[Conditionals]
+Is$WebApp=False
+Is$Win64=True
+Is$GraphicsLibrary=False
+COMP$TIMESTAMP=True
