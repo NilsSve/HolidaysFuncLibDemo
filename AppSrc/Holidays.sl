@@ -7,7 +7,7 @@ Use cDbCJGridColumn.pkg
 Use cRDCDbModalPanel.pkg
 Use cRDCDbCJGridPromptList.pkg
 Use cRDCDbCJGridColumn.pkg
-Use CalendarHolidays.pkg
+//Use cCalendarHolidays.pkg
 
 Use cNationsDataDictionary.dd
 Use cHolidaysDataDictionary.dd
@@ -88,42 +88,6 @@ Object Holidays_sl is a cRDCDbModalPanel
             
         End_Object
         
-//        Procedure ScaleFont Integer iDirection    // from control + mouse wheel in container object
-//            Integer iSize jSize kSize iSup iInf iDef
-//            Handle hoPaintManager hoFont
-//            Variant vFont
-//            Boolean blimite
-//            
-//            Move 3 to iInf      //max size
-//            Move 18 to iSup     //min size
-//            Move 8 to iDef      //default
-//            Get phoReportPaintManager to hoPaintManager
-//            If (IsComObjectCreated (hoPaintManager) = False) Begin
-//                Procedure_Return
-//            End
-//            Get Create (RefClass(cComStdFont)) to hoFont
-//            Get ComTextFont of hoPaintManager to vFont
-//            Set pvComObject of hoFont to vFont
-//            If (iDirection = 0) Begin
-//                Set ComSize of hoFont to iDef
-//            End
-//            Else Begin
-//               Get ComSize of hoFont to iSize
-//               Move iSize to jSize
-//               Repeat
-//                    Move (If(iDirection > 0, jSize + 1, jSize - 1)) to jSize
-//                    Move (If(iDirection > 0, If(jSize > iSup, True, False), If(jSize < iInf, True, False))) to blimite
-//                    If (not(blimite)) Begin       
-//                       Set ComSize of hoFont to jSize
-//                       Get ComSize of hoFont to kSize
-//                    End
-//                Until (iSize <> kSize or blimite)
-//            End
-//            Send Destroy to hoFont 
-//            Send ComRedraw  
-//            Send WriteInteger of ghoApplication CS_Settings CS_GridFontSize iSize
-//        End_Procedure 
-
     End_Object
 
     Object oOk_bn is a Button
