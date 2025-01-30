@@ -7,7 +7,7 @@ Use cDbCJGridColumn.pkg
 Use cRDCDbModalPanel.pkg
 Use cRDCDbCJGridPromptList.pkg
 Use cRDCDbCJGridColumn.pkg
-//Use cCalendarHolidays.pkg
+Use cCalendarHolidays.pkg
 
 Use cNationsDataDictionary.dd
 Use cHolidaysDataDictionary.dd

@@ -29,7 +29,7 @@ Activate_View Activate_oDateFunctionsTest for oDateFunctionsTest
 Object oDateFunctionsTest is a dbView
     Set Size to 345 527
     Set Location to 2 1
-    Set Label to "Holidays and Other Special Dates Functions Test"
+    Set Label to "Date Functions Test"
     Set Border_Style to Border_Thick
     Set Maximize_Icon to True
     Set pbAutoActivate to True

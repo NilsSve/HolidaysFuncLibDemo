@@ -209,22 +209,22 @@ Object oMain is a Panel
                 Set psToolTip to "View"
                 Set psDescription to "Available Views"
 
-                Object oNationsViewMenuItem is a cCJMenuItem
-                    Set psCaption to "Nations View"
-                    Set psDescription to "Data about all nations in the world"
+                Object oDateFunctionsTestMenuItem is a cCJMenuItem
+                    Set psCaption to "Date Functions Test"
+                    Set psDescription to "Holidays and Other Special Dates Functions Test"
                     Set peControlStyle to xtpButtonCaptionAndDescription
-                    Set psImage to "Nations.ico"
+                    Set psImage to "Calendar.ico"
 
                     Procedure OnExecute Variant vCommandBarControl
                         Handle hoClient
                         Get Client_Id to hoClient
-                        Send Activate_oNations of hoClient
+                        Send Activate_oDateFunctionsTest of hoClient
                     End_Procedure
                 End_Object
 
                 Object oSimpleHolidaysMenuItem is a cCJMenuItem
                     Set psCaption to "Calendar"
-                    Set psDescription to "Simple example on usage of the Holiday Function Library"
+                    Set psDescription to "Sample on using the Holiday Function Library"
                     Set peControlStyle to xtpButtonCaptionAndDescription
                     Set psImage to "NationalHolidays.ico"
 
@@ -235,16 +235,16 @@ Object oMain is a Panel
                     End_Procedure
                 End_Object
 
-                Object oDateFunctionsTestMenuItem is a cCJMenuItem
-                    Set psCaption to "Date Functions"
-                    Set psDescription to "Holidays and Other Special Dates Functions Test"
+                Object oNationsViewMenuItem is a cCJMenuItem
+                    Set psCaption to "Nations Data"
+                    Set psDescription to "Data about all nations in the world"
                     Set peControlStyle to xtpButtonCaptionAndDescription
-                    Set psImage to "Calendar.ico"
+                    Set psImage to "Nations.ico"
 
                     Procedure OnExecute Variant vCommandBarControl
                         Handle hoClient
                         Get Client_Id to hoClient
-                        Send Activate_oDateFunctionsTest of hoClient
+                        Send Activate_oNations of hoClient
                     End_Procedure
                 End_Object
 
@@ -510,8 +510,9 @@ Object oMain is a Panel
     Object oClientArea is a ClientArea
 //        Use Dd_debug.dg // This Provides access to dd debugger by pressing ctrl+d within any view. Good for debugging
         Use StdAbout.pkg
-        Use Holidays.vw
+
         Use Nations.vw
+        Use Holidays.vw
         Use DataFunctionsTest.vw
         
         Procedure Activate_About
