@@ -28,7 +28,7 @@
 //> pkg.doc.end
 
 Use VdfBase.pkg // DAW package. Provides low level support expected of all VDF applications (windows and webapp)
-//Use CalendarHolidays.pkg
+//Use cCalendarHolidays.pkg
 
 // Internally for use with wildcard* functions
 Enum_List
