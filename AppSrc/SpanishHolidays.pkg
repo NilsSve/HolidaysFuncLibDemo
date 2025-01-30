@@ -12,7 +12,7 @@
 //    2012-03-15 Module header created
 //
 //****************************************************************************
-Use CalendarHolidays.pkg
+Use cNationalHolidays.pkg
 
 Object oSpanishHolidays is a cNationalHolidays
 
@@ -23,7 +23,7 @@ Object oSpanishHolidays is a cNationalHolidays
 
     // Function that returns the name of Spanish 'holidays' from a date variable.
     //
-    // Function takes two parameters;
+    // Function IsHoliday takes two parameters;
     // A 4-year digit date variable and a boolean as a ByRef variable.
     //
     // Returns: A string with the 'holidayname' as text AND it changes the boolean ByRef
@@ -33,9 +33,15 @@ Object oSpanishHolidays is a cNationalHolidays
     // wants to have included in the functionality.
     //
     // For example; Christmas Eve is a "holiday" but not a national holiday (regulated by law),
-    // In contrast Christmas Day is a national holiday and so the ByRef bNationalHoliday will be TRUE for Christmas Day,
-    // but false for Christmas Eve.
+    // In contrast Christmas Day is a national holiday and so the ByRef bOfficialHoliday will be TRUE for Christmas Day,
+    // but false for Christmas Eve. 
     //
+    // To include your own special days see *** New 2010-03-30 NGS *** below for an example
+    // on how to add e.g. the "International Women's Day" wich falls on the 8th of March
+    // each year. It's really simple to do.
+    //
+    // Note that although all functions below defines two parameters, not all
+    // of those functions use the second parameter.
     Function IsHoliday Date dInDate Boolean ByRef bNationalHoliday Returns String
         Integer iYear
         Date dHolidayDate

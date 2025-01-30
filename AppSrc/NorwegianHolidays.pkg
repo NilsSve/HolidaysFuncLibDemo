@@ -20,7 +20,7 @@
 //
 //
 //****************************************************************************
-Use CalendarHolidays.pkg
+Use cNationalHolidays.pkg
 
 Object oNorwegianHolidays is a cNationalHolidays
     Move Self to ghoNationalHolidayObject
@@ -32,7 +32,7 @@ Object oNorwegianHolidays is a cNationalHolidays
 
     // Function that returns the name of Norwegian 'holidays' from a date variable.
     //
-    // Function takes two parameters;
+    // Function IsHoliday takes two parameters;
     // A 4-year digit date variable and a boolean as a ByRef variable.
     //
     // Returns: A string with the 'holidayname' as text AND it changes the boolean ByRef
@@ -49,7 +49,7 @@ Object oNorwegianHolidays is a cNationalHolidays
     // on how to add e.g. the "International Women's Day" wich falls on the 8th of March
     // each year. It's really simple to do.
     //
-    // Note that although all functions below are called with two parameters, not all
+    // Note that although all functions below defines two parameters, not all
     // of those functions use the second parameter.
     Function IsHoliday Date dInDate Boolean ByRef bOfficialHoliday Returns String
         Integer iYear

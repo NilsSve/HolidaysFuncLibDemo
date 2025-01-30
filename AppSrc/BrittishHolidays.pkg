@@ -31,7 +31,7 @@
 //
 //****************************************************************************
 //
-Use CalendarHolidays.pkg
+Use cNationalHolidays.pkg
 
 Object oBrittishHolidays is a cNationalHolidays
 
@@ -40,17 +40,27 @@ Object oBrittishHolidays is a cNationalHolidays
     Set psOfficial_Short to "GB"
     Set psCountryName to "United Kingdom of Great Britain and Northern Ireland (the)"
 
-    //***************************************************************************
-    // Main function
+    // Function that returns the name of GB 'notable dates' from a date variable.
     //
-    // Returns the name of UK 'notable dates' for a date variable.
+    // Function IsHoliday takes two parameters;
+    // A 4-year digit date variable and a boolean as a ByRef variable.
     //
-    // Function takes two parameters;
-    // A 4-year date variable and an integer as a ByRef variable.
+    // Returns: A string with the 'holidayname' as text AND it changes the boolean ByRef
+    // variable if the returned holiday is considered to be a national holiday - these
+    // national holidays are regulated by law. So if the boolean is false the date
+    // is really not a holiday at all - but rather some sort of 'special' date that one
+    // wants to have included in the functionality.
     //
-    // Returns: A string with the 'holidayname' as text AND it changes the integer ByRef
-    // variable if the returned holiday is a Bank Holiday.
+    // For example; Christmas Eve is a "holiday" but not a national holiday (regulated by law),
+    // In contrast Christmas Day is a national holiday and so the ByRef bOfficialHoliday will be TRUE for Christmas Day,
+    // but false for Christmas Eve. 
     //
+    // To include your own special days see *** New 2010-03-30 NGS *** below for an example
+    // on how to add e.g. the "International Women's Day" wich falls on the 8th of March
+    // each year. It's really simple to do.
+    //
+    // Note that although all functions below defines two parameters, not all
+    // of those functions use the second parameter.
     Function IsHoliday Date dInDate Integer ByRef iBankHoliday Returns String
         Integer iYear
         String sHolidayName sOfficial_Short
