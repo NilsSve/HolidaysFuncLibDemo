@@ -1,16 +1,18 @@
 ﻿Use Windows.pkg
 Use DFClient.pkg
+Use cCJGridColumnRowIndicator.pkg
+Use cCJGridColumn.pkg
 Use cRDCComboForm.pkg
 Use cRDCForm.pkg
 Use cRDCButton.pkg
 Use cRDCCJGridPromptList.pkg
-Use cCJGridColumnRowIndicator.pkg
-Use CalendarHolidays.pkg
+Use cRDCCheckbox.pkg 
+// Object with all cCalendarHolidays.
+Use oCalendarHolidays.pkg
 
 Use cContinenDataDictionary.dd
 Use cNationsDataDictionary.dd
 Use cHolidaysDataDictionary.dd
-Use cCJGridColumn.pkg
 
 Class cDateRDCForm is a cRDCForm
     Procedure Construct_Object
@@ -23,8 +25,8 @@ Class cDateRDCForm is a cRDCForm
     
 End_Class
 
-Activate_View Activate_oDataFunctionsTest for oDataFunctionsTest
-Object oDataFunctionsTest is a dbView
+Activate_View Activate_oDateFunctionsTest for oDateFunctionsTest
+Object oDateFunctionsTest is a dbView
     Set Size to 345 527
     Set Location to 2 1
     Set Label to "Holidays and Other Special Dates Functions Test"
@@ -165,6 +167,8 @@ Object oDataFunctionsTest is a dbView
             Set pbInitialSelectionEnable to True
             Set pbMultiSelectionMode to False
             Set peUpdateMode to umPromptNonInvoking
+            Set pbGrayIfDisable to False
+            Set pbShadeSortColumn to False
             
             Object oCJGridColumnRowIndicator is a cCJGridColumnRowIndicator
             End_Object
@@ -360,7 +364,8 @@ Object oDataFunctionsTest is a dbView
                 Handle ho
                 
                 Move False to bOK
-                Move False to bOfficialHoliday
+                Move False to bOfficialHoliday 
+                Move "" to sHolidayName
                 Get Value of oType1_fm  to sType1
                 Get Value of oValue1_fm to sValue1
                 If (sType1 = "String") Begin
@@ -417,6 +422,8 @@ Object oDataFunctionsTest is a dbView
                     Set Value of oExtra6_fm to sHolidayName
                     Set psToolTip of (Label_Object(oExtra6_fm)) to sHolidayName
                 End
+                Set Visible_State of oExtra6_fm to (sHolidayName <> "")
+                Set Visible_State of oIsHoliday_cg to (sHolidayName <> "")
             End_Procedure 
             
             Function CheckTypeValue String sType String sValue Returns Boolean
@@ -453,7 +460,7 @@ Object oDataFunctionsTest is a dbView
 
         Object oResult_fm is a cDateRDCForm
             Set Location to 24 395
-            Set Size to 13 86
+            Set Size to 13 93
             Set Label to "Result:"
             Set Label_Col_Offset to 0
             Set Label_Justification_Mode to JMode_Top
@@ -490,21 +497,21 @@ Object oDataFunctionsTest is a dbView
 
         Object oExtra1_fm is a cDateRDCForm
             Set Location to 40 395
-            Set Size to 13 86
+            Set Size to 13 93
             Set Label to "Year:"
             Set Enabled_State to False
         End_Object
         
         Object oExtra2_fm is a cDateRDCForm
             Set Location to 56 395
-            Set Size to 13 86
+            Set Size to 13 93
             Set Label to "Month:"
             Set Enabled_State to False
         End_Object
 
         Object oExtra3_fm is a cDateRDCForm
             Set Location to 72 395
-            Set Size to 13 86
+            Set Size to 13 93
             Set Label to "Week Day:"
             Set Enabled_State to False
         End_Object
@@ -524,19 +531,21 @@ Object oDataFunctionsTest is a dbView
         End_Object
         
         Object oExtra6_fm is a cDateRDCForm
-            Set Location to 104 220
-            Set Size to 13 168
-            Set Label to "(CountryPackages.pkg) Holiday Name:"
+            Set Location to 104 279
+            Set Size to 13 209
+            Set Label to "(See Also:'Calendar view' - 'Test Holiday Lookup List')   Holiday Name:"
             Set Enabled_State to False
             Set peAnchors to anNone
+            Set Visible_State to False
         End_Object
 
         Object oIsHoliday_cg is a CheckBox
             Set Size to 13 46
-            Set Location to 104 395
+            Set Location to 92 281
             Set Label to "Is Holiday"  
-            Set Enabled_State to False
             Set Checked_State to False
+            Set Enabled_State to False
+            Set Visible_State to False
         End_Object
 
         Procedure SetParamValues tHolidayFunc HolidayFunc
