@@ -45,71 +45,7 @@
 //   1928 - Egypt 
 //
 Use GlobalDateTimeFunctions.pkg
-
-// * Note: By default the year 1752 (Britain/US) has been selected as the first Gregorian year
-// for the Easter algorithm.
-// If you have the need to calculate Easter dates before the year 1928 (Egypt), you may
-// need to replace the default first Gregorian year - depending on where in the world
-// the calculation should take place - with a year from the list above.
-Define C_FirstGregorianYear for 1752 
-
-Struct tLunar
-    Integer iYear
-    Integer iMonth
-    Integer iDay
-    Boolean bLeap
-End_Struct
-
-Struct tHoliday
-    Date    dDate
-    Boolean bNationalHoliday
-    String  sHolidayName
-End_Struct  
-
-Struct tHolidayFuncVar
-    String sType
-    String sVarName
-End_Struct
-
-Struct tHolidayFunc
-    String sName
-    String sHelp
-    tHolidayFuncVar[] HolidayFuncVarArray
-    String sReturnType
-End_Struct
-
-#IFNDEF ghoNationalHolidayObject
-    Global_Variable Integer ghoNationalHolidayObject
-    Move 0 to ghoNationalHolidayObject
-#ENDIF
-
-// After the class (end of package) an object of the class cDateFunctions sets
-// the ghoDateFunctions to Self.
-#IFNDEF ghoCalendarHolidays
-    Global_Variable Integer ghoCalendarHolidays
-    Move 0 to ghoCalendarHolidays
-#ENDIF
-
-// This is the class to use when creating National Holidays packages,
-// such as BrittishHolidays.pkg, SwedishHolidays.pkg, NorwegianHolidays.pkg etc.
-// Each such country holiday package should then be added to the CountryPackages.pkg.
-// The class registers itself with the ghoCalendarHolidays object.
-Class cNationalHolidays is a cObject
-    Procedure Construct_Object
-        Forward Send Construct_Object
-        Property String psOfficial_Short
-        Property String psCountryName
-        Move Self to ghoNationalHolidayObject
-    End_Procedure
-
-    Procedure End_Construct_Object
-        Forward Send End_Construct_Object
-        If (ghoCalendarHolidays <> 0) Begin
-            Send RegisterNationalHolidays of ghoCalendarHolidays Self
-        End
-    End_Procedure
-
-End_Class
+Use cCalendarHolidays.inc
 
 // Note: All Holiday Date functions of the class is defined in an object that
 //       is placed after the class definition (bottom of this package)
@@ -134,7 +70,7 @@ Class cCalendarHolidays is a cObject
     // Register functions to class pHolidayFunctions struct array property.
     Procedure RegisterInterface Handle hMsg String sMsgName String sParams String sComment
         Handle hNewTest       
-        String sReturnType sCRLF
+        String sReturnType
         tHolidayFunc   HolidayFunction
         tHolidayFunc[] HolidayFuncArray
         tHolidayFuncVar[] HolidayFuncVarArray
@@ -153,8 +89,6 @@ Class cCalendarHolidays is a cObject
         End
         Get pHolidayFunctions to HolidayFuncArray
         Move sMsgName         to HolidayFunction.sName
-        Move (Character(13)+Character(10)) to sCRLF
-        Move (Replaces("\n", sComment, sCRLF)) to sComment
         Move sComment         to HolidayFunction.sHelp
         Move HolidayFunction  to HolidayFuncArray[-1] 
         Move (SortArray(HolidayFuncArray)) to HolidayFuncArray
@@ -1076,7 +1010,8 @@ Object oCalendarHolidays is a cCalendarHolidays
     { Description = """
       All Saints Day is a feast celebrated on November 1 in Western Christianity, and on the first Sunday
       after Pentecost in Eastern Christianity in honour of All the saints, known and unknown.
-      \nIn Sweden it is a moving holiday and is the Saturday that falls Between 31st of October and 6th of November.
+      
+      In Sweden it is a moving holiday and is the Saturday that falls Between 31st of October and 6th of November.
       See also the Halloween Function.
       Returns: The Date of All Saints Day, according to the Gregorian calendar.
       """ }
@@ -1130,10 +1065,12 @@ Object oCalendarHolidays is a cCalendarHolidays
     { Description  = """
       Ascension Day is the Christian celebration of Christ's ascension to heaven.
       It is celebrated 40 days after Easter Sunday on a Thursday.
-      \nIn some countries (e.g. Austria, Belgium, Croatia, Denmark, Finland, France, Germany, Iceland,
+      
+      In some countries (e.g. Austria, Belgium, Croatia, Denmark, Finland, France, Germany, Iceland,
       Indonesia, the Netherlands, Norway, Sweden, Switzerland and Vanuatu) it is a public holiday; Germany
       also holds its Father's Day on the same Date.
-      \nThe Date of Ascension (always a Thursday), according to the Gregorian calendar (for years
+      
+      The Date of Ascension (always a Thursday), according to the Gregorian calendar (for years
       after 1752) or the Julian calendar (for years before 1753) as a Date variable.
       """ }
     Function AscensionDay Integer iYear Returns Date
@@ -1163,16 +1100,20 @@ Object oCalendarHolidays is a cCalendarHolidays
       The EasterDay function calculates the Easter Sunday and is a major Function that forms the basis for
       calculating several other movable holidays; PalmSunday, HolyThursday, HolyFriday, HolySaturday,
       EasterMonday, AscensionThursday and Pentecost.
-      \nThe Date of Easter Day was defined by the Council of Nicaea in AD 325 as the Sunday after the first full moon
+      
+      The Date of Easter Day was defined by the Council of Nicaea in AD 325 as the Sunday after the first full moon
       which falls on or after the Spring Equinox. The Equinox is assumed to always fall on 21st March, so the
       calculation reduces to determining the Date of the full moon and the Date of the following Sunday. The algorithm
       used here was introduced around the year 532 by Dionysius Exiguus.
-      \nUnder the Julian Calendar a simple 19-year cycle is used to track the phases of the Moon. Under the
+      
+      Under the Julian Calendar a simple 19-year cycle is used to track the phases of the Moon. Under the
       Gregorian Calendar (devised by Clavius and Lilius, and introduced by Pope Gregory XIII in October 1582.),
       two correction factors were added to make the cycle more accurate.
-      \nReturns: The Easter Sunday date, according to the Gregorian calendar (for years after C_FirstGregorianYear)
+      
+      Returns: The Easter Sunday date, according to the Gregorian calendar (for years after C_FirstGregorianYear)
       or the Julian calendar (for years before C_FirstGregorianYear) as a Date variable.
-      \nAdopted from a C-algorithm by Simon Kershaw.
+      
+      Adopted from a C-algorithm by Simon Kershaw.
       """ }
     Function EasterDay Integer iYear Returns Date
         Integer iGolden iSolar iLunar iPfm iDom iTmp iEaster
@@ -1253,7 +1194,8 @@ Object oCalendarHolidays is a cCalendarHolidays
       Palm Sunday is a Christian moveable feast which always falls on the Sunday before Easter Sunday (Easter Day).
       Returns: The Palm Sunday, according to the Gregorian calendar (for years after 1752)
       or the Julian calendar (for years before 1753) as a Date variable.
-      \nThis is not a national holiday, but put here for consistency.
+      
+      This is not a national holiday, but put here for consistency.
       """ }
     Function PalmSunday Integer iYear Returns Date
         Date dReturn
@@ -1265,7 +1207,8 @@ Object oCalendarHolidays is a cCalendarHolidays
     { Description  = """
       Maundy Thursday, also known as Holy Thursday, Great and Holy Thursday, and Thursday of Mysteries.
       HoMaundyly Thursday is a holiday in Denmark and Norway.
-      \nReturns: The Maundy Thursday, according to the Gregorian calendar (for years after 1752)
+      
+      Returns: The Maundy Thursday, according to the Gregorian calendar (for years after 1752)
       or the Julian calendar (for years before 1753) as a Date variable.
       """ }
     Function MaundyThursday Integer iYear Returns Date
@@ -1278,8 +1221,10 @@ Object oCalendarHolidays is a cCalendarHolidays
     { Description  = """
       Good Friday, also called Holy Friday, Black Friday, or Great Friday.
       In most Christian countries it's a national holiday.
-      \nIn the US it is not a govermental holiday at federal level; individual states and municipalities may observe the holiday.
-      \nReturns: The Good Friday, according to the Gregorian calendar (for years after 1752)
+      
+      In the US it is not a govermental holiday at federal level; individual states and municipalities may observe the holiday.
+      
+      Returns: The Good Friday, according to the Gregorian calendar (for years after 1752)
       or the Julian calendar (for years before 1753) as a Date variable.
       """ }
     Function GoodFriday Integer iYear Returns Date
@@ -1292,7 +1237,8 @@ Object oCalendarHolidays is a cCalendarHolidays
     { Description  = """
       Holy Saturday, is the day after Good Friday and day before Easter Day.
       This is not a national holiday, but put here for consistency.
-      \nReturns: The Holy Saturday, according to the Gregorian calendar (for years after 1752)
+      
+      Returns: The Holy Saturday, according to the Gregorian calendar (for years after 1752)
       or the Julian calendar (for years before 1753) as a Date variable.
       """ }
     Function HolySaturday Integer iYear Returns Date
@@ -1305,7 +1251,8 @@ Object oCalendarHolidays is a cCalendarHolidays
     { Description  = """
       Easter Monday is the day after Easter Sunday and is celebrated as a holiday in some largely Christian cultures,
       especially Roman Catholic cultures.
-      \nReturns: The Easter Monday, according to the Gregorian calendar (for years after 1752)
+      
+      Returns: The Easter Monday, according to the Gregorian calendar (for years after 1752)
       or the Julian calendar (for years before 1753) as a Date variable.
       """ }
     Function EasterMonday Integer iYear Returns Date
@@ -1318,11 +1265,14 @@ Object oCalendarHolidays is a cCalendarHolidays
     { Description  = """
       Whit Sunday or Pentecost is one of the prominent feasts in the Christian liturgical year.
       It is celebrated 7 weeks (49 days) after Easter Sunday - hence its name.;
-      \nPentecost is a public holiday in many European countries including Austria, Belgium, Cyprus,
+      Pentecost is a public holiday in many European countries including Austria, Belgium, Cyprus,
       Denmark, Estonia, France, Spain, Germany, Hungary, Luxemburg, The Netherlands, Norway, Poland,
-      Romania, and (most parts of) Switzerland. \nIn Sweden it is no longer (as of 2005) a holiday,
+      Romania, and (most parts of) Switzerland.
+      
+      In Sweden it is no longer (as of 2005) a holiday,
       While Italy is discussing whether to re-establish it.
-      \nReturns: The date of Whit Sunday, according to the Gregorian calendar (for years:
+      
+      Returns: The date of Whit Sunday, according to the Gregorian calendar (for years:
       after 1752) or the Julian calendar (for years before 1753) as a Date variable.
       """ }
     Function WhitSunday Integer iYear Returns Date
@@ -1344,7 +1294,8 @@ Object oCalendarHolidays is a cCalendarHolidays
       Whit Monday or Day after Pentecost (Whit Sunday).
       It is a public holiday in many European countries including Austria, Belgium,
       Denmark, France, Germany, Hungary, Luxemburg, The Netherlands, Norway and Switzerland.
-      \nReturns: The Date of Whit Monday, according to the Gregorian calendar (for years
+      
+      Returns: The Date of Whit Monday, according to the Gregorian calendar (for years
       after 1752) or the Julian calendar (for years before 1753) as a Date variable.
       """ }
     Function WhitMonday Integer iYear Returns Date
@@ -1516,7 +1467,8 @@ Object oCalendarHolidays is a cCalendarHolidays
       In Germany it is celebrated on Ascension Day (forty days after Easter)
       In Brazil it falls on the second Sunday of August
       In Argentina,United Kingdom, Netherlands and United States it falls on the third Sunday in June.
-      \nElse: The most common day is the second Sunday of June.
+      
+      Else: The most common day is the second Sunday of June.
       It is however, not a holiday.
       """ }
     Function FathersDay Integer iYear String sOfficial_Short Returns Date
@@ -1619,7 +1571,8 @@ Object oCalendarHolidays is a cCalendarHolidays
     { Description  = """
       Midsummer day in Sweden is the Saturday that falls between 20-26th of June.
       Holiday in Sweden. In Norway, Denmark, Estonia and Lithuania the Midsummer day always falls on the 24th of June.
-      \nIn Norway and Denmark it is called Sankt Hans, and there is also a function doing the same thing, named 'SanktHans'.
+      
+      In Norway and Denmark it is called Sankt Hans, and there is also a function doing the same thing, named 'SanktHans'.
       """ }
     Function MidsummerDay Integer iYear String sOfficial_Short Returns Date
         Date dReturn
@@ -1656,7 +1609,8 @@ Object oCalendarHolidays is a cCalendarHolidays
     { Description  = """
       Same as function: MidsummerDay. In Sweden it is the Saturday that falls between 20-26th of June.
       Holiday in Sweden. In Norway, Denmark, Estonia and Lithuania the Midsummer day always falls on the 24th of June.
-      \nIn Norway and Denmark MidsummerDay is called SanktHans.
+      
+      In Norway and Denmark MidsummerDay is called SanktHans.
       """ }
     Function SanktHans Integer iYear String sOfficial_Short Returns Date
         Date dReturn
