@@ -1,0 +1,24 @@
+﻿// This is the class to use when creating National Holidays packages,
+// such as BrittishHolidays.pkg, SwedishHolidays.pkg, NorwegianHolidays.pkg etc.
+// Note: Each country holiday package based on this class should be added 
+//       to the "CountryPackages.pkg."
+// The class registers itself with the ghoCalendarHolidays object.
+
+Use cCalendarHolidays.pkg
+
+Class cNationalHolidays is a cObject
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Property String psOfficial_Short
+        Property String psCountryName
+        Move Self to ghoNationalHolidayObject
+    End_Procedure
+
+    Procedure End_Construct_Object
+        Forward Send End_Construct_Object
+        If (ghoCalendarHolidays <> 0) Begin
+            Send RegisterNationalHolidays of ghoCalendarHolidays Self
+        End
+    End_Procedure
+
+End_Class
