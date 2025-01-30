@@ -24,8 +24,7 @@ Use cRDCButton.pkg
     Use cImageContainer.pkg
     Use cDbImageContainer.pkg
 #ENDIF    
-Use WindowsMonthAndDayNames.pkg
-Use CalendarHolidays.pkg
+Use oCalendarHolidays.pkg
 Use CountryPackages.pkg
 Use HolidaysLookup.dg
 
