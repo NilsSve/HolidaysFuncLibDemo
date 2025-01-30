@@ -3,10 +3,11 @@ Use cCJStandardCommandBarSystem.pkg
 Use cCJCommandBarSystem.pkg
 Use cDigitalSoftwareCertificate.pkg
 
-// If defined, then the "DataFlex Graphics Library" needs to be used as a library,
-// else the "Flags" object will not be used/visible in the application.
+// If Is$GraphicsLibrary is defined, then the "DataFlex Graphics Library" needs to be used as a library.
+// Else the "Flags" object will not be used/visible in the application.
 // NOTE: The Studio will complain if the library is defined in the .sws file, but
 //       the library is not accessible. Don't think there's a way around that problem.
+//       For that reason the .sws files does have a link to the library.
 //Define Is$GraphicsLibrary
 
 Object oDigitalSoftwareCertificate is a cDigitalSoftwareCertificate
@@ -21,7 +22,6 @@ Object oDigitalSoftwareCertificate is a cDigitalSoftwareCertificate
     // If the program has been tampered with e.g. it has been infected by a virus,
     // the user will get a warning and the program will be aborted.
 //    Send ValidateProgramOnStartup
-
 End_Object
 
 Object oHtmlHelp is a cHtmlHelp
@@ -49,6 +49,14 @@ Object oApplication is a cApplication
         Forward Send DoOpenWorkspace sWorkspace
         Open Nations
         Send CheckCollatingSequence of ghoDatabaseFunctions File_Field Nations.ISO_Code
+
+#IF (!@ > 240)
+        UBigInt ullUnixUTC
+        DateTime dtCompileTime
+        Move COMP$TIMESTAMP to ullUnixUTC 
+        Move 1/1/1970 to dtCompileTime
+        Move (DateAddSecond(dtCompileTime, ullUnixUTC)) to dtCompileTime
+#ENDIF
     End_Procedure
 
 End_Object
@@ -80,8 +88,11 @@ Object oMain is a Panel
         Set pbAutoResizeIcons to True
         Set pbTabbedWorkspaces to True
         Set pbLargeIcons to True
-        Set peVisualTheme to xtpThemeOffice2013Word
-
+#IF (!@ > 240)
+        Set peVisualTheme to xtpThemeNativeWindows11 
+#ELSE
+        Set peVisualTheme to xtpThemeOffice2016Word
+#ENDIF
         Procedure OnCreateCommandBars
             Handle hoOptions
             Get OptionsObject to hoOptions
@@ -212,7 +223,7 @@ Object oMain is a Panel
                 End_Object
 
                 Object oSimpleHolidaysMenuItem is a cCJMenuItem
-                    Set psCaption to "Holidays"
+                    Set psCaption to "Calendar"
                     Set psDescription to "Simple example on usage of the Holiday Function Library"
                     Set peControlStyle to xtpButtonCaptionAndDescription
                     Set psImage to "NationalHolidays.ico"
@@ -221,6 +232,19 @@ Object oMain is a Panel
                         Handle hoClient
                         Get Client_Id to hoClient
                         Send Activate_oHolidays of hoClient
+                    End_Procedure
+                End_Object
+
+                Object oDateFunctionsTestMenuItem is a cCJMenuItem
+                    Set psCaption to "Date Functions"
+                    Set psDescription to "Holidays and Other Special Dates Functions Test"
+                    Set peControlStyle to xtpButtonCaptionAndDescription
+                    Set psImage to "Calendar.ico"
+
+                    Procedure OnExecute Variant vCommandBarControl
+                        Handle hoClient
+                        Get Client_Id to hoClient
+                        Send Activate_oDateFunctionsTest of hoClient
                     End_Procedure
                 End_Object
 
