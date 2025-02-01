@@ -1,7 +1,7 @@
 ﻿// C:\Visual DataFlex Projects 15\National Holidays\AppSrc\Nations.vw
 // Nations View
 //
-Use DFClient.pkg  
+Use cRDCDbView.pkg
 Use cRDCDbCJGrid.pkg
 Use cRDCDbForm.pkg
 Use cRDCDbGroup.pkg
@@ -17,7 +17,7 @@ Use cContinenDataDictionary.dd
 Use Currency.sl
 
 Activate_View Activate_oNations For oNations
-Object oNations is a dbView
+Object oNations is a cRDCDbView
     Set Size to 227 520
     Set Label to "Nations Data"
     Set Border_Style to Border_Thick
@@ -63,28 +63,28 @@ Object oNations is a dbView
             Set psToolTip to "Link to ISO -  International Organization for Standardization - Country Codes and names"
         End_Object
 
-        Object oNations_ISO_Long is a cRDCdbForm
+        Object oNations_ISO_Long is a cRDCDbForm
             Entry_Item Nations.ISO_Long
             Set Location to 28 75
             Set Size to 13 37
             Set Label to "ISO Code Long"
         End_Object
 
-        Object oNations_ISO_Code is a cRDCdbForm
+        Object oNations_ISO_Code is a cRDCDbForm
             Entry_Item Nations.ISO_Code
             Set Location to 43 75
             Set Size to 13 37
             Set Label to "Numeric ISO Code"
         End_Object
 
-        Object oNations_UN_Code is a cRDCdbForm
+        Object oNations_UN_Code is a cRDCDbForm
             Entry_Item Nations.UN_Code
             Set Location to 43 194
             Set Size to 13 25
             Set Label to "UN Code"
         End_Object
 
-        Object oNationsOfficial_Short is a cRDCdbForm
+        Object oNationsOfficial_Short is a cRDCDbForm
             Entry_Item Nations.Official_Short
             Set Size to 13 332
             Set Location to 58 75
@@ -92,7 +92,7 @@ Object oNations is a dbView
             Set peAnchors to anTopLeftRight
         End_Object
 
-        Object oNations_Official_Long is a cRDCdbForm
+        Object oNations_Official_Long is a cRDCDbForm
             Entry_Item Nations.Official_Long
             Set Location to 73 75
             Set Size to 13 332
@@ -100,42 +100,42 @@ Object oNations is a dbView
             Set peAnchors to anTopLeftRight
         End_Object
 
-        Object oNations_Capital_City is a cRDCdbForm
+        Object oNations_Capital_City is a cRDCDbForm
             Entry_Item Nations.Capital_City
             Set Location to 88 75
             Set Size to 13 144
             Set Label to "Capital City"
         End_Object
 
-        Object oNations_IntCallCode is a cRDCdbForm
+        Object oNations_IntCallCode is a cRDCDbForm
             Entry_Item Nations.IntCallCode
             Set Location to 103 75
             Set Size to 13 39
             Set Label to "Int Calling Code"
         End_Object
 
-        Object oNations_Internet_TLD is a cRDCdbForm
+        Object oNations_Internet_TLD is a cRDCDbForm
             Entry_Item Nations.Internet_TLD
             Set Location to 118 75
             Set Size to 13 37
             Set Label to "Internet TLD"
         End_Object
 
-        Object oNations_ISO_Currency is a cRDCdbForm
+        Object oNations_ISO_Currency is a cRDCDbForm
             Entry_Item Nations.ISO_Currency
             Set Location to 133 75
             Set Size to 13 37
             Set Label to "ISO Currency Code"
         End_Object
 
-        Object oNations_CurrNum is a cRDCdbForm
+        Object oNations_CurrNum is a cRDCDbForm
             Entry_Item Nations.ISO_CurrNum
             Set Location to 133 194
             Set Size to 13 25
             Set Label to "ISO Currency Number"
         End_Object
 
-        Object oNations_ISO_CurrTxt is a cRDCdbForm
+        Object oNations_ISO_CurrTxt is a cRDCDbForm
             Entry_Item Nations.ISO_CurrTxt
             Set Location to 148 75
             Set Size to 13 144
@@ -181,21 +181,21 @@ Object oNations is a dbView
             Set pbShowScrollBars to False
         End_Object
 #ENDIF
-        Object oContinen_Name is a cRDCdbForm
+        Object oContinen_Name is a cRDCDbForm
             Entry_Item Continen.Name
             Set Location to 164 75
             Set Size to 13 145
             Set Label to "Continent Name"
         End_Object
 
-        Object oNations_Area is a cRDCdbForm
+        Object oNations_Area is a cRDCDbForm
             Entry_Item Nations.Area
             Set Label to "Area"
             Set Location to 180 75
             Set Size to 13 59
         End_Object
 
-        Object oNations_Population is a cRDCdbForm
+        Object oNations_Population is a cRDCDbForm
             Entry_Item Nations.Population
             Set Label to "Population"
             Set Location to 195 75

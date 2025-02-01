@@ -11,9 +11,8 @@
 //
 //============================================================================
 //
-Use DFClient.pkg
 Use Batchdd.pkg
-
+Use cRDCDbView.pkg
 Use cRDCDbForm.pkg
 Use cRDCDbGroup.pkg
 Use cRDCDbCJGrid.pkg
@@ -33,7 +32,7 @@ Use cHolidaysDataDictionary.dd
 Use cContinenDataDictionary.dd
 
 Activate_View Activate_oHolidays For oHolidays
-Object oHolidays is a dbView
+Object oHolidays is a cRDCDbView
     Set Location to -1 0
     Set Size to 272 522
     Set Label to "Calendar"
@@ -246,28 +245,6 @@ Object oHolidays is a dbView
             Set pbEditOnTyping to False
             Set pbReadOnly to True 
 
-            Procedure InitFromTodaysDate
-                Date dToday
-                String sID
-                Sysdate dToday
-                Get Field_Current_Value of oNations_DD Field Nations.ISO_Short to sID
-                Clear Holidays
-                Move sID to Holidays.ISO_Short
-                Move dToday to Holidays.DateNo
-                Find EQ Holidays.DateNo
-                Send RefreshDataFromExternal 5
-            End_Procedure
-
-            Procedure InitBirthDate Date dBirthDayThisYear
-                String sID
-                Get Field_Current_Value of oNations_DD Field Nations.ISO_Short to sID
-                Clear Holidays
-                Move sID to Holidays.ISO_Short
-                Move dBirthDayThisYear to Holidays.DateNo
-                Find EQ Holidays.DateNo
-                Send RefreshDataFromExternal 5
-            End_Procedure
-
             Object oHolidays_Dateno is a cRDCDbCJGridColumn
                 Entry_Item Holidays.DateNo
                 Set piWidth to 104
@@ -316,6 +293,28 @@ Object oHolidays is a dbView
                 End_Procedure
             End_Object
             
+            Procedure InitFromTodaysDate
+                Date dToday
+                String sID
+                Sysdate dToday
+                Get Field_Current_Value of oNations_DD Field Nations.ISO_Short to sID
+                Clear Holidays
+                Move sID to Holidays.ISO_Short
+                Move dToday to Holidays.DateNo
+                Find EQ Holidays.DateNo
+                Send RefreshDataFromExternal 5
+            End_Procedure
+
+            Procedure InitBirthDate Date dBirthDayThisYear
+                String sID
+                Get Field_Current_Value of oNations_DD Field Nations.ISO_Short to sID
+                Clear Holidays
+                Move sID to Holidays.ISO_Short
+                Move dBirthDayThisYear to Holidays.DateNo
+                Find EQ Holidays.DateNo
+                Send RefreshDataFromExternal 5
+            End_Procedure
+
             Procedure End_Construct_Object
                 Forward Send End_Construct_Object
                 Set phoContextMenu to 0
@@ -630,29 +629,6 @@ Object oHolidays is a dbView
         End_Object
 
     End_Object
-
-    // To enable Ctrl+MouseWheel in the grid to change font size.
-    Procedure OnWmMouseWheel Integer wParam Integer lParam
-       Integer iKeys iClicks iX iY iCONTROL
-       Short iDelta     // Short signed integer
-       Boolean bok 
-       
-       Move 0 to iDelta
-       Move (Low(wParam)) to iKeys           // any keys down when pressed
-       Move (MemCopy(AddressOf(iDelta),AddressOf(wParam)+2,2)) to bok
-       // C_WHEELDATA is 120 as defined by MS as the delta to react to. Once click is usually 120
-       Move (iDelta/C_WHEELDELTA) to iClicks // Number of clicks to react to
-       Move (Low(lParam)) to iX  // cursor position
-       Move (Hi(lParam)) to iY   
-
-       Move (iKeys iand MK_CONTROL ) to iCONTROL  //$008
-       If (iCONTROL) Begin
-            Broadcast Recursive Send ScaleFont iClicks
-       End
-
-       // Tell windows that we've handled the event.    
-       Set Windows_Override_State to True    
-    End_Procedure
 
     // Do not allow to close panel:
     Procedure Request_Cancel
