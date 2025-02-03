@@ -224,6 +224,22 @@ Object oHolidays is a cRDCDbView
 
         End_Object
 
+        Object oHolidays_sl is a cRDCButton
+            Set Size to 14 86
+            Set Location to 13 322
+            Set Label to "Test Holiday Lookup List"
+            Set peAnchors to anTopRight
+        
+            Procedure OnClick
+                String sISO_Short
+                tHoliday[] SelectedHolidays
+                Get Field_Current_Value of oNations_DD Field Nations.ISO_Short to sISO_Short
+                Get PopupHolidayLookup sISO_Short to SelectedHolidays
+                Send Info_Box ("You selected:" * String(SizeOfArray(SelectedHolidays)) * "holidays from the popup.")
+            End_Procedure
+        
+        End_Object
+
         Object oNationsOfficial_Short is a cRDCDbForm
             Entry_Item Nations.Official_Short
             Set Size to 13 244
@@ -231,6 +247,12 @@ Object oHolidays is a cRDCDbView
             Set Label to "Country"
             Set Label_Col_Offset to 2
             Set Label_Justification_Mode to JMode_Right
+        End_Object
+
+        Object oInfo_tb is a TextBox
+            Set Size to 10 48
+            Set Location to 59 19
+            Set Label to "Test Calendar:"
         End_Object
 
         Object oHolidaysDetails_grd is a cRDCDbCJGrid
@@ -368,28 +390,6 @@ Object oHolidays is a cRDCDbView
                 Send Refind_Records to oHolidays_DD
                 Send Find of oHolidays_DD GE (Ordering(oHolidaysDetails_grd(Self)))    // to refresh grid
             End_Procedure
-        End_Object
-
-        Object oHolidays_sl is a cRDCButton
-            Set Size to 14 86
-            Set Location to 13 322
-            Set Label to "Test Holiday Lookup List"
-            Set peAnchors to anTopRight
-        
-            Procedure OnClick
-                String sISO_Short
-                tHoliday[] SelectedHolidays
-                Get Field_Current_Value of oNations_DD Field Nations.ISO_Short to sISO_Short
-                Get PopupHolidayLookup sISO_Short to SelectedHolidays
-                Send Info_Box ("You selected:" * String(SizeOfArray(SelectedHolidays)) * "holidays from the popup.")
-            End_Procedure
-        
-        End_Object
-
-        Object oInfo_tb is a TextBox
-            Set Size to 10 48
-            Set Location to 59 19
-            Set Label to "Test Calendar:"
         End_Object
 
     End_Object

@@ -514,6 +514,7 @@ Object oMain is a Panel
         Use Nations.vw
         Use Holidays.vw
         Use DataFunctionsTest.vw
+        Use MouseWheel.vw
         
         Procedure Activate_About
             Send DoAbout "" "" "" "" "World64x64.bmp" "E-mail: mailto:support@rdctools.com" "This is a FREE program. Please make a contribution if you find it useful. Just click the toolbar button to make a small donation." ("This tool was created with DataFlex" * String(C_DFVersion) * "from Data Access Worldwide. Please visit http://www.dataaccess.com for a free personal copy of DataFlex.")
