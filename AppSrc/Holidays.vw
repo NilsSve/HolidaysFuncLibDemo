@@ -42,7 +42,7 @@ Object oHolidays is a cRDCDbView
     Set pbAutoActivate to True   
     Set Auto_Clear_Deo_State to False
 
-    Property String psCountryCode "US"
+    Property String psCountryCode ""
     Property String[] pasOfficial_Short
     
     // Constraint function for oNations_DD
