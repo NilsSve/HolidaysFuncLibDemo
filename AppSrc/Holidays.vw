@@ -180,7 +180,7 @@ Object oHolidays is a cRDCDbView
     Object oDateMaintenance_grp is a cRDCDbGroup
         Set Size to 208 508
         Set Location to 3 5
-        Set Label to "Calendar Dates Including Holidays and Other Special Dates"
+        Set Label to "Sample - Calendar Dates Including Holidays and Other Special Dates"
         Set peAnchors to anAll
         Set piMinSize to 204 457
         Set Bitmap_Style to Bitmap_Stretch
