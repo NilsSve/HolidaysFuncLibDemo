@@ -51,6 +51,7 @@ Object oHolidaysLookup is a cRDCModalPanel
         Object oWeekday_col is a cCJGridColumn
             Set piWidth to 85
             Set psCaption to CS_WeekDayNameCaption
+            Set psToolTip to "Local computer date settings are used here."
             Set peHeaderAlignment to xtpAlignmentCenter
             Set peTextAlignment to xtpAlignmentCenter
         End_Object

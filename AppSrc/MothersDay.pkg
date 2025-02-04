@@ -828,3 +828,168 @@ Function MothersDay Integer iYear String sOfficial_Short Returns Date
 
     Function_Return dReturn
 End_Function
+
+// Hong Kong, Hungary, Lithuania, Mozambique, Portugal & Spain
+// celebrates Mother's Day on the first Sunday in May.
+Function FirstSundayMay Integer iYear Returns Date
+    Date dReturn
+    Integer iDayNumber
+
+    // Start with the 1st of May.
+    Get DateSetDate iYear 5 1 to dReturn
+    Get DateGetISODayOfWeek dReturn to iDayNumber
+    // If iDayNumber < Sunday, add number of days to first Sunday.
+    If (iDayNumber < 7) Begin
+        Move ((7 - iDayNumber) + dReturn) to dReturn
+    End
+    Function_Return dReturn
+End_Function
+
+// Many countries (to many to mention here) celebrates Mother's Day
+// on the second Sunday in May.
+Function SecondSundayMay Integer iYear Returns Date
+    Date dReturn
+
+    Get FirstSundayMay iYear to dReturn
+    // Add another week.
+    Move (dReturn + 7) to dReturn // Second Sunday.
+    Function_Return dReturn
+End_Function
+    
+// Several countries celebrates Mother's Day on the last Sunday in May.
+Function LastSundayMay Integer iYear Returns Date
+    Date dReturn
+    Integer iDayNumber
+
+    Get DateSetDate iYear 5 31 to dReturn
+    Get DateGetISODayOfWeek dReturn to iDayNumber
+    If (iDayNumber <> 7) Begin
+        Move (dReturn - iDayNumber) to dReturn
+    End
+    Function_Return dReturn
+End_Function
+    
+// Ireland, Nigeria & United Kingdom is the fourth Sunday in Lent.
+// Lent starts at AshWednesday the first day of Lent and occurs forty-six
+// days before Easter
+Function FourthSundayLent Integer iYear Returns Date
+    Date dReturn
+    Integer iDayNumber
+
+    Get AshWednesday iYear to dReturn
+    Get DateGetISODayOfWeek dReturn to iDayNumber
+    // If iDayNumber < Sunday, add number of days to first Sunday.
+    If (iDayNumber < 7) Begin
+        Move ((7 - iDayNumber) + dReturn) to dReturn
+    End
+
+    // Add 3 more week.
+    Move (dReturn + 21) to dReturn // Fourth Sunday.
+    Function_Return dReturn
+End_Function
+    
+// Luxembourg celebrates Mother's Day on the second Sunday in June.
+Function SecondSundayJune Integer iYear Returns Date
+    Date dReturn
+    Integer iDayNumber
+
+    // Start with the 1st of June.
+    Get DateSetDate iYear 6 1 to dReturn
+    Get DateGetISODayOfWeek dReturn to iDayNumber
+    // If iDayNumber < Sunday, add number of days to first Sunday.
+    If (iDayNumber < 7) Begin
+        Move ((7 - iDayNumber) + dReturn) to dReturn
+    End
+
+    // Add another week.
+    Move (dReturn + 7) to dReturn // Second Sunday.
+    Function_Return dReturn
+End_Function
+    
+// Kenya celebrates Mother's Day on the last Sunday in June.
+Function LastSundayJune Integer iYear Returns Date
+    Date dReturn
+    Integer iDayNumber
+
+    Get DateSetDate iYear 6 31 to dReturn
+    Get DateGetISODayOfWeek dReturn to iDayNumber
+    Move (dReturn - iDayNumber) to dReturn
+
+    Function_Return dReturn
+End_Function
+    
+// Malawi celebrates Mother's Day on the second Monday of October.
+Function SecondMondayOctober Integer iYear Returns Date
+    Date dReturn
+    Integer iDayNumber
+
+    Get DateSetDate iYear 10 1 to dReturn
+    Get DateGetISODayOfWeek dReturn to iDayNumber
+    // If iDayNumber < Monday, add number of days to first Monday.
+    If (iDayNumber < 6) Begin
+        Move ((7 - iDayNumber) + dReturn) to dReturn
+    End
+
+    // Add another week.
+    Move (dReturn + 7) to dReturn // Second Sunday.
+    Function_Return dReturn
+End_Function
+    
+// Argentina celebrates Mother's Day on the third Sunday of October.
+Function ThirdSundayOctober Integer iYear Returns Date
+    Date dReturn
+    Integer iDayNumber
+
+    // Start with the 1st of June.
+    Get DateSetDate iYear 6 1 to dReturn
+    Get DateGetISODayOfWeek dReturn to iDayNumber
+    // If iDayNumber < Sunday, add number of days to first Sunday.
+    If (iDayNumber < 7) Begin
+        Move ((7 - iDayNumber) + dReturn) to dReturn
+    End
+
+    // Add two week.
+    Move (dReturn + 14) to dReturn
+    Function_Return dReturn
+End_Function
+    
+// Russia celebrates Mother's Day on the last Sunday of November.
+Function LastSundayNovember Integer iYear Returns Date
+    Date dReturn
+    Integer iDayNumber
+
+    Get DateSetDate iYear 11 31 to dReturn
+    Get DateGetISODayOfWeek dReturn to iDayNumber
+    Move (dReturn - iDayNumber) to dReturn
+    Function_Return dReturn
+End_Function
+
+// Helper function for the MothersDay function (internal - no error handling)
+// In Norway falls on the second Sunday in February.
+// Function NorwayMothersDay
+//   Params:  4-digit integer Year
+//   Returns: 4-character string in the format: MMDD
+Function NorwayMothersDay Integer iYear Returns Date
+    Integer iDayNumber
+    Date    dReturn
+
+    // Start with 1st of February:
+    // *** PDC ***
+    //    Get HolidayDateCompose (String(iYear)) (String(02)) (String(01)) to dReturn // Function of CalcHolidays.pkg
+    Get DateSetDate iYear 2 1 to dReturn
+    // ***
+    Get DateGetISODayOfWeek dReturn to iDayNumber
+
+    // If iDayNumber = Sunday, do nothing.
+    If (iDayNumber = 7) Begin
+        Move (0 + dReturn) to dReturn
+    End
+    // Else if iDayNumber is less then Sunday, add number of days to next Sunday.
+    Else If (iDayNumber < 5) Begin
+        Move ((6 - iDayNumber) + dReturn) to dReturn
+    End
+    // Add the second week.
+    Move (dReturn + 7) to dReturn
+
+    Function_Return dReturn
+End_Function

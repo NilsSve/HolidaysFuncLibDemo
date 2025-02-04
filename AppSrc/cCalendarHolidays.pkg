@@ -1,62 +1,111 @@
-﻿//****************************************************************************
-// $Module type: Class Package
-// $Module name: CalendarHolidays.pkg
-// $Author     : Nils Svedmyr, RDC Tools International. nils.svedmyr@rdctools.com
-// Created     : 2009-07-27 @ 12:53
-//
-// Description : To calculate dates for holidays *and* other special days for a given year.
-//
-// List of holiday Functions: See DateFunctionsTest.vw when NationalHolidays program is run.
-////
-// $Rev History:
-//    2009-07-27  Module header created
-//    2010-12-14  Mother's Day for all countries in separate package. (MothersDay.pkg)
-//    2010-12-27  Made functions into a class
-//    2011-02-22  Added class cNationalHolidays (Ola Eldoy)
-//    2025-01-22  Merged much of the holiday logic that was split over several 
-//                packages into one place: cCalendarHolidays and ocClalendarHoliday object
-//                By: Nils Svedmyr
-//****************************************************************************
+﻿/*/****************************************************************************
+   $Module type: Class Package
+   $Module name: CalendarHolidays.pkg
+   $Author     : Nils Svedmyr, RDC Tools International. nils.svedmyr@rdctools.com
+   Created     : 2009-07-27 @ 12:53
+  
+   Description : To calculate dates for holidays *and* other special days for a given year.
+  
+   List of holiday Functions: See DateFunctionsTest.vw when NationalHolidays program is run.
+  
+   $Rev History:
+      2009-07-27  Module header created
+      2010-12-14  Mother's Day for all countries in separate package. (MothersDay.pkg)
+      2010-12-27  Made functions into a class
+      2011-02-22  Added class cNationalHolidays (Ola Eldoy)
+      2025-01-22  Merged much of the holiday logic that was split over several 
+                  packages into one place: cCalendarHolidays and ocClalendarHoliday 
+                  object. (Nils Svedmyr)
 
-// * Years when the Gregorian calendar was introduced:
-//   1582 - Spain, Italy, Polen, Portugal, France, Luxembourg
-//          and the katholic parts of the Netherlands
-//   1583 - Bayern och Tyrol
-//   1583-1585 - The katholic parts of Germany and Schweiz
-//   1584 - Austria och the Czeck Republic
-//   1587 - Hungary
-//   1590 - Transsylvania
-//   1610 - Preussen
-//   1700 - Denmark (inclusive Norway, Faroe Islands and Iceland)
-//          and the protestantic parts of Germany, Netherlands and Schweiz
-//          (except the Sankt Gallen canton)
-//   1724 - The Swiss canton Sankt Gallen
-//   1752 - Britain and colonies (inclusive those that would later constitute the USA)
-//   1753 - Sweden (inclusive Finland)
-//   1873 - Japan
-//   1911 - China
-//   1912 - Albania
-//   1915 - Lithuania
-//   1916 - Bulgaria
-//   1918 - Ryssia och Estonia
-//   1919 - Rumania och Serbia
-//   1924 - Grece
-//   1926 - Turkey
-//   1928 - Egypt 
-//
+****************************************************************************
+  
+   * Years when the Gregorian calendar was introduced:
+     1582 - Spain, Italy, Polen, Portugal, France, Luxembourg
+            and the katholic parts of the Netherlands
+     1583 - Bayern och Tyrol
+     1583-1585 - The katholic parts of Germany and Schweiz
+     1584 - Austria och the Czeck Republic
+     1587 - Hungary
+     1590 - Transsylvania
+     1610 - Preussen
+     1700 - Denmark (inclusive Norway, Faroe Islands and Iceland)
+            and the protestantic parts of Germany, Netherlands and Schweiz
+            (except the Sankt Gallen canton)
+     1724 - The Swiss canton Sankt Gallen
+     1752 - Britain and colonies (inclusive those that would later constitute the USA)
+     1753 - Sweden (inclusive Finland)
+     1873 - Japan
+     1911 - China
+     1912 - Albania
+     1915 - Lithuania
+     1916 - Bulgaria
+     1918 - Ryssia och Estonia
+     1919 - Rumania och Serbia
+     1924 - Grece
+     1926 - Turkey
+     1928 - Egypt 
+*/
+Use Windows.pkg
+Use Dll.pkg
+Use Dferror.pkg
 Use GlobalDateTimeFunctions.pkg
 Use cCalendarHolidays.inc
-Use WindowsMonthAndDayNames.pkg
-//Use cNationalHolidays.pkg
 
 Register_Function psOfficial_Short Returns String
 
-// Note: All Holiday Date functions of the class is defined in an object that
-//       is placed after the class definition (bottom of this package)
-//       The reason is the usage of the "Procedure RegisterInterface"
-//       message. It is used for capturing the function name, parameters and help text (comment).
-//       And it is *only* allowed to use meta tags { Published } and { Description }, in
-//       an object (not class).
+/* Note: All Holiday Date functions of the class is defined in an object that
+         is placed after the class definition (bottom of this package)
+         The reason is the usage of the "Procedure RegisterInterface"
+         message. It is used for capturing the function name, parameters and help text (comment).
+         And it is *only* allowed to use meta tags { Published } and { Description }, in
+         an Object (not Class).
+*/
+
+//Use An_Dates.pkg
+// *** These are best used as global functions: ***
+    // First out are functions that used to be defined in the An_dates.pkg, but was moved
+    // here for convenience.
+    // *** Start An_Dates.pkg functions ***
+    Function LeftFill2 Global String sString Integer iWidth String sFillChar Returns String
+        Function_Return (Insert(Repeat(sFillChar,0 max (iWidth-Length(Trim(sString)))),Trim(sString),0))
+    End_Function
+    
+    Function Ordinal Global Integer iNum Returns String
+        String sNum
+        Move iNum to sNum
+        If (Mid(sNum,1,Length(sNum)-1) = 1) Begin
+            Function_Return (sNum-"th")
+        End
+        // 11th, 113th, 2,312th etc
+        Else If (Right(sNum,1) = 1) Begin
+            Function_Return (sNum-"st")
+        End
+        Else If (Right(sNum,1) = 2) Begin
+            Function_Return (sNum-"nd")
+        End
+        Else If (Right(sNum,1) = 3) Begin
+            Function_Return (sNum-"rd")
+        End
+        Else Begin
+            Function_Return (sNum-"th")
+        End
+    End_Function
+
+//    Function DateGetDayName2 Global DateTime dtDate Returns String
+//        Integer iWeekday 
+//        String sDay
+//        Move (DateGetDayofWeek(dtDate)) to iWeekday
+//        Get GetDayName iWeekday to sDay
+//        Function_Return sDay
+//    End_Function
+//    
+//    Function DateGetMonthName2 Global Date dtDate Returns String 
+//        String sMonth
+//        Get GetMonthName (DateGetMonth(dtDate)) to sMonth
+//        Function_Return sMonth
+//    End_Function    
+//
+
 Class cCalendarHolidays is a cObject
 
     Procedure Construct_Object
@@ -144,55 +193,227 @@ Class cCalendarHolidays is a cObject
         Function_Return 0
     End_Function
 
-    // *** Common Interface Holiday Date Functions ***
-    //
-    //  Params:  A 4-digit year as an integer variable
-    //           A 2-character string ISO Official_Short ISO_Short, accorging to the list:
-    //           https://www.iso.org/obp/ui/#search/code/
-    //           Note: sOfficial_Short is not always used.
-    //  Returns: A date.
-
-    // *** Helper Functions ***
-    //
     Procedure HELPER_FUNCTIONS // For the Studio Code Explorer
     End_Procedure
 
-    // First out are functions that used to be defined in the An_dates.pkg, but was moved
-    // here for convenience.
-    // *** Start An_Dates.pkg functions ***
-    Function LeftFill String sString Integer iWidth String sFillChar Returns String
-        Function_Return (Insert(Repeat(sFillChar,0 max (iWidth-Length(Trim(sString)))),Trim(sString),0))
-    End_Function
+    Function WindowsLocaleValue Integer iLocaleId Returns String
+        WString sValue wsResult
+        Pointer lpValue
+        Integer iRetval
     
-    Function Ordinal Integer iNum Returns String
-        String sNum
-        Move iNum to sNum
-        If (Mid(sNum,1,Length(sNum)-1) = 1) Begin
-            Function_Return (sNum-"th")
+        Move (AddressOf(sValue)) to lpValue
+        Move (WinAPI_GetLocaleInfoEx(AddressOf(sValue), iLocaleId, 0, 0)) to iRetval
+        Move (ZeroString (iRetval)) to wsResult
+        Move (WinAPI_GetLocaleInfoEx(AddressOf(sValue), iLocaleId, AddressOf(wsResult), iRetval)) to iRetval
+    
+        Function_Return (Cstring(wsResult))
+    End_Function
+
+    Function MonthNameFromInteger Integer iMthNo Boolean bLongName Boolean bCapsFirstLetter Returns String
+        String sMonthName
+        Pointer lpsMonthName
+        Integer iVoid iMonth
+        
+        Case Begin
+            Case (iMthNo = 1)                                 
+                If (bLongName = True) Begin
+                    Move LOCALE_SMONTHNAME1         to iMonth
+                End 
+                Else Begin
+                    Move LOCALE_SABBREVMONTHNAME1   to iMonth
+                End
+                Case Break
+            Case (iMthNo = 2) 
+                If (bLongName = True) Begin
+                    Move LOCALE_SMONTHNAME2         to iMonth
+                End 
+                Else Begin
+                    Move LOCALE_SABBREVMONTHNAME2   to iMonth
+                End
+                Case Break
+            Case (iMthNo = 3) 
+                If (bLongName = True) Begin
+                    Move LOCALE_SMONTHNAME3         to iMonth
+                End 
+                Else Begin
+                    Move LOCALE_SABBREVMONTHNAME3   to iMonth
+                End
+                Case Break
+            Case (iMthNo = 4) 
+                If (bLongName = True) Begin
+                    Move LOCALE_SMONTHNAME4         to iMonth
+                End 
+                Else Begin
+                    Move LOCALE_SABBREVMONTHNAME4   to iMonth
+                End
+                Case Break
+            Case (iMthNo = 5) 
+                If (bLongName = True) Begin
+                    Move LOCALE_SMONTHNAME5         to iMonth
+                End 
+                Else Begin
+                    Move LOCALE_SABBREVMONTHNAME5   to iMonth
+                End
+                Case Break
+            Case (iMthNo = 6) 
+                If (bLongName = True) Begin
+                    Move LOCALE_SMONTHNAME6         to iMonth
+                End 
+                Else Begin
+                    Move LOCALE_SABBREVMONTHNAME6   to iMonth
+                End
+                Case Break
+            Case (iMthNo = 7) 
+                If (bLongName = True) Begin
+                    Move LOCALE_SMONTHNAME7         to iMonth
+                End 
+                Else Begin
+                    Move LOCALE_SABBREVMONTHNAME7   to iMonth
+                End
+                Case Break
+            Case (iMthNo = 8) 
+                If (bLongName = True) Begin
+                    Move LOCALE_SMONTHNAME8         to iMonth
+                End 
+                Else Begin
+                    Move LOCALE_SABBREVMONTHNAME8   to iMonth
+                End
+                Case Break
+            Case (iMthNo = 9) 
+                If (bLongName = True) Begin
+                    Move LOCALE_SMONTHNAME9         to iMonth
+                End 
+                Else Begin
+                    Move LOCALE_SABBREVMONTHNAME9   to iMonth
+                End
+                Case Break
+            Case (iMthNo = 10) 
+                If (bLongName = True) Begin
+                    Move LOCALE_SMONTHNAME10        to iMonth
+                End 
+                Else Begin
+                    Move LOCALE_SABBREVMONTHNAME10  to iMonth
+                End
+                Case Break
+            Case (iMthNo = 11)
+                If (bLongName = True) Begin
+                    Move LOCALE_SMONTHNAME11        to iMonth
+                End 
+                Else Begin
+                    Move LOCALE_SABBREVMONTHNAME11  to iMonth
+                End
+                Case Break
+            Case (iMthNo = 12)
+                If (bLongName = True) Begin
+                    Move LOCALE_SMONTHNAME12        to iMonth
+                End 
+                Else Begin
+                    Move LOCALE_SABBREVMONTHNAME12  to iMonth
+                End
+                Case Break
+            Case (iMthNo = 13) 
+                If (bLongName = True) Begin
+                    Move LOCALE_SMONTHNAME13        to iMonth
+                End 
+                Else Begin
+                    Move LOCALE_SABBREVMONTHNAME13  to iMonth
+                End
+                Case Break
+        Case End
+    
+        Move (ZeroString(20)) to sMonthName
+        Move (AddressOf(sMonthName)) to lpsMonthName
+        Move (GetLocaleInfo(LOCALE_USER_DEFAULT, iMonth, lpsMonthName, 20)) to iVoid
+       
+    //    Move (ToOEM(CString(sMonthName))) to sMonthName
+        If (bCapsFirstLetter = True) Begin
+            Move (Uppercase(Left(sMonthName, 1)) + Mid(sMonthName, Length(sMonthName), 2)) to sMonthName
         End
-        // 11th, 113th, 2,312th etc
-        Else If (Right(sNum,1) = 1) Begin
-            Function_Return (sNum-"st")
+       
+        Function_Return sMonthName
+    End_Function
+
+    // Note: It is assumed here that Monday is the first day of the week.
+    Function DayNameFromInteger Integer iDayNo Boolean bLongName Boolean bCapsFirstLetter Returns String
+       String sDayName
+       Pointer lpsDayName
+       Integer iVoid iDay
+    
+        Case Begin
+            Case (iDayNo = 1) 
+                If (bLongName = True) Begin
+                    Move LOCALE_SDAYNAME1           to iDay
+                End 
+                Else Begin
+                    Move LOCALE_SABBREVDAYNAME1     to iDay
+                End
+                Case Break
+            Case (iDayNo = 2) 
+                If (bLongName = True) Begin
+                    Move LOCALE_SDAYNAME2           to iDay
+                End 
+                Else Begin
+                    Move LOCALE_SABBREVDAYNAME2     to iDay
+                End
+                Case Break
+            Case (iDayNo = 3)
+                If (bLongName = True) Begin
+                    Move LOCALE_SDAYNAME3           to iDay
+                End 
+                Else Begin
+                    Move LOCALE_SABBREVDAYNAME3     to iDay
+                End
+                Case Break
+            Case (iDayNo = 4)
+                If (bLongName = True) Begin
+                    Move LOCALE_SDAYNAME4           to iDay
+                End 
+                Else Begin
+                    Move LOCALE_SABBREVDAYNAME4     to iDay
+                End
+                Case Break
+            Case (iDayNo = 5) 
+                If (bLongName = True) Begin
+                    Move LOCALE_SDAYNAME5           to iDay
+                End 
+                Else Begin
+                    Move LOCALE_SABBREVDAYNAME5     to iDay
+                End
+                Case Break
+            Case (iDayNo = 6) 
+                If (bLongName = True) Begin
+                    Move LOCALE_SDAYNAME6           to iDay
+                End 
+                Else Begin
+                    Move LOCALE_SABBREVDAYNAME6     to iDay
+                End
+                Case Break
+            Case (iDayNo = 7) 
+                If (bLongName = True) Begin
+                    Move LOCALE_SDAYNAME7           to iDay
+                End 
+                Else Begin
+                    Move LOCALE_SABBREVDAYNAME7     to iDay
+                End
+                Case Break
+        Case End
+    
+       Move (ZeroString(20)) to sDayName
+       Move (AddressOf(sDayName)) to lpsDayName
+       Move (GetLocaleInfo(LOCALE_USER_DEFAULT, iDay, lpsDayName, 20)) to iVoid
+    
+    //    Move (ToAnsi(CString(sDayName))) to sDayName
+        If (bCapsFirstLetter = True) Begin
+            Move (Uppercase(Left(sDayName, 1)) + Mid(sDayName, Length(sDayName), 2)) to sDayName
         End
-        Else If (Right(sNum,1) = 2) Begin
-            Function_Return (sNum-"nd")
-        End
-        Else If (Right(sNum,1) = 3) Begin
-            Function_Return (sNum-"rd")
-        End
-        Else Begin
-            Function_Return (sNum-"th")
-        End
+    
+       Function_Return sDayName
     End_Function
 
     // Note: 2025-01-22 NS. Changed to use DAW's DateSet global function.
     // Construct a date from integers iYear iMonth and iDay
     Function DateSetDate Integer iYear Integer iMonth Integer iDay Returns Date
         Date dDate
-//        Move "1/1/1" to dDate
-//        Move (DateSetYear(dDate,iYear))   to dDate
-//        Move (DateSetMonth(dDate,iMonth)) to dDate
-//        Move (DateSetDay(dDate,iDay))     to dDate 
         Move (DateSet(iYear, iMonth, iDay)) to dDate
         Function_Return dDate
     End_Function
@@ -205,8 +426,8 @@ Class cCalendarHolidays is a cObject
     // Returns true if date is valid; false otherwise.
     // Note: It preserves the state of the Err and LastErr global variables.
     //       For some odd reason this gives a false positive;
-    //         Move (IsDateValid(sValue)) to bOK
-    //       even if the sValue = "" or sValue = "xfsdf"(!)
+    //         'Move (IsDateValid(sValue)) to bOK'
+    //       even if the sValue = "" or sValue = "xfsdf" (!)
     Function IsValidDateString String sDate Returns Boolean
         Date dDate
         DateTime dtDate
@@ -293,8 +514,7 @@ Class cCalendarHolidays is a cObject
     Function DateGetDayName DateTime dtDate Returns String
         Integer iWeekday 
         String sDay
-        Get DateGetDayofWeek_WDS dtDate 2 to iWeekday
-        //    Move (DateGetDayofWeek(dtDate)) to iWeekday
+        Move (DateGetDayofWeek(dtDate)) to iWeekday
         Get GetDayName iWeekday to sDay
         Function_Return sDay
     End_Function
@@ -387,15 +607,15 @@ Class cCalendarHolidays is a cObject
         Function_Return (DateGetYear(dNearestThu))
     End_Function
     
-    // Return a date in the format Year-Week-Day (e.g. "2009-W53-7")
+    // Return a date in the ISO format Year-Week-Day (e.g. "2009-W53-7")
     //
     Function DateGetISOWeekDate DateTime dtDate Returns String
-        Integer  iWeek
-        String   sYear sDays
+        Integer iWeek
+        String sYear sDays
         Get DateGetISOYear dtDate to sYear
         Get DateGetISOWeek dtDate to iWeek
         Get DateGetISODayOfWeek dtDate to sDays
-        Function_Return (sYear - "-W" - LeftFill(iWeek,2,0) - "-" - sDays)
+        Function_Return (sYear - "-W" - LeftFill2(iWeek,2,0) - "-" - sDays)
     End_Function
     
     // Given a date (or DateTime) return the date (DateTime) of the last day in the month.
@@ -488,219 +708,127 @@ Class cCalendarHolidays is a cObject
         Function_Return (DateSetDay(dtDate,iDay))
     End_Function
     
-    // Format a date according to the mask passed as second parameter:
-    // (DateFormat(2/6/2009,"dd/mm/yyyy"))          => 02/06/2009 (or 06/02/2009 if DF_DATE_FORMAT is DF_DATE_USA)
-    // (DateFormat(2/6/2009,"d/m/yy"))              => 2/6/09
-    // (DateFormat(2/6/2009,"dd-mmm-yyyy"))         => 02-Jun-2009 (or 02-Feb-2009 if DF_DATE_FORMAT is DF_DATE_USA)
-    // (DateFormat(2/6/2009,"d mmmm yyyy"))         => 2 June 2009
-    // (DateFormat(2/6/2009,"ddd, dd mmm yyyy"))    => Tues 02 Jun 2009
-    // (DateFormat(2/6/2009,"dddd, dth mmmm yyyy")) => Tuesday, 2nd June 2009
+    // Function DateFormat. Written by Samuel Pizarro
     //
-    Function DateFormat Date dDate String sFormat Returns String
-        Integer iDateSep
-        String  sDateSep
-    
-        If (dDate = 0) Begin
-            Move "" to sFormat
+    // dDate        - A date variable
+    // sFormatToken - Formatation tokens:
+    //                d     - Day of month as digits with no leading zero for single-digit days. 
+    //                dd    - Day of month as digits with leading zero for single-digit days. 
+    //                ddd   - Day of week as a three-letter abbreviation. The Function uses the LOCALE_SABBREVDAYNAME value associated with the specified locale. 
+    //                dddd  - Day of week as its full name. The Function uses the LOCALE_SDAYNAME value associated with the specified locale. 
+    //                M     - (Note the capsed 'M'.) Month as digits with no leading zero for single-digit months. 
+    //                MM    - Month as digits with leading zero for single-digit months. 
+    //                MMM   - Month as a three-letter abbreviation. The Function uses the LOCALE_SABBREVMONTHNAME value associated with the specified locale. 
+    //                MMMM  - Month as its full name. The Function uses the LOCALE_SMONTHNAME value associated with the specified locale. 
+    //                y     - Year as last two digits, but with no leading zero for years less than 10. 
+    //                yy    - Year as last two digits, but with leading zero for years less than 10. 
+    //                yyyy  - Year represented by full four or five digits, depending on the calendar used. Thai Buddhist and Korean calendars both have five digit years. The "yyyy" pattern will Show five digits for these two calendars, and four digits for all other supported calendars.  
+    //                yyyyy - Identical to "yyyy".  
+    //                gg    - Period/era String. The Function uses the CAL_SERASTRING value associated with the specified locale. This element is ignored If the Date to be formatted does not have an associated era or period String. 
+    // Exemples:
+    //     Move (sDateFormat(4/3/2002,"dddd ,d 'de' MMMM 'de' yyyy")) to sRet
+    //       sRet = "Quarta-Feira, 3 de abril de 2002"
+    //     Move (sDateFormat(30/09/2006,"dd/MM/yy")) to sRet
+    //       sRet = "30/09/06" 
+    Function DateFormat Date dDate String sFormatToken Returns String
+        String sDateRet 
+        WString wsFormat wsFormattedDate 
+        tSystemTimeType tSt
+        Pointer pDate psRet
+        Integer iRet iDataLength
+        
+        If (Num_Arguments = 2) Begin
+            Move sFormatToken to wsFormat
+        End
+        
+        If (dDate > 0) Begin
+            Move (DateGetYear(dDate))  to tSt.wYear
+            Move (DateGetMonth(dDate)) to tSt.wMonth
+            Move (DateGetDay(dDate))   to tSt.wDay
+            Move (AddressOf(tSt)) to pDate
         End
         Else Begin
-            Get_Attribute DF_DATE_SEPARATOR to iDateSep
-            Move (Character(iDateSep)) to sDateSep
-            Move (Replaces("/",sFormat,sDateSep)) to sFormat
-            
-            // ToDo: How should these be refactored from global functions?
-            Move (Replaces("d",sFormat,"\d")) to sFormat  // because if the day name is Wednesday the "d"s will be replaced with the day.
-            Move (Replaces("m",sFormat,"\m")) to sFormat  // because if the month name is September the "m" will be replaced with the month.
-            Move (Replace("\d\dth",sFormat,LeftFill(Ordinal(DateGetDay(dDate)),2,"0"))) to sFormat
-            Move (Replace("\dth",sFormat,Ordinal(DateGetDay(dDate))))                   to sFormat
-            Move (Replace("\d\d\d\d",sFormat,DateGetDayName(dDate)))                    to sFormat
-            Move (Replace("\d\d\d",sFormat,Left(DateGetDayName(dDate),3)))              to sFormat
-            Move (Replace("\d\d",sFormat,LeftFill(DateGetDay(dDate),2,"0")))            to sFormat
-            Move (Replace("\d",sFormat,DateGetDay(dDate)))                              to sFormat
-    
-            Move (Replace("\m\m\m\m",sFormat,DateGetMonthName(dDate)))                  to sFormat
-            Move (Replace("\m\m\m",sFormat,Left(DateGetMonthName(dDate),3)))            to sFormat
-            Move (Replace("\m\m",sFormat,LeftFill(DateGetMonth(dDate),2,"0")))          to sFormat
-            Move (Replace("\m",sFormat,DateGetMonth(dDate)))                            to sFormat
-    
-            Move (Replace("yyyy",sFormat,DateGetYear(dDate)))                           to sFormat
-            Move (Replace("yy",sFormat,Right(DateGetYear(dDate),2)))                    to sFormat
+            Move 0 to pDate
         End
-        Function_Return sFormat
-    
+            
+        // Determine the length
+        Move (WindowsAPI_GetDateFormatW( LOCALE_USER_DEFAULT , 0 , pDate , AddressOf(wsFormat) , 0 , 0 )) to iDataLength
+        Move (ZeroString(iDataLength)) to wsFormattedDate
+        Move (AddressOf(wsFormattedDate)) to psRet
+        // format it
+        Move (WindowsAPI_GetDateFormatW( LOCALE_USER_DEFAULT , 0 , pDate , AddressOf(wsFormat) , psRet , iDataLength )) to iRet
+        Move (cString(wsFormattedDate)) to sDateRet // convert back to df-string (utf-8)
+            
+        // Uppercase first day name character:
+        Move (Uppercase(Left(sDateRet,1)) + Mid(sDateRet, Length(sDateRet), 2)) to sDateRet
+        Function_Return sDateRet
     End_Function
-    // *** End An_Dates.pkg functions ***
+
+    // Function TimeFormat
+    //
+    // Parameters: 
+    //   sFormatToken - Use these tokens:
+    //   h  - Hours with no leading zero for single-digit hours; 12-hour clock. 
+    //   hh - Hours with leading zero for single-digit hours; 12-hour clock. 
+    //   H  - Hours with no leading zero for single-digit hours; 24-hour clock. 
+    //   HH - Hours with leading zero for single-digit hours; 24-hour clock. 
+    //   m  - Minutes with no leading zero for single-digit minutes. 
+    //   mm - Minutes with leading zero for single-digit minutes. 
+    //   s  - Seconds with no leading zero for single-digit seconds. 
+    //   ss - Seconds with leading zero for single-digit seconds. 
+    //   t  - One character Time marker String, such as A or P. 
+    //   tt - Multicharacter Time marker String, such as AM or PM. 
+    Function TimeFormat Time tTime String sFormatToken Returns String
+        String sTimeRet sTmFormat
+        tSystemTimeType tSt
+        Time tNullTime
+        Pointer pTime psRet
+        Integer iRet
+        
+        If (Num_Arguments = 2) Begin
+            Move sFormatToken to sTmFormat
+        End
+        
+        If (tTime <> tNullTime) Begin
+            Move (DateGetHour(tTime))   to tSt.wHour 
+            Move (DateGetMinute(tTime)) to tSt.wMinute 
+            Move (DateGetSecond(tTime)) to tSt.wSecond 
+            Move (AddressOf(tSt)) to pTime
+        End
+        Else Move 0 to pTime
+            
+        Move (ZeroString(30)) to sTimeRet
+        Move (AddressOf(sTimeRet)) to psRet
+        If (Trim(sTmFormat) <> "") Begin
+            Move (sTmFormat + Character(0)) to sTmFormat
+        End
+            
+        Move (WindowsAPI_GetTimeFormat( LOCALE_SYSTEM_DEFAULT , 0 , pTime , sTmFormat , psRet , (Length(sTimeRet)) )) to iRet
+        Move (Replaces(Character(0), sTimeRet, "")) to sTimeRet
+        
+        Function_Return sTimeRet
+    End_Function
+
+    //  Returns the current time formatted according to the sFormatToken
+    Function CurrentTimeFormat String sFormatToken Returns String
+        Time tVar
+        String sTmFormat sRet
+        
+        If (Num_Arguments = 1) Begin
+            Move sFormatToken to sTmFormat
+        End
+        Get TimeFormat tVar sTmFormat to sRet
+       
+        Function_Return sRet
+    End_Function
+
 
     // Amended to use built-in date functions
     Function YearFromDate Date dDate Returns Integer
         Function_Return (DateGetYear(dDate))
     End_Function
-
-    // Helper function for the MothersDay function (internal - no error handling)
-    // In Norway falls on the second Sunday in February.
-    // Function NorwayMothersDay
-    //   Params:  4-digit integer Year
-    //   Returns: 4-character string in the format: MMDD
-    Function NorwayMothersDay Integer iYear Returns Date
-        Integer iDayNumber
-        Date    dReturn
     
-        // Start with 1st of February:
-        // *** PDC ***
-        //    Get HolidayDateCompose (String(iYear)) (String(02)) (String(01)) to dReturn // Function of CalcHolidays.pkg
-        Get DateSetDate iYear 2 1 to dReturn
-        // ***
-        Get DateGetISODayOfWeek dReturn to iDayNumber
-    
-        // If iDayNumber = Sunday, do nothing.
-        If (iDayNumber = 7) Begin
-            Move (0 + dReturn) to dReturn
-        End
-        // Else if iDayNumber is less then Sunday, add number of days to next Sunday.
-        Else If (iDayNumber < 5) Begin
-            Move ((6 - iDayNumber) + dReturn) to dReturn
-        End
-        // Add the second week.
-        Move (dReturn + 7) to dReturn
-    
-        Function_Return dReturn
-    End_Function
-    
-    // Ireland, Nigeria & United Kingdom is the fourth Sunday in Lent.
-    // Lent starts at AshWednesday the first day of Lent and occurs forty-six
-    // days before Easter
-    Function FourthSundayLent Integer iYear Returns Date
-        Date dReturn
-        Integer iDayNumber
-    
-        Get AshWednesday iYear to dReturn
-        Get DateGetISODayOfWeek dReturn to iDayNumber
-        // If iDayNumber < Sunday, add number of days to first Sunday.
-        If (iDayNumber < 7) Begin
-            Move ((7 - iDayNumber) + dReturn) to dReturn
-        End
-    
-        // Add 3 more week.
-        Move (dReturn + 21) to dReturn // Fourth Sunday.
-        Function_Return dReturn
-    End_Function
-    
-    // Hong Kong, Hungary, Lithuania, Mozambique, Portugal & Spain
-    // celebrates Mother's Day on the first Sunday in May.
-    Function FirstSundayMay Integer iYear Returns Date
-        Date dReturn
-        Integer iDayNumber
-    
-        // Start with the 1st of May.
-        Get DateSetDate iYear 5 1 to dReturn
-        Get DateGetISODayOfWeek dReturn to iDayNumber
-        // If iDayNumber < Sunday, add number of days to first Sunday.
-        If (iDayNumber < 7) Begin
-            Move ((7 - iDayNumber) + dReturn) to dReturn
-        End
-        Function_Return dReturn
-    End_Function
-    
-    // Many countries (to many to mention here) celebrates Mother's Day
-    // on the second Sunday in May.
-    Function SecondSundayMay Integer iYear Returns Date
-        Date dReturn
-    
-        Get FirstSundayMay iYear to dReturn
-        // Add another week.
-        Move (dReturn + 7) to dReturn // Second Sunday.
-        Function_Return dReturn
-    End_Function
-    
-    // Several countries celebrates Mother's Day on the last Sunday in May.
-    Function LastSundayMay Integer iYear Returns Date
-        Date dReturn
-        Integer iDayNumber
-    
-        Get DateSetDate iYear 5 31 to dReturn
-        Get DateGetISODayOfWeek dReturn to iDayNumber
-        If (iDayNumber <> 7) Begin
-            Move (dReturn - iDayNumber) to dReturn
-        End
-        Function_Return dReturn
-    End_Function
-    
-    // Luxembourg celebrates Mother's Day on the second Sunday in June.
-    Function SecondSundayJune Integer iYear Returns Date
-        Date dReturn
-        Integer iDayNumber
-    
-        // Start with the 1st of June.
-        Get DateSetDate iYear 6 1 to dReturn
-        Get DateGetISODayOfWeek dReturn to iDayNumber
-        // If iDayNumber < Sunday, add number of days to first Sunday.
-        If (iDayNumber < 7) Begin
-            Move ((7 - iDayNumber) + dReturn) to dReturn
-        End
-    
-        // Add another week.
-        Move (dReturn + 7) to dReturn // Second Sunday.
-        Function_Return dReturn
-    End_Function
-    
-    // Kenya celebrates Mother's Day on the last Sunday in June.
-    Function LastSundayJune Integer iYear Returns Date
-        Date dReturn
-        Integer iDayNumber
-    
-        get DateSetDate iYear 6 31 to dReturn
-        Get DateGetISODayOfWeek dReturn to iDayNumber
-        Move (dReturn - iDayNumber) to dReturn
-    
-        Function_Return dReturn
-    End_Function
-    
-    // Malawi celebrates Mother's Day on the second Monday of October.
-    Function SecondMondayOctober Integer iYear Returns Date
-        Date dReturn
-        Integer iDayNumber
-    
-        Get DateSetDate iYear 10 1 to dReturn
-        Get DateGetISODayOfWeek dReturn to iDayNumber
-        // If iDayNumber < Monday, add number of days to first Monday.
-        If (iDayNumber < 6) Begin
-            Move ((7 - iDayNumber) + dReturn) to dReturn
-        End
-    
-        // Add another week.
-        Move (dReturn + 7) to dReturn // Second Sunday.
-        Function_Return dReturn
-    End_Function
-    
-    // Argentina celebrates Mother's Day on the third Sunday of October.
-    Function ThirdSundayOctober Integer iYear Returns Date
-        Date dReturn
-        Integer iDayNumber
-    
-        // Start with the 1st of June.
-        get DateSetDate iYear 6 1 to dReturn
-        Get DateGetISODayOfWeek dReturn to iDayNumber
-        // If iDayNumber < Sunday, add number of days to first Sunday.
-        If (iDayNumber < 7) Begin
-            Move ((7 - iDayNumber) + dReturn) to dReturn
-        End
-    
-        // Add two week.
-        Move (dReturn + 14) to dReturn
-        Function_Return dReturn
-    End_Function
-    
-    // Russia celebrates Mother's Day on the last Sunday of November.
-    Function LastSundayNovember Integer iYear Returns Date
-        Date dReturn
-        Integer iDayNumber
-    
-        Get DateSetDate iYear 11 31 to dReturn
-        Get DateGetISODayOfWeek dReturn to iDayNumber
-        Move (dReturn - iDayNumber) to dReturn
-        Function_Return dReturn
-    End_Function
-
+    // Function is being used both by the MothersDay.pkg and NationalDays.pkg.
     // Helper function for the NationalDay function (internal - no error handling)
     // Great Britain (U.K.) has a moving National Day - and falls on the second Saturday in June.
     // Function UKNationalDay

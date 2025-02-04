@@ -9,14 +9,21 @@
 //       https://www.iso.org/obp/ui/#search/code/
 //       and are used by of these functions.
 //
+// *** Common Interface For Holiday Date Functions ***
+//
+//  Params:  - A 4-digit year as an integer variable
+//           - A 2-character string ISO Official_Short
+//             Note: sOfficial_Short is not always passed as a param.
+//  Returns: A date.
+
 Use cCalendarHolidays.pkg
 
 Object oCalendarHolidays is a cCalendarHolidays
     Move Self to ghoCalendarHolidays
 
-    // *** Include of other function packages ***
-    #Include NationalDays.pkg // Function "NationalDay" that returns the National Day for the passed year and an ISO 2-character country code.
-    #Include MothersDay.pkg   // Function "MothersDay" that returns the Mother's Day for the passed year and an ISO 2-character country code.
+    // *** Here we include special function packages ***
+    #Include MothersDay.pkg   // Function "MothersDay"  returns the Mother's Day for the passed year and an ISO 2-character country code.
+    #Include NationalDays.pkg // Function "NationalDay" returns the National Day for the passed year and an ISO 2-character country code.
 
     { Published = True } 
     { Description = """

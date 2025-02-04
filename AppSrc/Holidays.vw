@@ -295,7 +295,8 @@ Object oHolidays is a cRDCDbView
 
             Object oDbCJGridColumnDayOfWeek is a cRDCDbCJGridColumn
                 Set piWidth to 109
-                Set psCaption to "Day of Week"
+                Set psCaption to "Day of Week (Local)"
+                Set psToolTip to "Local computer date settings are used here."
                 Set peHeaderAlignment to xtpAlignmentCenter
                 Set peTextAlignment to xtpAlignmentCenter
                 Procedure OnSetCalculatedValue String ByRef sValue
@@ -466,7 +467,7 @@ Object oHolidays is a cRDCDbView
                 String sISO_Long sISO_Short sOfficial_Short
 
                 Move Nations.Recnum to iRecnum
-                Get WindowsLocaleValue LOCALE_SABBREVCTRYNAME 3 to sISO_Long
+                Get WindowsLocaleValue of ghoCalendarHolidays LOCALE_SABBREVCTRYNAME 3 to sISO_Long
                 // Change global record buffer to auto-find todays date record (if any)
                 Clear Nations
                 Move sISO_Long to Nations.ISO_Long

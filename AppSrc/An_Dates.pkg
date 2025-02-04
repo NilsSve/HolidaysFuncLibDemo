@@ -18,16 +18,16 @@
 //
 Use WindowsMonthAndDayNames.pkg
 
-//Define MonthNames For "January  February March    April    May      June     July     August   SeptemberOctober  November December "
-//Define DayNames   For "Sunday   Monday   Tuesday  WednesdayThursday Friday   Saturday "
+Define MonthNames for "January  February March    April    May      June     July     August   SeptemberOctober  November December "
+Define DayNames   for "Sunday   Monday   Tuesday  WednesdayThursday Friday   Saturday "
 
 // Function also defined in An_Functions.pkg
 #IFNDEF Get_Leftfill
-Function LeftFill Global String sString Integer iWidth String sFillChar Returns String
+Function LeftFill2 Global String sString Integer iWidth String sFillChar Returns String
     Function_Return (insert(Repeat(sFillChar,0 max (iWidth-Length(Trim(sString)))),Trim(sString),0))
 End_Function
 
-Function Ordinal Global Integer iNum Returns String
+Function Ordinal2 Global Integer iNum Returns String
     String sNum
     Move iNum to sNum
     If (Mid(sNum,1,Length(sNum)-1) = 1) Begin
@@ -49,7 +49,7 @@ Function Ordinal Global Integer iNum Returns String
 End_Function
 #ENDIF
 
-Function IsLeapYear Integer iYear Returns Boolean
+Function IsLeapYear2 Integer iYear Returns Boolean
     Function_Return ((not(Mod(iYear, 4))) and (Mod(iYear, 100)) and (Mod(iYear, 400)))
 End_Function
 
@@ -59,7 +59,7 @@ End_Function
 //       For some odd reason this gives a false positive;
 //         Move (IsDateValid(sValue)) to bOK
 //       even if the sValue = "" or sValue = "xfsdf"(!)
-Function IsValidDateString Global String sDate Returns Boolean
+Function IsValidDateString2 Global String sDate Returns Boolean
     Date dDate
     DateTime dtDate
     Boolean bWasTrappd bErr bOK bIsLeapYear
@@ -81,7 +81,7 @@ Function IsValidDateString Global String sDate Returns Boolean
         Move (DateGetDay(dtDate))   to iDay
         Move (not(iYear > 1753 and iMonth > 0 and iMonth <= 12 and iDay > 0 and iDay <= 31)) to Err
         If (not(Err) and iMonth = 2) Begin 
-            Get IsLeapYear iYear to bIsLeapYear 
+            Get IsLeapYear2 iYear to bIsLeapYear 
             Move (If(bIsLeapYear, 29, 28)) to iMonthDays
             Move (iDay > iMonthDays) to Err
         End
@@ -95,7 +95,7 @@ End_Function
 
 // Construct a date from integers iYear iMonth and iDay
 //
-Function DateSetDate Global Integer iYear Integer iMonth Integer iDay Returns Date
+Function DateSetDate2 Global Integer iYear Integer iMonth Integer iDay Returns Date
     Date dDate
     Move "1/1/1" to dDate
     Move (DateSetYear(dDate,iYear))   to dDate
@@ -107,7 +107,7 @@ End_Function
 // Given the number of a day in the week, return its name.
 // Day 1 is Sunday.
 //
-Function GetDayName Global Integer iWeekDay Returns String
+Function GetDayName2 Global Integer iWeekDay Returns String
     String sDayName
     Get DayNameFromInteger iWeekDay False True to sDayName
     Function_Return sDayName
@@ -115,16 +115,16 @@ End_Function
 
 // Given a data (or DateTime) return the name of the day of the week.
 //
-Function DateGetDayName Global DateTime dtDate Returns String
+Function DateGetDayName2 Global DateTime dtDate Returns String
     Integer iWeekday
     Get DateGetDayofWeek_WDS dtDate 2 to iWeekday
     //    Move (DateGetDayofWeek(dtDate)) to iWeekday
-    Function_Return (GetDayName(iWeekday))
+    Function_Return (GetDayName2(iWeekday))
 End_Function
 
 // Given the number of a month, return its name.
 //
-Function GetMonthName Global Integer iMthNo Returns String
+Function GetMonthName2 Global Integer iMthNo Returns String
     String sMonthName
 
     Get MonthNameFromInteger iMthNo False True to sMonthName
@@ -133,11 +133,11 @@ End_Function
 
 // Given a date (or DateTime) return the name of the month.
 //
-Function DateGetMonthName Global Date dtDate Returns String
-    Function_Return (GetMonthName(DateGetMonth(dtDate)))
+Function DateGetMonthName2 Global Date dtDate Returns String
+    Function_Return (GetMonthName2(DateGetMonth(dtDate)))
 End_Function
 
-Function GetMonthNameLong Global Integer iMthNo Returns String
+Function GetMonthNameLong2 Global Integer iMthNo Returns String
     String sMonthName
 
     Get MonthNameFromInteger iMthNo True True to sMonthName
@@ -146,13 +146,13 @@ End_Function
 
 // Given a date (or DateTime) return the name of the month.
 //
-Function DateGetMonthNameLong Global Date dtDate Returns String
-    Function_Return (GetMonthNameLong(DateGetMonth(dtDate)))
+Function DateGetMonthNameLong2 Global Date dtDate Returns String
+    Function_Return (GetMonthNameLong2(DateGetMonth(dtDate)))
 End_Function
 
 // Given a  date (or DateTime) return the number of days in the month.
 //
-Function DateGetDaysInMonth Global DateTime dtDate Returns Integer
+Function DateGetDaysInMonth2 Global DateTime dtDate Returns Integer
     Integer iMth iYr iDays
     Move (DateGetMonth(dtDate)) to iMth
     If ("4,6,9" contains iMth or iMth = 11) Begin
@@ -174,7 +174,7 @@ End_Function
 // "The great advantage of having International Standards is that they make
 // it easy for the American people to differ from everybody else."
 //
-Function DateGetISODayOfWeek Global DateTime dtDate Returns Integer
+Function DateGetISODayOfWeek2 Global DateTime dtDate Returns Integer
     Integer iDayNo
     Move (DateGetDayOfWeek(dtDate)) to iDayNo
     Function_Return (If(iDayNo = 1,7,iDayNo - 1))
@@ -183,7 +183,7 @@ End_Function
 // Return the week number (ISO 8601 definition - weeks start on a Monday
 // and week 1 of any year is that with the year's first Thursday in it).
 //
-Function DateGetISOWeek Global DateTime dtDate Returns Integer
+Function DateGetISOWeek2 Global DateTime dtDate Returns Integer
     Integer  iDayNo iYear
     Date     dDate dNearestThu dJan1
 
@@ -195,7 +195,7 @@ Function DateGetISOWeek Global DateTime dtDate Returns Integer
     // Get the Ordinal Date of that Thursday, DDD (no. of days since 1st Jan)
     // Then Week No is 1 + (DDD-1) div 7
     Move dtDate to dDate
-    Move (DateGetISODayOfWeek(dDate)) to iDayNo
+    Move (DateGetISODayOfWeek2(dDate)) to iDayNo
     Move (dDate - iDayNo + 4) to dNearestThu  // go to previous Thursday
     Move (DateGetYear(dNearestThu)) to iYear
     Move "1/1/1" to dJan1
@@ -208,7 +208,7 @@ End_Function
 // and week 1 of any year is that with the year's first Thursday in it) containing
 // the date passed.
 //
-Function DateGetISOYear Global DateTime dtDate Returns Integer
+Function DateGetISOYear2 Global DateTime dtDate Returns Integer
     Integer  iDayNo
     Date     dDate dNearestThu
 
@@ -217,7 +217,7 @@ Function DateGetISOYear Global DateTime dtDate Returns Integer
     // Use that to move to the nearest Thursday (-3..+3 days)
     // The result the year of that Date, Y
     Move dtDate to dDate
-    Move (DateGetISODayOfWeek(dDate)) to iDayNo
+    Move (DateGetISODayOfWeek2(dDate)) to iDayNo
     Move (dDate - iDayNo + 4) to dNearestThu  // go to previous Thursday
     Function_Return (DateGetYear(dNearestThu))
 
@@ -225,24 +225,24 @@ End_Function
 
 // Return a date in the format Year-Week-Day (e.g. "2009-W53-7")
 //
-Function DateGetISOWeekDate Global DateTime dtDate Returns String
+Function DateGetISOWeekDate2 Global DateTime dtDate Returns String
     Integer  iWeek
     String   sYear sDays
-    Move (DateGetISOYear(dtDate))               to sYear
-    Move (DateGetISOWeek(dtDate))      to iWeek
-    Move (DateGetISODayOfWeek(dtDate))          to sDays
-    Function_Return (sYear - "-W" - LeftFill(iWeek,2,0) - "-" - sDays)
+    Move (DateGetISOYear2(dtDate))               to sYear
+    Move (DateGetISOWeek2(dtDate))      to iWeek
+    Move (DateGetISODayOfWeek2(dtDate))          to sDays
+    Function_Return (sYear - "-W" - LeftFill2(iWeek,2,0) - "-" - sDays)
 End_Function
 
 // Given a date (or DateTime) return the date (DateTime) of the last day in the month.
 //
-Function DateGetLastDayOfMonth Global DateTime dtDate Returns DateTime
-    Function_Return (DateSetDay(dtDate,DateGetDaysInMonth(dtDate)))
+Function DateGetLastDayOfMonth2 Global DateTime dtDate Returns DateTime
+    Function_Return (DateSetDay(dtDate,DateGetDaysInMonth2(dtDate)))
 End_Function
 
 // Given a date (or DateTime) return the date (DateTime) of the first day of the year
 //
-Function DateGetFirstDayOfYear Global DateTime dtDate Returns DateTime
+Function DateGetFirstDayOfYear2 Global DateTime dtDate Returns DateTime
     Move (DateSetDay(dtDate,1))   to dtDate
     Move (DateSetMonth(dtDate,1)) to dtDate
     Function_Return dtDate
@@ -250,7 +250,7 @@ End_Function
 
 // Given a date (or DateTime) return the date (DateTime) of the Last day of the year
 //
-Function DateGetLastDayOfYear Global DateTime dtDate Returns DateTime
+Function DateGetLastDayOfYear2 Global DateTime dtDate Returns DateTime
     Move (DateSetMonth(dtDate,12)) to dtDate
     Move (DateSetDay(dtDate,31))   to dtDate
     Function_Return dtDate
@@ -263,7 +263,7 @@ End_Function
 // or 30th April to become 31st May) pass the optional boolean parameter as a true
 // value (the 31st May will always become 30th June etc.).
 //
-Function DateChangeMonth Global DateTime dtDate Integer iMths Boolean bLastDay Returns DateTime
+Function DateChangeMonth2 Global DateTime dtDate Integer iMths Boolean bLastDay Returns DateTime
     // If bLastDay is present and True the last day of the new month will be returned.
     // Use this if you want the 28th February to become eg 31st March or 30th April to become 31st May.
     Integer iDay iMth iYr iYrs iLastDay
@@ -271,7 +271,7 @@ Function DateChangeMonth Global DateTime dtDate Integer iMths Boolean bLastDay R
     Move (DateGetDay(dtDate))   to iDay
     Move (DateGetMonth(dtDate)) to iMth
     Move (DateGetYear(dtDate))  to iYr
-    If (num_arguments > 2 and bLastDay and iDay = DateGetDaysInMonth(dtDate)) Begin
+    If (num_arguments > 2 and bLastDay and iDay = DateGetDaysInMonth2(dtDate)) Begin
         Move True to bIsLast
     End
     Move (iMth + iMths) to iMth
@@ -288,7 +288,7 @@ Function DateChangeMonth Global DateTime dtDate Integer iMths Boolean bLastDay R
         Move (DateSetMonth(dtDate,iMth)) to dtDate
     End
     Move (DateSetYear(dtDate,0 max (iYr + iYrs) min 2500))         to dtDate
-    Move (DateGetDaysInMonth(dtDate)) to iLastDay
+    Move (DateGetDaysInMonth2(dtDate)) to iLastDay
     If (bIsLast) Begin
         Move iLastDay            to iDay
     End
@@ -301,7 +301,7 @@ End_Function
 // Given a date (or DateTime) advance or retard it by a given number of years.
 // The last day of the month is treated as for DateChangeMonth.
 //
-Function DateChangeYear Global DateTime dtDate Integer iYrs Boolean bLastDay Returns DateTime
+Function DateChangeYear2 Global DateTime dtDate Integer iYrs Boolean bLastDay Returns DateTime
     // If bLastDay is present and True the last day of the new month will be returned.
     // Use this if you want the 28th February 2007 to become eg 29th Feburary 2008.
     Integer iDay iYr iLastDay
@@ -309,7 +309,7 @@ Function DateChangeYear Global DateTime dtDate Integer iYrs Boolean bLastDay Ret
     Move (DateGetYear(dtDate)) to iYr
     Move (DateSetDay(dtDate,1))           to dtDate
     Move (DateSetYear(dtDate,0 max (iYr + iYrs) min 2500)) to dtDate
-    Move (DateGetDaysInMonth(dtDate)) to iLastDay
+    Move (DateGetDaysInMonth2(dtDate)) to iLastDay
     If (num_arguments > 2 and bLastDay) Begin
         Move iLastDay            to iDay
     End
@@ -327,7 +327,7 @@ End_Function
 // (DateFormat(2/6/2009,"ddd, dd mmm yyyy"))    => Tues 02 Jun 2009
 // (DateFormat(2/6/2009,"dddd, dth mmmm yyyy")) => Tuesday, 2nd June 2009
 //
-Function DateFormat Global Date dDate String sFormat Returns String
+Function DateFormat2 Global Date dDate String sFormat Returns String
     Integer iDateSep
     String  sDateSep
 
@@ -342,16 +342,16 @@ Function DateFormat Global Date dDate String sFormat Returns String
 
         Move (Replaces("d",sFormat,"\d")) to sFormat  // because if the day name is Wednesday the "d"s will be replaced with the day.
         Move (Replaces("m",sFormat,"\m")) to sFormat  // because if the month name is September the "m" will be replaced with the month.
-        Move (Replace("\d\dth",sFormat,LeftFill(Ordinal(DateGetDay(dDate)),2,"0"))) to sFormat
-        Move (Replace("\dth",sFormat,Ordinal(DateGetDay(dDate))))                   to sFormat
-        Move (Replace("\d\d\d\d",sFormat,DateGetDayName(dDate)))                    to sFormat
-        Move (Replace("\d\d\d",sFormat,Left(DateGetDayName(dDate),3)))              to sFormat
-        Move (Replace("\d\d",sFormat,LeftFill(DateGetDay(dDate),2,"0")))            to sFormat
+        Move (Replace("\d\dth",sFormat,LeftFill2(Ordinal2(DateGetDay(dDate)),2,"0"))) to sFormat
+        Move (Replace("\dth",sFormat,Ordinal2(DateGetDay(dDate))))                   to sFormat
+        Move (Replace("\d\d\d\d",sFormat,DateGetDayName2(dDate)))                    to sFormat
+        Move (Replace("\d\d\d",sFormat,Left(DateGetDayName2(dDate),3)))              to sFormat
+        Move (Replace("\d\d",sFormat,LeftFill2(DateGetDay(dDate),2,"0")))            to sFormat
         Move (Replace("\d",sFormat,DateGetDay(dDate)))                              to sFormat
 
-        Move (Replace("\m\m\m\m",sFormat,DateGetMonthName(dDate)))                  to sFormat
-        Move (Replace("\m\m\m",sFormat,Left(DateGetMonthName(dDate),3)))            to sFormat
-        Move (Replace("\m\m",sFormat,LeftFill(DateGetMonth(dDate),2,"0")))          to sFormat
+        Move (Replace("\m\m\m\m",sFormat,DateGetMonthName2(dDate)))                  to sFormat
+        Move (Replace("\m\m\m",sFormat,Left(DateGetMonthName2(dDate),3)))            to sFormat
+        Move (Replace("\m\m",sFormat,LeftFill2(DateGetMonth(dDate),2,"0")))          to sFormat
         Move (Replace("\m",sFormat,DateGetMonth(dDate)))                            to sFormat
 
         Move (Replace("yyyy",sFormat,DateGetYear(dDate)))                           to sFormat

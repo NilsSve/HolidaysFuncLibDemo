@@ -27,7 +27,7 @@ End_Class
 
 Activate_View Activate_oDateFunctionsTest for oDateFunctionsTest
 Object oDateFunctionsTest is a cRDCDbView
-    Set Size to 345 527
+    Set Size to 375 527
     Set Location to 2 1
     Set Label to "Dates Functions Test"
     Set Border_Style to Border_Thick
@@ -251,7 +251,7 @@ Object oDateFunctionsTest is a cRDCDbView
 
     Object oParam_grp is a Group
         Set Location to 215 9
-        Set Size to 125 511
+        Set Size to 155 511
         Set Label to "Enter Function Parameters and Call Function:"
         Set peAnchors to anBottomLeftRight
 
@@ -316,6 +316,14 @@ Object oDateFunctionsTest is a cRDCDbView
             Set Size to 13 53
             Set Label to "Enter Value 1:"
             Procedure ClearData
+            End_Procedure
+            Procedure End_Construct_Object
+                Date dDate
+                Integer iYear
+                Forward Send End_Construct_Object
+                Sysdate dDate
+                Get DateGetISOYear of ghoCalendarHolidays dDate to iYear
+                Set Value to iYear 
             End_Procedure
         End_Object
 
@@ -461,13 +469,13 @@ Object oDateFunctionsTest is a cRDCDbView
         Object oResult_fm is a cDateRDCForm
             Set Location to 24 395
             Set Size to 13 93
-            Set Label to "Result:"
+            Set Label to "Result: (Local Date settings used below)"
             Set Label_Col_Offset to 0
             Set Label_Justification_Mode to JMode_Top
             Set Label_Row_Offset to 1
             
             Procedure OnChange
-                String sValue sYear sMonth sDay sLastDayOfMonth
+                String sValue sYear sMonth sDay sLastDayOfMonth sTextDate sISO_Long sFormat
                 Integer iMonthDays iWeekNo 
                 Boolean bOK
                 
@@ -485,12 +493,20 @@ Object oDateFunctionsTest is a cRDCDbView
                 Get DateGetDayNameLong   of ghoCalendarHolidays sValue to sDay 
                 Get DateGetDaysInMonth   of ghoCalendarHolidays sValue to iMonthDays
                 Get DateGetISOWeek       of ghoCalendarHolidays sValue to iWeekNo
-                
+                Get WindowsLocaleValue of ghoCalendarHolidays LOCALE_SABBREVCTRYNAME 3 to sISO_Long
+                If (sISO_Long = "SWE") Begin
+                    Move "dddd d MMMM yyyy" to sFormat
+                End
+                Else Begin
+                    Move "dddd, dth MMMM yyyy" to sFormat
+                End
+                Get DateFormat          of ghoCalendarHolidays sValue sFormat to sTextDate
                 Set Value of oExtra1_fm to sYear
                 Set Value of oExtra2_fm to sMonth
                 Set Value of oExtra3_fm to sDay
                 Set Value of oExtra4_fm to iMonthDays
                 Set Value of oExtra5_fm to iWeekNo
+                Set Value of oExtra7_fm to sTextDate
             End_Procedure
             
         End_Object
@@ -531,17 +547,25 @@ Object oDateFunctionsTest is a cRDCDbView
         End_Object
         
         Object oExtra6_fm is a cDateRDCForm
-            Set Location to 104 279
-            Set Size to 13 209
-            Set Label to "(See Also:'Calendar view' - 'Test Holiday Lookup List')   Holiday Name:"
+            Set Location to 136 395
+            Set Size to 13 93
+            Set Label to "(See Also:'Calendar view' - 'Test Holiday Lookup List')   Day Name:"
             Set Enabled_State to False
             Set peAnchors to anNone
             Set Visible_State to False
         End_Object
 
+        Object oExtra7_fm is a cDateRDCForm
+            Set Location to 105 395
+            Set Size to 13 93
+            Set Label to "Formated Date 'dddd, dth MMMM yyyy':"
+            Set Enabled_State to False
+            Set peAnchors to anBottomLeftRight
+        End_Object
+
         Object oIsHoliday_cg is a CheckBox
             Set Size to 13 46
-            Set Location to 92 281
+            Set Location to 124 395
             Set Label to "Is Holiday"  
             Set Checked_State to False
             Set Enabled_State to False

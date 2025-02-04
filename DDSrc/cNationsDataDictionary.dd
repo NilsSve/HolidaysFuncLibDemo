@@ -1,5 +1,5 @@
 ﻿Use DataDict.pkg
-Use WindowsMonthAndDayNames.pkg
+Use oCalendarHolidays.pkg
 
 Open Nations
 Open Holidays
@@ -79,7 +79,7 @@ Class cNationsDataDictionary is a DataDictionary
 
         Get Field_Changed_State iField to iChanged
         If (iChanged = 0 and sISO_Long = "") Begin
-            Get WindowsLocaleValue LOCALE_SABBREVCTRYNAME 3 to sISO_Long
+            Get WindowsLocaleValue of ghoCalendarHolidays LOCALE_SABBREVCTRYNAME 3 to sISO_Long
             Move sISO_Long to Nations.ISO_Long
             Find EQ Nations.ISO_Long
             // If not found, clear and display official short as the default value.
