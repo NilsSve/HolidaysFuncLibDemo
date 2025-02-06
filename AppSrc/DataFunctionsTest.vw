@@ -54,7 +54,6 @@ Object oDateFunctionsTest is a cRDCDbView
     Object oNations_DD is a cNationsDataDictionary
         Set DDO_Server to oContinen_DD
 
-
         Procedure OnConstrain
             If (pbUseRegisteredCountriesOnly(Self) = True) Begin
                 Constrain Nations as (IsCountry(Self, Nations.ISO_Short))
@@ -256,63 +255,63 @@ Object oDateFunctionsTest is a cRDCDbView
         Set peAnchors to anBottomLeftRight
 
         Object oType1_fm is a cDateRDCForm
-            Set Location to 24 27
+            Set Location to 24 37
             Set Size to 13 43
             Set Label to "Type 1:"
             Set Enabled_State to False
         End_Object
 
         Object oType2_fm is a cDateRDCForm
-            Set Location to 40 27
+            Set Location to 40 37
             Set Size to 13 43
             Set Label to "Type 2:"
             Set Enabled_State to False
         End_Object
 
         Object oType3_fm is a cDateRDCForm
-            Set Location to 56 27
+            Set Location to 56 37
             Set Size to 13 43
             Set Label to "Type 3:"
             Set Enabled_State to False
         End_Object
 
         Object oType4_fm is a cDateRDCForm
-            Set Location to 72 27
+            Set Location to 72 37
             Set Size to 13 43
             Set Label to "Type 4:"
             Set Enabled_State to False
         End_Object
 
         Object oVarName1_fm is a cDateRDCForm
-            Set Location to 24 118
+            Set Location to 24 128
             Set Size to 13 53
             Set Label to "Name 1:"
             Set Enabled_State to False
         End_Object
 
         Object oVarName2_fm is a cDateRDCForm
-            Set Location to 40 118
+            Set Location to 40 128
             Set Size to 13 53
             Set Label to "Name 2:"
             Set Enabled_State to False
         End_Object
 
         Object oVarName3_fm is a cDateRDCForm
-            Set Location to 56 118
+            Set Location to 56 128
             Set Size to 13 53
             Set Label to "Name 3:"
             Set Enabled_State to False
         End_Object
 
         Object oVarName4_fm is a cDateRDCForm
-            Set Location to 72 118
+            Set Location to 72 128
             Set Size to 13 53
             Set Label to "Name 4:"
             Set Enabled_State to False
         End_Object
 
         Object oValue1_fm is a cDateRDCForm
-            Set Location to 24 220
+            Set Location to 24 230
             Set Size to 13 53
             Set Label to "Enter Value 1:"
             Procedure ClearData
@@ -328,7 +327,7 @@ Object oDateFunctionsTest is a cRDCDbView
         End_Object
 
         Object oValue2_fm is a cDateRDCForm
-            Set Location to 40 220
+            Set Location to 40 230
             Set Size to 13 53
             Set Label to "Enter Value 2:"
             Set Prompt_Button_Mode to PB_PromptOn
@@ -347,13 +346,13 @@ Object oDateFunctionsTest is a cRDCDbView
         End_Object
 
         Object oValue3_fm is a cDateRDCForm
-            Set Location to 56 220
+            Set Location to 56 230
             Set Size to 13 53
             Set Label to "Enter Value 3:"
         End_Object
 
         Object oValue4_fm is a cDateRDCForm
-            Set Location to 72 220
+            Set Location to 72 230
             Set Size to 13 53
             Set Label to "Enter Value 4:"
         End_Object

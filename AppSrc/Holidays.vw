@@ -482,7 +482,7 @@ Object oHolidays is a cRDCDbView
 
                 Move Nations.Recnum to iRecnum
                 Get WindowsLocaleValue of ghoCalendarHolidays LOCALE_SABBREVCTRYNAME 3 to sISO_Long
-                // Change global record buffer to auto-find todays date record (if any)
+                // Change global record buffer and DDO to auto-find a country based on the current machine.
                 Clear Nations
                 Move sISO_Long to Nations.ISO_Long
                 Find EQ Nations.ISO_Long
