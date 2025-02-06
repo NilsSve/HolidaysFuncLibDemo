@@ -361,7 +361,8 @@ Object oDateFunctionsTest is a cRDCDbView
         Object oCallFunction is a cRDCButton
             Set Location to 22 300
             Set Size to 31 57
-            Set Label to "Call Function"
+            Set Label to "Call Function" 
+            Set psToolTip to "Calls the selected function from the grid with the entered values to the left."
             Set MultiLineState to True
             
             Procedure OnClick
@@ -549,7 +550,7 @@ Object oDateFunctionsTest is a cRDCDbView
         Object oExtra6_fm is a cDateRDCForm
             Set Location to 136 395
             Set Size to 13 93
-            Set Label to "(See Also:'Calendar view' - 'Test Holiday Lookup List')   Day Name:"
+            Set Label to "(See Also:'Calendar' view - 'Test Holiday Lookup List')   Day Name:"
             Set Enabled_State to False
             Set peAnchors to anNone
             Set Visible_State to False
@@ -558,7 +559,9 @@ Object oDateFunctionsTest is a cRDCDbView
         Object oExtra7_fm is a cDateRDCForm
             Set Location to 105 395
             Set Size to 13 93
-            Set Label to "Formated Date 'dddd, dth MMMM yyyy':"
+            Set Label to "Formated Date 'dddd, dth MMMM yyyy':" 
+            Set psToolTip to "Note that the date is spelled according to your computer's local date settings."
+            Set psToolTip of (Label_Object(Self)) to "Note that the date is spelled according to your computer's local date settings."
             Set Enabled_State to False
             Set peAnchors to anBottomLeftRight
         End_Object
