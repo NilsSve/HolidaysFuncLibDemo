@@ -4,8 +4,8 @@
 // registers itself with the main cCalendarHolidays class as an object.
 //
 // To get a handle to a national holidays object, use;
-//   "Get NationalHolidaysObject of ghoCalendarHolidays sOfficial_Short to ho",
-//   where "sOfficial_Short" is the psOfficial_Short defined in the packages
+//   "Get NationalHolidaysObject of ghoCalendarHolidays sISO_Short to ho",
+//   where "sISO_Short" is the psISO_Short defined in the packages
 //   below. E.g. "US", "GB", "NL", "NO", "ES", "SE".
 //
 // The *main message* in each cNationalHolidays object is;

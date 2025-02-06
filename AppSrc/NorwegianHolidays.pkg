@@ -8,7 +8,7 @@
 //
 // Note        : To create a similar package for another country, copy the function below and
 //               simply change the name and wordings and possibly also what should constitute the holidays
-//               for your country. All the underlying holiday functions can be found in CalendarHolidays.pkg
+//               for your country. All the underlying holiday functions can be found in oCalendarHolidays.pkg
 //               The IsHoliday function is used by the Holidays.vw sample view; the oCreateDates_bp business process.
 //
 // $Rev History:
@@ -25,10 +25,9 @@ Use cNationalHolidays.pkg
 Object oNorwegianHolidays is a cNationalHolidays
     Move Self to ghoNationalHolidayObject
 
-    // A 2-character string ISO Official_Short ISO_Short, accorging to the list:
+    // A 2-character ISO_Short string, according to the list:
     // https://www.iso.org/obp/ui/#search/code/
-    Set psOfficial_Short to "NO"
-    Set psCountryName to "Norway"
+    Set psISO_Short to "NO"
 
     // Function that returns the name of Norwegian 'holidays' from a date variable.
     //
@@ -54,11 +53,11 @@ Object oNorwegianHolidays is a cNationalHolidays
     Function IsHoliday Date dInDate Boolean ByRef bOfficialHoliday Returns String
         Integer iYear
         Date dHolidayDate
-        String sHolidayName sOfficial_Short
+        String sHolidayName sISO_Short
 
         Move "" to sHolidayName
         Move False to bOfficialHoliday
-        Get psOfficial_Short to sOfficial_Short
+        Get psISO_Short to sISO_Short
 
         If (dInDate < 1) Begin
             Function_Return ""
@@ -67,43 +66,43 @@ Object oNorwegianHolidays is a cNationalHolidays
 
         // *** Fixed Holidays ***
 
-        Get NewYearsEve of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get NewYearsEve of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move False to bOfficialHoliday
             Function_Return "nyttårsaften"
         End
 
-        Get NewYearsDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get NewYearsDay of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             Function_Return "1. nyttårsdag"
         End
 
-        Get LaborDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get LaborDay of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             Function_Return "offentlig høytidsdag"
         End
 
-        Get ChristmasEve of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get ChristmasEve of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move False to bOfficialHoliday
             Function_Return "julaften"
         End
 
-        Get ChristmasDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get ChristmasDay of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             Function_Return "1. juledag"
         End
 
-        Get SecondDayChristmas of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get SecondDayChristmas of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             Function_Return "2. juledag"
         End
 
-        Get NationalDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get NationalDay of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             Function_Return "grunnlovsdag"
@@ -126,61 +125,61 @@ Object oNorwegianHolidays is a cNationalHolidays
         // *** Movable holidays ***
         // Easter functions at the bottom; they are the most complicated to calculate.
 
-        Get PalmSunday of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get PalmSunday of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             Function_Return "palmesøndag"
         End
 
-        Get AscensionDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get AscensionDay of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             Function_Return "Kristi Himmelfartsdag"
         End
 
-        Get WhitSunday of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get WhitSunday of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             Function_Return "1. pinsedag"
         End
 
-        Get WhitMonday of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get WhitMonday of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             Function_Return "2. pinsedag"
         End
 
-        Get MidsummerDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get MidsummerDay of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move False to bOfficialHoliday
             Function_Return "sankthans"
         End
 
-        Get MaundyThursday of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get MaundyThursday of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             Function_Return "skjærtorsdag"
         End
 
-        Get GoodFriday of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get GoodFriday of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             Function_Return "langfredag"
         End
 
-        Get HolySaturday of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get HolySaturday of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move False to bOfficialHoliday
             Function_Return "påskeaften"
         End
 
-        Get EasterDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get EasterDay of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             Function_Return "1. påskedag"
         End
 
-        Get EasterMonday of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get EasterMonday of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             Function_Return "2. påskedag"
@@ -189,7 +188,7 @@ Object oNorwegianHolidays is a cNationalHolidays
         // This needs to be after all easter days.
         // So when April fools day falls on one of the easter days,
         // an easter day will be returned instead. (More imporant)
-        Get AprilFoolsDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get AprilFoolsDay of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move False to bOfficialHoliday
             Function_Return "1. april"

@@ -4,16 +4,15 @@
 //       And functions are placed here as it is *only* allowed to use these meta tags;
 //       { Published } and { Description }, in an object (not class). 
 //
-// The Official_Short ISO_Short should consist of two characters as defined by the ISO -
-//       - International Standard Organization. The ISO_Shorts can be found at this address:
+//       A 2-character ISO_Short string, according to the list:
 //       https://www.iso.org/obp/ui/#search/code/
 //       and are used by of these functions.
 //
 // *** Common Interface For Holiday Date Functions ***
 //
 //  Params:  - A 4-digit year as an integer variable
-//           - A 2-character string ISO Official_Short
-//             Note: sOfficial_Short is not always passed as a param.
+//           - A 2-character string ISO_Short
+//             Note: sISO_Short is not always passed as a param.
 //  Returns: A date.
 
 Use cCalendarHolidays.pkg
@@ -72,11 +71,11 @@ Object oCalendarHolidays is a cCalendarHolidays
       See also the Halloween Function.
       Returns: The Date of All Saints Day, according to the Gregorian calendar.
       """ }
-    Function AllSaintsDay Integer iYear String sOfficial_Short Returns Date
+    Function AllSaintsDay Integer iYear String sISO_Short Returns Date
         Date dReturn
         Integer iDayNumber
 
-        If (sOfficial_Short = "SE") Begin
+        If (sISO_Short = "SE") Begin
             // Start with the 31st of October:
             Get DateSetDate iYear 10 31 to dReturn
             Get DateGetISODayOfWeek dReturn to iDayNumber
@@ -93,7 +92,7 @@ Object oCalendarHolidays is a cCalendarHolidays
         End
 
         // Eastern Christian - Orthodox and Eastern Catholic church. The first Sunday after Pentecost.
-        //    Else If ("" contains String(sOfficial_Short)) Begin // ***TODO: which countries?
+        //    Else If ("" contains String(sISO_Short)) Begin // ***TODO: which countries?
         //        Get Pentecost iYear to dReturn
         // If iDayNumber is less then Sunday, add number of days to next Sunday.
         //        Else If (iDayNumber < 7) Begin
@@ -111,9 +110,9 @@ Object oCalendarHolidays is a cCalendarHolidays
 
     { Published = True }
     { Description = "The day before AllSaintsDay." }
-    Function AllSaintsDayEve Integer iYear String sOfficial_Short Returns Date
+    Function AllSaintsDayEve Integer iYear String sISO_Short Returns Date
         Date dReturn
-        Get AllSaintsDay iYear sOfficial_Short to dReturn
+        Get AllSaintsDay iYear sISO_Short to dReturn
         Decrement dReturn
         Function_Return dReturn
     End_Function
@@ -366,11 +365,11 @@ Object oCalendarHolidays is a cCalendarHolidays
       Martin Luther King's Day is the third Monday in January.
       Holiday in the US.
       """ }
-    Function MLKDay Integer iYear String sOfficial_Short Returns Date
+    Function MLKDay Integer iYear String sISO_Short Returns Date
         Integer iDayNumber
         Date dReturn
         
-        If (sOfficial_Short = "US") Begin
+        If (sISO_Short = "US") Begin
             // Start with the 1st of January and find the first Monday.
             Get DateSetDate iYear 1 1 to dReturn
             Get DateGetISODayOfWeek dReturn to iDayNumber
@@ -392,11 +391,11 @@ Object oCalendarHolidays is a cCalendarHolidays
       President's Day is the third Monday in February.
       Holiday in the US.
       """ }
-    Function PresidentsDay Integer iYear String sOfficial_Short Returns Date
+    Function PresidentsDay Integer iYear String sISO_Short Returns Date
         Date dReturn
         Integer iDayNumber
 
-        If (sOfficial_Short = "US") Begin
+        If (sISO_Short = "US") Begin
             // Start with the 1st of February and find the first Monday.
             Get DateSetDate iYear 2 1 to dReturn
             Get DateGetISODayOfWeek dReturn to iDayNumber
@@ -420,11 +419,11 @@ Object oCalendarHolidays is a cCalendarHolidays
       In the year 2012 this date is moved to June 4 to mark the Queen's
       diamond jubilee and an extra bank holiday added on June 5 (GB).
       """ }
-    Function MayBankDay Integer iYear String sOfficial_Short Returns Date
+    Function MayBankDay Integer iYear String sISO_Short Returns Date
         Date dReturn
         Integer iDayNumber
 
-        If (sOfficial_Short = "GB") Begin
+        If (sISO_Short = "GB") Begin
             If (iYear <> 2012) Begin
                 // Start with the 1st of May and find the first Monday.
                 Get DateSetDate iYear 5 1 to dReturn
@@ -450,11 +449,11 @@ Object oCalendarHolidays is a cCalendarHolidays
       In the year 2012 the MayBankDay date is moved to June 4 to mark the Brittish Queen's
       diamond jubilee and an extra bank holiday is added on June 5 (GB).
       """ }
-    Function ExtraBankHoliday Integer iYear String sOfficial_Short Returns Date
+    Function ExtraBankHoliday Integer iYear String sISO_Short Returns Date
         Date dReturn
         String sHelp
 
-        If (sOfficial_Short = "GB") Begin
+        If (sISO_Short = "GB") Begin
             If (iYear = 2012) Begin
                 Get DateSetDate iYear 6 5 to dReturn
             End
@@ -468,11 +467,11 @@ Object oCalendarHolidays is a cCalendarHolidays
       Late Summer Bank Holiday.
       Brittish holiday on the last Monday in August (GB).
       """ }
-    Function LateSummerBankDay Integer iYear String sOfficial_Short Returns Date
+    Function LateSummerBankDay Integer iYear String sISO_Short Returns Date
         Date dReturn
         Integer iDayNumber
 
-        If (sOfficial_Short = "GB") Begin
+        If (sISO_Short = "GB") Begin
             // Start with the 1st of August and find the first Monday.
             Get DateSetDate iYear 8 1 to dReturn
             Get DateGetISODayOfWeek dReturn to iDayNumber
@@ -494,11 +493,11 @@ Object oCalendarHolidays is a cCalendarHolidays
       Memorial Day is the last Monday in May.
       Holiday in the US.
       """ }
-    Function MemorialDay Integer iYear String sOfficial_Short Returns Date
+    Function MemorialDay Integer iYear String sISO_Short Returns Date
         Date dReturn
         Integer iDayNumber
 
-        If (sOfficial_Short = "GB") Begin
+        If (sISO_Short = "GB") Begin
             // Start with the 1st of May and find the first Monday.
             Get DateSetDate iYear 5 1 to dReturn
             Get DateGetISODayOfWeek dReturn to iDayNumber
@@ -528,33 +527,33 @@ Object oCalendarHolidays is a cCalendarHolidays
       Else: The most common day is the second Sunday of June.
       It is however, not a holiday.
       """ }
-    Function FathersDay Integer iYear String sOfficial_Short Returns Date
+    Function FathersDay Integer iYear String sISO_Short Returns Date
         Date dReturn
         Integer iDayNumber
 
-        Move (Uppercase(sOfficial_Short)) to sOfficial_Short
+        Move (Uppercase(sISO_Short)) to sISO_Short
 
-        If (sOfficial_Short = "SE") Begin
+        If (sISO_Short = "SE") Begin
             Get DateSetDate iYear 11 1 to dReturn
         End
 
-        Else If (sOfficial_Short = "DK") Begin
+        Else If (sISO_Short = "DK") Begin
             Get DateSetDate iYear 6 5 to dReturn
             Function_Return dReturn
         End
 
-        Else If (sOfficial_Short = "AT" or sOfficial_Short = "NZ") Begin
+        Else If (sISO_Short = "AT" or sISO_Short = "NZ") Begin
             Get DateSetDate iYear 9 1 to dReturn
             // Adjust for the addition of seven days below.
             Move (dReturn -7) to dReturn
         End
 
-        Else If (sOfficial_Short = "DE") Begin
+        Else If (sISO_Short = "DE") Begin
             Get AscensionDay iYear to dReturn
             Function_Return dReturn
         End
 
-        Else If (sOfficial_Short = "BR") Begin
+        Else If (sISO_Short = "BR") Begin
             Get DateSetDate iYear 8 1 to dReturn
         End
 
@@ -571,7 +570,7 @@ Object oCalendarHolidays is a cCalendarHolidays
         // Add another week.
         Move (dReturn + 7) to dReturn // Second Sunday.
         
-        If (sOfficial_Short = "AR" or sOfficial_Short = "GB" or sOfficial_Short = "NL" or sOfficial_Short = "US") Begin
+        If (sISO_Short = "AR" or sISO_Short = "UK" or sISO_Short = "NL" or sISO_Short = "US") Begin
             Move (7 + dReturn) to dReturn
         End
 
@@ -584,13 +583,13 @@ Object oCalendarHolidays is a cCalendarHolidays
       In most countries it is on the 1st of May.
       In the US it falls on the first Monday of September.
       """ }
-    Function LaborDay Integer iYear String sOfficial_Short Returns Date
+    Function LaborDay Integer iYear String sISO_Short Returns Date
         Date dReturn
         Integer iDayNumber
 
-        Move (Uppercase(sOfficial_Short)) to sOfficial_Short
+        Move (Uppercase(sISO_Short)) to sISO_Short
 
-        If (sOfficial_Short = "US") Begin        // First Monday in September
+        If (sISO_Short = "US") Begin        // First Monday in September
             Get DateSetDate iYear 9 1 to dReturn
             Get DateGetISODayOfWeek dReturn to iDayNumber
             If (iDayNumber > 1) Begin
@@ -598,7 +597,7 @@ Object oCalendarHolidays is a cCalendarHolidays
             End
         End
 
-        Else If (sOfficial_Short <> "US") Begin
+        Else If (sISO_Short <> "US") Begin
             Get DateSetDate iYear 5 1 to dReturn
         End
 
@@ -631,13 +630,13 @@ Object oCalendarHolidays is a cCalendarHolidays
       
       In Norway and Denmark it is called Sankt Hans, and there is also a function doing the same thing, named 'SanktHans'.
       """ }
-    Function MidsummerDay Integer iYear String sOfficial_Short Returns Date
+    Function MidsummerDay Integer iYear String sISO_Short Returns Date
         Date dReturn
         Integer iDayNumber
 
-        Move (Uppercase(sOfficial_Short)) to sOfficial_Short
+        Move (Uppercase(sISO_Short)) to sISO_Short
 
-        If (sOfficial_Short = "SE") Begin
+        If (sISO_Short = "SE") Begin
             // Start with the 20th of June:
             Get DateSetDate iYear 6 20 to dReturn
             Get DateGetISODayOfWeek dReturn to iDayNumber
@@ -669,9 +668,9 @@ Object oCalendarHolidays is a cCalendarHolidays
       
       In Norway and Denmark MidsummerDay is called SanktHans.
       """ }
-    Function SanktHans Integer iYear String sOfficial_Short Returns Date
+    Function SanktHans Integer iYear String sISO_Short Returns Date
         Date dReturn
-        Get MidsummerDay iYear sOfficial_Short to dReturn
+        Get MidsummerDay iYear sISO_Short to dReturn
         Function_Return dReturn
     End_Function
     
@@ -680,24 +679,24 @@ Object oCalendarHolidays is a cCalendarHolidays
       Midsummer eve is the Friday that falls between 19-25th of June.
       'Half a Holiday' in Sweden.
       """ }
-    Function MidsummerEve Integer iYear String sOfficial_Short Returns Date
+    Function MidsummerEve Integer iYear String sISO_Short Returns Date
         Date dReturn
-        Get MidsummerDay iYear sOfficial_Short to dReturn
+        Get MidsummerDay iYear sISO_Short to dReturn
         Function_Return (dReturn -1)
     End_Function
 
     { Published = True } 
     { Description = """
       Independence Day always falls on the 4th of July - which is always returned by the NationalDay
-      Function when the "US" Official_Short ISO_Short is passed. The difference to this Function is that it takes
+      Function when the "US" ISO_Short is passed. The difference to this Function is that it takes
       into account if 4th of July falls on a Saturday or Sunday - in case it is adjusted - and returns
       the day off work.
       """ }
-    Function IndependenceDay Integer iYear String sOfficial_Short Returns Date
+    Function IndependenceDay Integer iYear String sISO_Short Returns Date
         Date dReturn
         Integer iDayNumber
 
-        If (sOfficial_Short = "US") Begin            
+        If (sISO_Short = "US") Begin            
             Get DateSetDate iYear 7 4 to dReturn
             Get DateGetISODayOfWeek dReturn to iDayNumber
             If (iDayNumber = 6) Begin
@@ -716,11 +715,11 @@ Object oCalendarHolidays is a cCalendarHolidays
       Columbus Day falls on the second Monday of October.
       Holiday in the US.
       """ }
-    Function ColumbusDay Integer iYear String sOfficial_Short Returns Date
+    Function ColumbusDay Integer iYear String sISO_Short Returns Date
         Date dReturn
         Integer iDayNumber
 
-        If (sOfficial_Short = "US") Begin            
+        If (sISO_Short = "US") Begin            
             // Start with the 1st of October and find the first Monday.
             Get DateSetDate iYear 10 1 to dReturn
             Get DateGetISODayOfWeek dReturn to iDayNumber
@@ -739,11 +738,11 @@ Object oCalendarHolidays is a cCalendarHolidays
 
     { Published = True } 
     { Description = "Thanksgiving Day falls on the fourth Thursday of November in the US - and on Columbus day in Canada." }
-    Function Thanksgiving Integer iYear String sOfficial_Short Returns Date
+    Function Thanksgiving Integer iYear String sISO_Short Returns Date
         Date dReturn
         Integer iDayNumber
 
-        If (sOfficial_Short = "CA") Begin
+        If (sISO_Short = "CA") Begin
             Get ColumbusDay to dReturn
         End
 
@@ -840,9 +839,9 @@ Object oCalendarHolidays is a cCalendarHolidays
 
     { Published = True } 
     { Description = "FlagDay always falls on the June 14. Commemorates the adoption of the flag of the United States, in 1777." }
-    Function FlagDay Integer iYear String sOfficial_Short Returns Date
+    Function FlagDay Integer iYear String sISO_Short Returns Date
         Date dReturn
-        If (sOfficial_Short = "US") Begin
+        If (sISO_Short = "US") Begin
             Get DateSetDate iYear 6 14 to dReturn            
         End
         Function_Return dReturn
@@ -850,9 +849,9 @@ Object oCalendarHolidays is a cCalendarHolidays
 
     { Published = True } 
     { Description = "PatriotsDay falls on the September 11. (US)" }
-    Function PatriotsDay Integer iYear String sOfficial_Short Returns Date
+    Function PatriotsDay Integer iYear String sISO_Short Returns Date
         Date dReturn
-        If (sOfficial_Short = "US") Begin            
+        If (sISO_Short = "US") Begin            
             Get DateSetDate iYear 9 11 to dReturn
         End
         Function_Return dReturn
@@ -860,9 +859,9 @@ Object oCalendarHolidays is a cCalendarHolidays
 
     { Published = True } 
     { Description = "ConstitutionDay falls on September 17. (US)" }
-    Function ConstitutionDay Integer iYear String sOfficial_Short Returns Date
+    Function ConstitutionDay Integer iYear String sISO_Short Returns Date
         Date dReturn
-        If (sOfficial_Short = "US") Begin            
+        If (sISO_Short = "US") Begin            
             Get DateSetDate iYear 9 17 to dReturn
         End
         Function_Return dReturn
@@ -870,9 +869,9 @@ Object oCalendarHolidays is a cCalendarHolidays
 
     { Published = True } 
     { Description = "LeifEriksonDay falls on October 9. (US)" }
-    Function LeifEriksonDay Integer iYear String sOfficial_Short Returns Date
+    Function LeifEriksonDay Integer iYear String sISO_Short Returns Date
         Date dReturn
-        If (sOfficial_Short = "US") Begin            
+        If (sISO_Short = "US") Begin            
             Get DateSetDate iYear 10 9 to dReturn
         End
         Function_Return dReturn
@@ -902,9 +901,9 @@ Object oCalendarHolidays is a cCalendarHolidays
 
     { Published = True } 
     { Description = "Public Holiday in the USA (not national holiday). (US)" }
-    Function VeteransDay Integer iYear String sOfficial_Short Returns Date
+    Function VeteransDay Integer iYear String sISO_Short Returns Date
         Date dReturn
-        If (sOfficial_Short = "US") Begin
+        If (sISO_Short = "US") Begin
             Get DateSetDate iYear 11 11 to dReturn            
         End
         Function_Return dReturn
@@ -989,9 +988,9 @@ Object oCalendarHolidays is a cCalendarHolidays
 
     { Published = True } 
     { Description = "Always falls on January 2. Scottish holiday (GB)" }
-    Function NewYearHoliday Integer iYear String sOfficial_Short Returns Date
+    Function NewYearHoliday Integer iYear String sISO_Short Returns Date
         Date dReturn
-        If (sOfficial_Short = "GB") Begin
+        If (sISO_Short = "GB") Begin
             Get DateSetDate iYear 1 2 to dReturn            
         End
         Function_Return dReturn
@@ -1163,18 +1162,18 @@ Object oCalendarHolidays is a cCalendarHolidays
 
     { Published = False } 
     { Description = "" }
-    Function HariRayaPuasa Date dDate String sOfficial_Short Returns Date
+    Function HariRayaPuasa Date dDate String sISO_Short Returns Date
         Date dReturn
         tLunar Lunar
 
         Get IslamicCalendar dDate to Lunar
         If (Lunar.iMonth=10) Begin
-            If (sOfficial_Short="MY") Begin
+            If (sISO_Short="MY") Begin
                 If (Lunar.iDay=1 or Lunar.iDay=2) Begin
                     Move dDate to dReturn
                 End
             End
-            Else If (sOfficial_Short = "SG") Begin
+            Else If (sISO_Short = "SG") Begin
                 If (Lunar.iDay=1) Begin
                     Move dDate to dReturn
                 End
@@ -1353,11 +1352,11 @@ Object oCalendarHolidays is a cCalendarHolidays
 
     { Published = True }
     { Description = "Christmas Day bank holiday - the Monday following Christmas Day if the latter is at a weekend. (GB)" }
-    Function ChristmasDayBH Integer iYear String sOfficial_Short Returns Date
+    Function ChristmasDayBH Integer iYear String sISO_Short Returns Date
         Integer iDayOfWeek
         Date    dDate
         
-        If (sOfficial_Short = "GB") Begin            
+        If (sISO_Short = "GB") Begin            
             Move "1/1/1" to dDate
             Move (DateSetDay(dDate,25))     to dDate
             Move (DateSetMonth(dDate,12))   to dDate
@@ -1379,11 +1378,11 @@ Object oCalendarHolidays is a cCalendarHolidays
       Boxing Day bank holiday - the Monday (if Boxing Day is on a Saturday) or Tuesday 
       (if on a Sunday) following. (GB)
       """ }
-    Function BoxingDayBH Integer iYear String sOfficial_Short Returns Date
+    Function BoxingDayBH Integer iYear String sISO_Short Returns Date
         Integer iDayOfWeek
         Date    dDate
         
-        If (sOfficial_Short = "GB") Begin            
+        If (sISO_Short = "GB") Begin            
             Move "1/1/1" to dDate
             Move (DateSetDay(dDate,26))     to dDate
             Move (DateSetMonth(dDate,12))   to dDate
@@ -1407,11 +1406,11 @@ Object oCalendarHolidays is a cCalendarHolidays
       New Year's Day bank holiday - the Monday following New Year's Day if 
       the latter is at a weekend. (GB)
       """ }
-    Function NewYearsDayBH Integer iYear String sOfficial_Short Returns Date
+    Function NewYearsDayBH Integer iYear String sISO_Short Returns Date
         Integer iDayOfWeek
         Date    dDate
         
-        If (sOfficial_Short = "GB") Begin
+        If (sISO_Short = "GB") Begin
             Move "1/1/1" to dDate
             Move (DateSetYear(dDate,iYear)) to dDate
             Move (DateGetDayOfWeek(dDate))  to iDayOfWeek
@@ -1432,11 +1431,11 @@ Object oCalendarHolidays is a cCalendarHolidays
       But if that is a Saturday or Sunday it will be the following Monday or
       Tuesday (i.e. the day after the New Year's Day bank holiday) (GB).
       """ }
-    Function ScotishNewYearHoliday Integer iYear String sOfficial_Short Returns Date
+    Function ScotishNewYearHoliday Integer iYear String sISO_Short Returns Date
         Integer iDayOfWeek
         Date  dDate
 
-        If (sOfficial_Short = "GB") Begin        
+        If (sISO_Short = "GB") Begin        
             Move "1/1/1" to dDate
             Move (DateSetDay(dDate,2))      to dDate
             Move (DateSetMonth(dDate,1))    to dDate
@@ -1460,11 +1459,11 @@ Object oCalendarHolidays is a cCalendarHolidays
       St.Patrick' Day bank holiday - the Monday after St.Patrick's Day if the latter
       falls at a weekend (GB)
       """ }
-    Function StPatricksDayBH Integer iYear String sOfficial_Short Returns Date
+    Function StPatricksDayBH Integer iYear String sISO_Short Returns Date
         Integer iDayOfWeek
         Date    dDate
 
-        If (sOfficial_Short = "GB") Begin        
+        If (sISO_Short = "GB") Begin        
             Move "1/1/1" to dDate
             Move (DateSetDay(dDate,17))     to dDate
             Move (DateSetMonth(dDate,3))    to dDate
@@ -1488,11 +1487,11 @@ Object oCalendarHolidays is a cCalendarHolidays
       In the year 2012 this date is moved to June 4 to mark the Queen's
       diamond jubilee and an extra bank holiday added on June 5 (GB).
       """ }
-    Function EarlyMayBH Integer iYear String sOfficial_Short Returns Date
+    Function EarlyMayBH Integer iYear String sISO_Short Returns Date
         Integer iDayOfWeek
         Date    dDate
 
-        If (sOfficial_Short = "GB") Begin        
+        If (sISO_Short = "GB") Begin        
             If (iYear <> 2012) Begin
                 // Start with the 1st of May and find the first Monday.
                 Move "1/1/1" to dDate
@@ -1521,11 +1520,11 @@ Object oCalendarHolidays is a cCalendarHolidays
 
     { Published = True }
     { Description = "Summer Bank Holiday (Scotland). The first Monday in August (GB)" }
-    Function SummerBHScot Integer iYear String sOfficial_Short Returns Date
+    Function SummerBHScot Integer iYear String sISO_Short Returns Date
         Integer iDayOfWeek
         Date    dDate
 
-        If (sOfficial_Short = "GB") Begin        
+        If (sISO_Short = "GB") Begin        
             // Start with the 1st of August and find the first Monday.
             Move "1/1/1" to dDate
             Move (DateSetMonth(dDate,8))    to dDate
@@ -1544,11 +1543,11 @@ Object oCalendarHolidays is a cCalendarHolidays
 
     { Published = True }
     { Description = "Summer Bank Holiday (England). The last Monday in August. (GB)" }
-    Function SummerBHEngNI Integer iYear String sOfficial_Short Returns Date
+    Function SummerBHEngNI Integer iYear String sISO_Short Returns Date
         Integer iDayOfWeek
         Date    dDate
 
-        If (sOfficial_Short = "GB") Begin        
+        If (sISO_Short = "GB") Begin        
             // Start with the 31st of August and find the previous Monday.
             Move "1/1/1" to dDate
             Move (DateSetDay(dDate,31))     to dDate
@@ -1568,10 +1567,10 @@ Object oCalendarHolidays is a cCalendarHolidays
 
     { Published = True }
     { Description = "Battle of the Boyne Day (Orangemen's Day) - Northern Ireland, 12th July (GB)" }
-    Function BattleOfTheBoyne Integer iYear String sOfficial_Short Returns Date
+    Function BattleOfTheBoyne Integer iYear String sISO_Short Returns Date
         Date dDate
         
-        If (sOfficial_Short = "GB") Begin
+        If (sISO_Short = "GB") Begin
             Move "1/1/1" to dDate
             Move (DateSetDay(dDate,12))     to dDate
             Move (DateSetMonth(dDate,7))    to dDate
@@ -1583,11 +1582,11 @@ Object oCalendarHolidays is a cCalendarHolidays
 
     { Published = True }
     { Description = "Battle of the Boyne Day bank holiday - Northern Ireland, 12th July unless that is a Saturday or Sunday (GB)" }
-    Function BattleOfTheBoyneBH Integer iYear String sOfficial_Short Returns Date
+    Function BattleOfTheBoyneBH Integer iYear String sISO_Short Returns Date
         Integer iDayOfWeek
         Date dDate
 
-        If (sOfficial_Short = "GB") Begin
+        If (sISO_Short = "GB") Begin
             Move "1/1/1" to dDate
             Move (DateSetDay(dDate,12))     to dDate
             Move (DateSetMonth(dDate,7))    to dDate
@@ -1606,11 +1605,11 @@ Object oCalendarHolidays is a cCalendarHolidays
 
     { Published = True }
     { Description = "Remembrance Sunday - the first Sunday on or after 11th November (GB)." }
-    Function RemembranceSunday Integer iYear String sOfficial_Short Returns Date
+    Function RemembranceSunday Integer iYear String sISO_Short Returns Date
         Integer iDayOfWeek
         Date dDate
 
-        If (sOfficial_Short = "GB") Begin
+        If (sISO_Short = "GB") Begin
             Move "1/1/1" to dDate
             Move (DateSetDay(dDate,11))     to dDate
             Move (DateSetMonth(dDate,11))   to dDate
@@ -1626,10 +1625,10 @@ Object oCalendarHolidays is a cCalendarHolidays
 
     { Published = True }
     { Description = "St.Andrew's Day (Scotland) - 30th November. (GB)" }
-    Function StAndrewsDay Integer iYear String sOfficial_Short Returns Date
+    Function StAndrewsDay Integer iYear String sISO_Short Returns Date
         Date dDate
 
-        If (sOfficial_Short = "GB") Begin
+        If (sISO_Short = "GB") Begin
             Move "1/1/1" to dDate
             Move (DateSetDay(dDate,30))     to dDate
             Move (DateSetMonth(dDate,11))   to dDate
@@ -1641,11 +1640,11 @@ Object oCalendarHolidays is a cCalendarHolidays
 
     { Published = True }
     { Description = "St.Andrew's Day bank holiday (Scotland) - 30th November unless that is a Saturday or Sunday (GB)" }
-    Function StAndrewsDayBH Integer iYear String sOfficial_Short Returns Date
+    Function StAndrewsDayBH Integer iYear String sISO_Short Returns Date
         Integer iDayOfWeek
         Date dDate
 
-        If (sOfficial_Short = "GB") Begin
+        If (sISO_Short = "GB") Begin
             Move "1/1/1" to dDate
             Move (DateSetDay(dDate,30))     to dDate
             Move (DateSetMonth(dDate,11))   to dDate

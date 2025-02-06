@@ -18,7 +18,7 @@
 Use HolidaysLookup.inc
 
 // See bottom of package for General purpose access method!
-//   Function PopupHolidayLookup String sOfficial_Short Returns tHoliday[]
+//   Function PopupHolidayLookup String sISO_Short Returns tHoliday[]
 Object oHolidaysLookup is a cRDCModalPanel
     Set Size to 209 372
     Set Label to CS_LookupHeader
@@ -259,12 +259,12 @@ End_Object
 
 
 // *** Public access message ***
-Function PopupHolidayLookup String sOfficial_Short Returns tHoliday[]
+Function PopupHolidayLookup String sISO_Short Returns tHoliday[]
     Handle hoHolidaysObject ho
     tHoliday[] SelectedHolidays
     
     Move (oHolidaysLookup(Self)) to ho   
-    Get NationalHolidaysObject of ghoCalendarHolidays sOfficial_Short to hoHolidaysObject
+    Get NationalHolidaysObject of ghoCalendarHolidays sISO_Short to hoHolidaysObject
     Move hoHolidaysObject to ghoNationalHolidayObject
     Send Popup of ho
     Get pSelectedHolidaysArray of ho to SelectedHolidays

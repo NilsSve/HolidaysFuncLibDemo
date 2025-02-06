@@ -39,13 +39,13 @@ Object oDateFunctionsTest is a cRDCDbView
     Property Boolean pbUseRegisteredCountriesOnly True
     // Array of short country codes for all registered countries.
     // Registered countries are packages found in 
-    Property String[] pasOfficial_Short
+    Property String[] pasISO_Short
     Property String psFuncName ""
     
-    Function IsCountry String sOfficial_Short Returns Boolean
-        String[] asOfficial_Short
-        Get pasOfficial_Short to asOfficial_Short
-        Function_Return (SearchArray(sOfficial_Short, asOfficial_Short) <> -1)
+    Function IsCountry String sISO_Short Returns Boolean
+        String[] asISO_Short
+        Get pasISO_Short to asISO_Short
+        Function_Return (SearchArray(sISO_Short, asISO_Short) <> -1)
     End_Function
         
     Object oContinen_DD is a cContinenDataDictionary
@@ -61,11 +61,11 @@ Object oDateFunctionsTest is a cRDCDbView
             End
         End_Procedure
         
-        // Fill the pasOfficial_Short string array w ISO_Short values,
+        // Fill the pasISO_Short string array w ISO_Short values,
         // for all registered language packages.
         Procedure End_Construct_Object
             Handle[] hoNationalHolidaysArray
-            String[] asOfficial_Short
+            String[] asISO_Short
             Handle ho
             Integer iSize iCount
             
@@ -76,9 +76,9 @@ Object oDateFunctionsTest is a cRDCDbView
             Decrement iSize
             For iCount from 0 to iSize
                 Move hoNationalHolidaysArray[iCount] to ho
-                Get psOfficial_Short of ho to asOfficial_Short[-1]
+                Get psISO_Short of ho to asISO_Short[-1]
             Loop
-            Set pasOfficial_Short to asOfficial_Short
+            Set pasISO_Short to asISO_Short
         End_Procedure
         
     End_Object

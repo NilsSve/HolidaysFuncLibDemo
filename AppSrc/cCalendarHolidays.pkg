@@ -51,7 +51,7 @@ Use Dferror.pkg
 Use GlobalDateTimeFunctions.pkg
 Use cCalendarHolidays.inc
 
-Register_Function psOfficial_Short Returns String
+Register_Function psISO_Short Returns String
 
 /* Note: All Holiday Date functions of the class is defined in an object that
          is placed after the class definition (bottom of this package)
@@ -180,13 +180,13 @@ Class cCalendarHolidays is a cObject
         Set phoNationalHolidaysArray to hoNationalHolidaysArray
     End_Procedure
 
-    // Returns the national holiday object handle for the passed sOfficial_Short code
-    Function NationalHolidaysObject String sOfficial_Short Returns Handle
+    // Returns the national holiday object handle for the passed sISO_Short code
+    Function NationalHolidaysObject String sISO_Short Returns Handle
         Integer iCount
         Handle[] hoNationalHolidaysArray
         Get phoNationalHolidaysArray to hoNationalHolidaysArray
         For iCount From 0 to (SizeOfArray(hoNationalHolidaysArray) - 1)
-            If (psOfficial_Short(hoNationalHolidaysArray[iCount]) = sOfficial_Short) Begin
+            If (psISO_Short(hoNationalHolidaysArray[iCount]) = sISO_Short) Begin
                 Function_Return hoNationalHolidaysArray[iCount]
             End
         Loop

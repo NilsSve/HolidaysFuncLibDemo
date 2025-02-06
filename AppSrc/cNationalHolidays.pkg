@@ -9,10 +9,27 @@ Use cCalendarHolidays.pkg
 Class cNationalHolidays is a cObject
     Procedure Construct_Object
         Forward Send Construct_Object
-        Property String psOfficial_Short
-        Property String psCountryName
         Move Self to ghoNationalHolidayObject
+
+        { Visibility = Private }
+        Property String private_psISO_Short
+        { Visibility = Public }
+        Property String psOfficial_Short
     End_Procedure
+    
+    { MethodType = Property }    
+    Procedure Set psISO_Short String sISO_Short
+        Set private_psISO_Short to sISO_Short
+        Move sISO_Short to Nations.ISO_Short
+        Find EQ Nations.ISO_Short
+        If (Found) Begin
+            Set psOfficial_Short to (Trim(Nations.Official_Short))
+        End
+    End_Procedure  
+    
+    Function psISO_Short Returns String
+        Function_Return (private_psISO_Short(Self))
+    End_Function
 
     Procedure End_Construct_Object
         Forward Send End_Construct_Object

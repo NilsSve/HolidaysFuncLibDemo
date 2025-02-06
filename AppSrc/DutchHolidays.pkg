@@ -8,7 +8,7 @@
 //
 // Note        : To create a similar package for another country, copy the function below and
 //               simply change the name and wordings and possibly also what should constitute the holidays
-//               for your country. All the underlying holiday functions can be found in CalendarHolidays.pkg
+//               for your country. All the underlying holiday functions can be found in oCalendarHolidays.pkg
 //               The IsHoliday function is used by the Holidays.vw sample view; the oCreateDates_bp business process.
 //
 // $Rev History:
@@ -26,10 +26,9 @@ Use cNationalHolidays.pkg
 
 Object oDutchHolidays is a cNationalHolidays
 
-    // A 2-character string ISO Official_Short ISO_Short, accorging to the list:
+    // A 2-character ISO_Short string, according to the list:
     // https://www.iso.org/obp/ui/#search/code/
-    Set psOfficial_Short to "NL"
-    Set psCountryName to " Netherlands (Kingdom of the)"
+    Set psISO_Short to "NL"
 
     // Function that returns the name of Dutch 'holidays' from a date variable.
     //
@@ -54,11 +53,11 @@ Object oDutchHolidays is a cNationalHolidays
     Function IsHoliday Date dInDate Boolean ByRef bOfficialHoliday Returns String
         Integer iYear
         Date dHolidayDate
-        String sHolidayName sOfficial_Short
+        String sHolidayName sISO_Short
 
         Move "" to sHolidayName
         Move False to bOfficialHoliday
-        Get psOfficial_Short to sOfficial_Short
+        Get psISO_Short to sISO_Short
 
         If (dInDate < 1) Begin
             Function_Return ""
@@ -67,61 +66,61 @@ Object oDutchHolidays is a cNationalHolidays
 
         // *** Fixed Holidays ***
 
-        Get NewYearsEve of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get NewYearsEve of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move False to bOfficialHoliday
             Function_Return "Oudejaarsavond"
         End
 
-        Get NewYearsDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get NewYearsDay of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             Function_Return "Nieuwjaarsdag"
         End
 
-        Get Epiphany of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get Epiphany of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move False to bOfficialHoliday
             Function_Return "Driekoningen"
         End
 
-        Get ValentinesDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get ValentinesDay of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move False to bOfficialHoliday
             Function_Return "Valentijnsdag"
         End
 
-        Get LaborDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get LaborDay of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move False to bOfficialHoliday
             Function_Return "Dag van de Arbeid"
         End
 
-        Get Halloween of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate      // Not a National Holiday in The Netherlands. but there is some US influence :-)
+        Get Halloween of ghoCalendarHolidays iYear sISO_Short to dHolidayDate      // Not a National Holiday in The Netherlands. but there is some US influence :-)
         If (dInDate = dHolidayDate) Begin
             Move False to bOfficialHoliday
             Function_Return "Halloween"
         End
 
-        Get ChristmasEve of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get ChristmasEve of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move False to bOfficialHoliday
             Function_Return "Kerstavond"
         End
 
-        Get ChristmasDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get ChristmasDay of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             Function_Return "Eerste Kerstdag"
         End
 
-        Get SecondDayChristmas of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get SecondDayChristmas of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             Function_Return "Tweede Kerstdag"
         End
 
-        Get NationalDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get NationalDay of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             If (iYear <= 2013) Begin
@@ -154,61 +153,61 @@ Object oDutchHolidays is a cNationalHolidays
         // *** Movable holidays ***
         // Easter functions at the bottom; they are the most complicated to calculate.
 
-        Get PalmSunday of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get PalmSunday of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move False to bOfficialHoliday
             Function_Return "Palmzondag"
         End
 
-        Get AscensionDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get AscensionDay of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             Function_Return "Hemelvaartsdag"
         End
 
-        Get WhitSunday of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get WhitSunday of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             Function_Return "Eerste Pinksterdag"
         End
 
-        Get WhitMonday of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get WhitMonday of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             Function_Return "Tweede Pinksterdag"
         End
 
-        Get AllSaintsDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get AllSaintsDay of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move False to bOfficialHoliday
             Function_Return "Allerheiligen"
         End
 
-        Get MaundyThursday of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get MaundyThursday of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move False to bOfficialHoliday
             Function_Return "Witte Donderdag"
         End
 
-        Get GoodFriday of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get GoodFriday of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move False to bOfficialHoliday
             Function_Return "Goede Vrijdag"
         End
 
-        //  Get HolySaturday iYear sOfficial_Short to dHolidayDate
+        //  Get HolySaturday iYear sISO_Short to dHolidayDate
         //  If (dInDate = dHolidayDate) Begin
         //      Move False to bOfficialHoliday
         //      Function_Return "Paaszaterdag"
         //  End
 
-        Get EasterDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get EasterDay of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             Function_Return "Eerste Paasdag"
         End
 
-        Get EasterMonday of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get EasterMonday of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move True to bOfficialHoliday
             Function_Return "Tweede Paasdag"
@@ -216,7 +215,7 @@ Object oDutchHolidays is a cNationalHolidays
 
         // Start of European Summer Time - last Sunday in March (at 1am)
         //
-        Get EUSummerTimeStart of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get EUSummerTimeStart of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move False to bOfficialHoliday
             Function_Return "Begin zomertijd"
@@ -224,7 +223,7 @@ Object oDutchHolidays is a cNationalHolidays
 
         // End of European Summer Time - last Sunday in October (at 1am)
         //
-        Get EUSummerTimeEnd of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get EUSummerTimeEnd of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move False to bOfficialHoliday
             Function_Return "Einde zomertijd"
@@ -234,13 +233,13 @@ Object oDutchHolidays is a cNationalHolidays
         // So when WhitSunday falls on the last Sunday in May,
         // only the WhitSunday will get generated. Else the
         // Mother's Day would show up at that same day.
-        Get MothersDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get MothersDay of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move False to bOfficialHoliday
             Function_Return "Moederdag"
         End
 
-        Get FathersDay of ghoCalendarHolidays iYear sOfficial_Short to dHolidayDate
+        Get FathersDay of ghoCalendarHolidays iYear sISO_Short to dHolidayDate
         If (dInDate = dHolidayDate) Begin
             Move False to bOfficialHoliday
             Function_Return "Vaderdag"
