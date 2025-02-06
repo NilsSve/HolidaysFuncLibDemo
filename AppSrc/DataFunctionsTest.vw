@@ -493,12 +493,12 @@ Object oDateFunctionsTest is a cRDCDbView
                 Get DateGetDayNameLong   of ghoCalendarHolidays sValue to sDay 
                 Get DateGetDaysInMonth   of ghoCalendarHolidays sValue to iMonthDays
                 Get DateGetISOWeek       of ghoCalendarHolidays sValue to iWeekNo
-                Get WindowsLocaleValue of ghoCalendarHolidays LOCALE_SABBREVCTRYNAME 3 to sISO_Long
-                If (sISO_Long = "SWE") Begin
-                    Move "dddd d MMMM yyyy" to sFormat
+                Get WindowsLocaleValue   of ghoCalendarHolidays LOCALE_SABBREVCTRYNAME 3 to sISO_Long
+                If (sISO_Long = "USA" or sISO_Long = "GBR") Begin
+                    Move "dddd, dth MMMM yyyy" to sFormat
                 End
                 Else Begin
-                    Move "dddd, dth MMMM yyyy" to sFormat
+                    Move "dddd d MMMM yyyy" to sFormat
                 End
                 Get DateFormat          of ghoCalendarHolidays sValue sFormat to sTextDate
                 Set Value of oExtra1_fm to sYear
