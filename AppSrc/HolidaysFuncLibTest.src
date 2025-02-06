@@ -1,5 +1,4 @@
 ﻿Use DFAllEnt.pkg
-Use cCJStandardCommandBarSystem.pkg
 Use cRDCCJCommandBarSystem.pkg
 Use cDigitalSoftwareCertificate.pkg
 
