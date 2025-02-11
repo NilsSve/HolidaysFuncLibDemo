@@ -95,71 +95,6 @@ Object oDateFunctionsTest is a cRDCDbView
         Set Label to "Test of 'Holiday and Other Special Dates' Functions:"
         Set peAnchors to anAll
 
-//        Object oDataFunctions_cf is a cRDCComboForm
-//            Set Location to 21 65
-//            Set Size to 13 119
-//            Set Label to "Function Library"
-//            
-//            Procedure Combo_Fill_List
-//                tHolidayFunc[] HolidayFuncArray
-//                Integer iCount iSize
-//                String sFirstFunc
-//                
-//                Send Delete_Data
-//                Get pHolidayFunctions of ghoCalendarHolidays to HolidayFuncArray
-//                Move (SizeOfArray(HolidayFuncArray)) to iSize
-//                Decrement iSize
-//                For iCount from 0 to iSize
-//                    If (iCount = 0) Begin
-//                        Move HolidayFuncArray[iCount].sName to sFirstFunc    
-//                    End
-//                    Send Combo_Add_Item HolidayFuncArray[iCount].sName
-//                Loop
-//                Set Value to sFirstFunc 
-//                Send Combo_Item_Changed
-//            End_Procedure 
-//            
-//            // Fill the combo
-//            Procedure Page Integer iPageObject
-//                Forward Send Page iPageObject
-//                Send Combo_Fill_List    
-//            End_Procedure
-//            
-//            Procedure Combo_Item_Changed
-//                String sHelpText
-//                Integer iItem
-//                tHolidayFunc HolidayFunc
-//                tHolidayFunc[] HolidayFuncArray
-//    
-//                Move "" to sHelpText
-//                Get Value to HolidayFunc.sName // the current selected item to struct member.
-//                Get pHolidayFunctions of ghoCalendarHolidays to HolidayFuncArray
-//                Move (SearchArray(HolidayFunc, HolidayFuncArray)) to iItem
-//                If (iItem <> -1) Begin
-//                    Move HolidayFuncArray[iItem].sHelp to sHelpText
-//                    Send SetParamValues of oParam_grp HolidayFuncArray[iItem]
-//                End
-//                Set Label of oHelpText_tb to sHelpText
-//            End_Procedure 
-//            
-//        End_Object
-//
-//        Object oLabel_tb is a TextBox
-//            Set Location to 9 329
-//            Set Size to 10 101
-//            Set Label to "Help Text for Selected Function:"
-//            Set Justification_Mode to JMode_Center
-//            Set peAnchors to anNone
-//        End_Object
-//
-//        Object oHelpText_tb is a TextBox
-//            Set Location to 25 202
-//            Set Size to 17 304
-//            Set Auto_Size_State to False
-//            Set Justification_Mode to JMode_Left
-//            Set peAnchors to anAll
-//        End_Object
-
         Object oDateFunctions_grd is a cRDCCJGridPromptList
             Set Size to 187 497
             Set Location to 13 6
@@ -201,7 +136,6 @@ Object oDateFunctionsTest is a cRDCDbView
                 For iCount from 0 to iSize
                     Move HolidayFuncArray[iCount].sName to TheData[iRow].sValue[iFunction_col]
                     Move HolidayFuncArray[iCount].sName to HolidayFunc.sName // the current selected item to struct member.
-                    Get pHolidayFunctions of ghoCalendarHolidays to HolidayFuncArray
                     Move (SearchArray(HolidayFunc, HolidayFuncArray)) to iItem
                     If (iItem <> -1) Begin
                         Move HolidayFuncArray[iItem].sHelp to TheData[iRow].sValue[iHelp_col]
