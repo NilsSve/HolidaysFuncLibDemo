@@ -551,7 +551,7 @@ Object oDateFunctionsTest is a cRDCDbView
             Set Size to 13 93
             Set Label to "(See Also:'Calendar' view - 'Test Holiday Lookup List')   Day Name:"
             Set Enabled_State to False
-            Set peAnchors to anNone
+            Set peAnchors to anBottomLeftRight
             Set Visible_State to False
         End_Object
 

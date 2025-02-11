@@ -351,6 +351,24 @@ Object oMain is a Panel
                 Object oAboutMenuItem is a cCJAboutMenuItem
                 End_Object 
                 
+                Object oKoFi_MenuItem is a cCJMenuItem
+                    Set psToolTip to "Coffee time!"
+                    Set psDescription to "Bye me a coffee, to support me"
+                    Set psImage to "Ko-fi.ico"
+                    Procedure OnExecute Variant vCommandBarControl
+                        Runprogram Shell Background "https://ko-fi.com/nilss"
+                    End_Procedure
+                End_Object
+    
+                Object oSuggestion_MenuItem is a cCJMenuItem
+                    Set psTooltip to "Suggest"
+                    Set psDescription to "Suggest a feature, or report a bug..."
+                    Set psImage to "Suggestion.ico"
+                    Procedure OnExecute Variant vCommandBarControl
+                        Runprogram Shell Background "https://github.com/NilsSve/Library-HolidaysFuncLib/issues"
+                    End_Procedure
+                End_Object
+
                 Object oISOCodesMenuItem is a cCJMenuItem
                     Set psCaption to "Official ISO Country Codes"
                     Set psImage to "Nations.ico"
