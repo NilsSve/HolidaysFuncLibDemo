@@ -14,3 +14,7 @@
 	path = Libraries/vwin32fh
 	url = https://github.com/NilsSve/Library-vwin32fh.git
 	branch = master
+[submodule "Libraries/HolidaysFuncLib"]
+	path = Libraries/HolidaysFuncLib
+	url = https://github.com/NilsSve/Library-HolidaysFuncLib
+	branch = main
