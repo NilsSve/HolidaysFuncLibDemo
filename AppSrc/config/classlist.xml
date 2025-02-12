@@ -833,12 +833,6 @@
 			<libraryID>0</libraryID>
 		</class>
 		<class>
-			<className>cWSCurrencyConvertor</className>
-			<image>ControlClientWebService.ico</image>
-			<package>cWSCurrencyConvertor</package>
-			<groupName>Web Services</groupName><libraryID></libraryID>
-		</class>
-		<class>
 			<className>cCJGridPromptList</className>
 			<image>ControlList.ico</image>
 			<package>cCJGridPromptList.pkg</package>
@@ -851,18 +845,6 @@
 			<package>DFRptVw.pkg</package>
 			<groupName>Base Containers</groupName>
 			<libraryID>0</libraryID>
-		</class>
-		<class>
-			<className>cWSHolidayService</className>
-			<image>ControlClientWebService.ico</image>
-			<package>cWSHolidayService.pkg</package>
-			<groupName>Web Services</groupName><libraryID></libraryID>
-		</class>
-		<class>
-			<className>cWSQuoteofTheDay</className>
-			<image>ControlClientWebService.ico</image>
-			<package>cWSQuoteofTheDay.pkg</package>
-			<groupName>Web Services</groupName><libraryID></libraryID>
 		</class>
 		<class>
 			<className>cWebColumnSuggestion</className>
