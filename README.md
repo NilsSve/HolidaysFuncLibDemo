@@ -1,4 +1,4 @@
-# Holidays and Other Special Dates Library
+# Demo app for 'Library-HolidaysFuncLib'
 
 The `cCalendarHolidays.pkg` contains all the basic holiday date functions.
 
