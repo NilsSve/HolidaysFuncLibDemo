@@ -16,3 +16,4 @@ Lib1=Libraries\DFAbout\DFAbout25.0.sws
 Lib2=Libraries\DigitalCert\DigitalCert25.0.sws
 Lib3=Libraries\RDCToolsLib\RDCToolsLib25.0.sws
 Lib4=Libraries\vwin32fh\StudioLibrary\vWin32fh-Library-DF25.0.sws
+Lib5=Libraries\HolidaysFuncLib\HolidaysFuncLib25.0.sws
