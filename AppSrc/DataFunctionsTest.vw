@@ -1,6 +1,7 @@
 ﻿Use cRDCDbView.pkg
 Use DFClient.pkg
 Use cCJGridColumnRowIndicator.pkg
+Use cRDCCJGrid.pkg
 Use cCJGridColumn.pkg
 Use cRDCComboForm.pkg
 Use cRDCForm.pkg
@@ -14,6 +15,7 @@ Use cContinenDataDictionary.dd
 Use cNationsDataDictionary.dd
 Use cHolidaysDataDictionary.dd
 Use Windows.pkg
+Use cCJGrid.pkg
 
 Class cDateRDCForm is a Form
     Procedure Construct_Object
@@ -209,21 +211,21 @@ Object oDateFunctionsTest is a cRDCDbView
             Set Enabled_State to False
         End_Object
 
-        Object oType3_fm is a cDateRDCForm
-            Set Location to 56 37
-            Set Size to 13 43
-            Set Label to "Type 3:"
-            Set Enabled_State to False
-            Set Visible_State to False
-        End_Object
-
-        Object oType4_fm is a cDateRDCForm
-            Set Location to 72 37
-            Set Size to 13 43
-            Set Label to "Type 4:"
-            Set Enabled_State to False
-            Set Visible_State to False
-        End_Object
+//        Object oType3_fm is a cDateRDCForm
+//            Set Location to 56 37
+//            Set Size to 13 43
+//            Set Label to "Type 3:"
+//            Set Enabled_State to False
+//            Set Visible_State to False
+//        End_Object
+//
+//        Object oType4_fm is a cDateRDCForm
+//            Set Location to 72 37
+//            Set Size to 13 43
+//            Set Label to "Type 4:"
+//            Set Enabled_State to False
+//            Set Visible_State to False
+//        End_Object
 
         Object oVarName1_fm is a cDateRDCForm
             Set Location to 24 116
@@ -239,21 +241,21 @@ Object oDateFunctionsTest is a cRDCDbView
             Set Enabled_State to False
         End_Object
 
-        Object oVarName3_fm is a cDateRDCForm
-            Set Location to 56 116
-            Set Size to 13 53
-            Set Label to "Name 3:"
-            Set Enabled_State to False
-            Set Visible_State to False
-        End_Object
-
-        Object oVarName4_fm is a cDateRDCForm
-            Set Location to 72 116
-            Set Size to 13 53
-            Set Label to "Name 4:"
-            Set Enabled_State to False
-            Set Visible_State to False
-        End_Object
+//        Object oVarName3_fm is a cDateRDCForm
+//            Set Location to 56 116
+//            Set Size to 13 53
+//            Set Label to "Name 3:"
+//            Set Enabled_State to False
+//            Set Visible_State to False
+//        End_Object
+//
+//        Object oVarName4_fm is a cDateRDCForm
+//            Set Location to 72 116
+//            Set Size to 13 53
+//            Set Label to "Name 4:"
+//            Set Enabled_State to False
+//            Set Visible_State to False
+//        End_Object
 
         Object oValue1_fm is a cDateRDCForm
             Set Location to 24 218
@@ -290,19 +292,19 @@ Object oDateFunctionsTest is a cRDCDbView
             
         End_Object
 
-        Object oValue3_fm is a cDateRDCForm
-            Set Location to 56 218
-            Set Size to 13 53
-            Set Label to "Enter Value 3:"
-            Set Visible_State to False
-        End_Object
-
-        Object oValue4_fm is a cDateRDCForm
-            Set Location to 72 218
-            Set Size to 13 53
-            Set Label to "Enter Value 4:"
-            Set Visible_State to False
-        End_Object
+//        Object oValue3_fm is a cDateRDCForm
+//            Set Location to 56 218
+//            Set Size to 13 53
+//            Set Label to "Enter Value 3:"
+//            Set Visible_State to False
+//        End_Object
+//
+//        Object oValue4_fm is a cDateRDCForm
+//            Set Location to 72 218
+//            Set Size to 13 53
+//            Set Label to "Enter Value 4:"
+//            Set Visible_State to False
+//        End_Object
 
         Object oCallFunction_btn is a cRDCButton
             Set Location to 22 285
@@ -346,23 +348,23 @@ Object oDateFunctionsTest is a cRDCDbView
                     Move sValue2 to sISO_Short
                 End
                 
-                Get Value of oType3_fm to sType3
-                If (sType3 <> "") Begin
-                    Get Value of oValue3_fm to sValue3    
-                    Get CheckTypeValue sType3 sValue3 to bOK
-                    If (bOK = False) Begin
-                        Procedure_Return
-                    End
-                End
-                
-                Get Value of oType4_fm to sType4
-                If (sType4 <> "") Begin
-                    Get Value of oValue4_fm to sValue4    
-                    Get CheckTypeValue sType4 sValue4 to bOK
-                    If (bOK = False) Begin
-                        Procedure_Return
-                    End
-                End 
+//                Get Value of oType3_fm to sType3
+//                If (sType3 <> "") Begin
+//                    Get Value of oValue3_fm to sValue3    
+//                    Get CheckTypeValue sType3 sValue3 to bOK
+//                    If (bOK = False) Begin
+//                        Procedure_Return
+//                    End
+//                End
+//                
+//                Get Value of oType4_fm to sType4
+//                If (sType4 <> "") Begin
+//                    Get Value of oValue4_fm to sValue4    
+//                    Get CheckTypeValue sType4 sValue4 to bOK
+//                    If (bOK = False) Begin
+//                        Procedure_Return
+//                    End
+//                End 
                 
                 Get psFuncName to sFuncName
                 Set Value of oFunctionName_fm to sFuncName
@@ -375,11 +377,14 @@ Object oDateFunctionsTest is a cRDCDbView
                 If (sISO_Short <> "" and dDate <> "") Begin
                     Get IsHoliday of ghoCalendarHolidays dDate sISO_Short (&bOfficialHoliday) to sHolidayName
                     Set Checked_State of oIsHoliday_cg to bOfficialHoliday
+                    If (sHolidayName = "") Begin
+                        Move "Not Found" to sHolidayName
+                    End
                     Set Value of oExtra6_fm to sHolidayName
                     Set psToolTip of (Label_Object(oExtra6_fm)) to sHolidayName
                 End
-                Set Visible_State of oExtra6_fm to (sHolidayName <> "")
-                Set Visible_State of oIsHoliday_cg to (sHolidayName <> "")
+//                Set Visible_State of oExtra6_fm to (sHolidayName <> "")
+//                Set Visible_State of oIsHoliday_cg to (sHolidayName <> "")
             End_Procedure 
             
             Function CheckTypeValue String sType String sValue Returns Boolean
@@ -417,7 +422,7 @@ Object oDateFunctionsTest is a cRDCDbView
         Object oInfo_tb is a TextBox
             Set Size to 10 177
             Set Location to 11 322
-            Set Label to "Note: Values according to the computer's local settings."
+            Set Label to "Note: Results according your computer's local settings."
         End_Object
 
         Object oFunctionName_fm is a cDateRDCForm
@@ -507,10 +512,10 @@ Object oDateFunctionsTest is a cRDCDbView
         Object oExtra6_fm is a cDateRDCForm
             Set Location to 153 404
             Set Size to 13 93
-            Set Label to "Day Name:"
+            Set Label to "(Using Country packages)  Day Name:"
             Set Enabled_State to False
             Set peAnchors to anBottomLeftRight
-            Set Visible_State to False
+//            Set Visible_State to False
         End_Object
 
         Object oExtra7_fm is a cDateRDCForm
@@ -529,7 +534,62 @@ Object oDateFunctionsTest is a cRDCDbView
             Set Label to "Is Holiday"  
             Set Checked_State to False
             Set Enabled_State to False
-            Set Visible_State to False
+//            Set Visible_State to False
+        End_Object
+
+        Object oGridInfo_tb is a TextBox
+            Set Size to 10 157
+            Set Location to 66 35
+            Set Label to "Existing Country packages (CountryPackages.pkg):"
+        End_Object
+
+        Object oNationHolidays_grd is a cRDCCJGrid
+            Set Size to 85 237
+            Set Location to 76 34
+            Set pbReadOnly to True 
+            Set pbShowFooter to False
+            Set peAnchors to anNone
+
+            Object oISO_Short_col is a cCJGridColumn
+                Set piWidth to 40
+                Set psCaption to "ISO Short"
+            End_Object
+
+            Object oOfficial_Short_col is a cCJGridColumn
+                Set piWidth to 160
+                Set psCaption to "Official_Short"
+            End_Object 
+            
+            Procedure LoadData
+                Handle hoDataSource
+                tDataSourceRow[] TheData
+                Handle[] ahoNationalHolidaysArray
+                Integer iCount iSize iFirst_col iSecond_col
+                Handle hoNationalHolidays
+                
+                Get phoDataSource to hoDataSource
+                // Get the datasource indexes of the various columns
+                Get piColumnId of oISO_Short_col      to iFirst_col
+                Get piColumnId of oOfficial_Short_col to iSecond_col
+                
+                Get phoNationalHolidaysArray of ghoCalendarHolidays to ahoNationalHolidaysArray
+                Move (SizeOfArray(ahoNationalHolidaysArray)) to iSize
+                Decrement iSize
+                For iCount from 0 to iSize
+                    Move ahoNationalHolidaysArray[iCount] to hoNationalHolidays
+                    Get psISO_Short      of hoNationalHolidays to TheData[iCount].sValue[iFirst_col]
+                    Get psOfficial_Short of hoNationalHolidays to TheData[iCount].sValue[iSecond_col]
+                Loop
+
+                Send ReInitializeData TheData True
+                Send MovetoFirstRow
+            End_Procedure
+            
+            Procedure OnCreate
+                Forward Send OnCreate
+                Send LoadData
+            End_Procedure
+
         End_Object
 
         Procedure SetParamValues tHolidayFunc HolidayFunc
@@ -550,23 +610,23 @@ Object oDateFunctionsTest is a cRDCDbView
                 Set Value of oVarName2_fm to FuncVarArray[1].sVarName
                 Set Enabled_State of oValue2_fm to True
             End
-            If (SizeOfArray(FuncVarArray) > 2) Begin
-                Set Value of oType3_fm    to FuncVarArray[2].sType
-                Set Value of oVarName3_fm to FuncVarArray[2].sVarName
-                Set Enabled_State of oValue3_fm to True
-            End
-            If (SizeOfArray(FuncVarArray) > 3) Begin
-                Set Value of oType4_fm    to FuncVarArray[3].sType
-                Set Value of oVarName4_fm to FuncVarArray[3].sVarName
-                Set Enabled_State of oValue4_fm to True
-            End
+//            If (SizeOfArray(FuncVarArray) > 2) Begin
+//                Set Value of oType3_fm    to FuncVarArray[2].sType
+//                Set Value of oVarName3_fm to FuncVarArray[2].sVarName
+//                Set Enabled_State of oValue3_fm to True
+//            End
+//            If (SizeOfArray(FuncVarArray) > 3) Begin
+//                Set Value of oType4_fm    to FuncVarArray[3].sType
+//                Set Value of oVarName4_fm to FuncVarArray[3].sVarName
+//                Set Enabled_State of oValue4_fm to True
+//            End
         End_Procedure
         
         Procedure DisableValueForms
             Set Enabled_State of oValue1_fm to False
             Set Enabled_State of oValue2_fm to False
-            Set Enabled_State of oValue3_fm to False
-            Set Enabled_State of oValue4_fm to False
+//            Set Enabled_State of oValue3_fm to False
+//            Set Enabled_State of oValue4_fm to False
         End_Procedure
         
         Procedure ClearData
