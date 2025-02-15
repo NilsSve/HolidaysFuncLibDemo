@@ -336,17 +336,19 @@ Object oDateFunctionsTest is a cRDCDbView
 
                 Move "" to sISO_Short
                 Get Value of oType2_fm to sType2
-                If (sType2 <> "") Begin
+//                If (sType2 <> "") Begin
                     Get Value of oValue2_fm to sValue2    
                     If (sType2 = "String") Begin
                         Move (Uppercase(sValue2)) to sValue2
                     End
-                    Get CheckTypeValue sType2 sValue2 to bOK
-                    If (bOK = False) Begin
-                        Procedure_Return
+                    If (sType2 <> "") Begin
+                        Get CheckTypeValue sType2 sValue2 to bOK
+                        If (bOK = False) Begin
+                            Procedure_Return
+                        End
                     End
                     Move sValue2 to sISO_Short
-                End
+//                End
                 
 //                Get Value of oType3_fm to sType3
 //                If (sType3 <> "") Begin
@@ -608,8 +610,8 @@ Object oDateFunctionsTest is a cRDCDbView
             If (SizeOfArray(FuncVarArray) > 1) Begin
                 Set Value of oType2_fm    to FuncVarArray[1].sType
                 Set Value of oVarName2_fm to FuncVarArray[1].sVarName
-                Set Enabled_State of oValue2_fm to True
             End
+            Set Enabled_State of oValue2_fm to True
 //            If (SizeOfArray(FuncVarArray) > 2) Begin
 //                Set Value of oType3_fm    to FuncVarArray[2].sType
 //                Set Value of oVarName3_fm to FuncVarArray[2].sVarName
