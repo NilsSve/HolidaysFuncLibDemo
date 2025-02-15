@@ -293,6 +293,14 @@ Object oDateFunctionsTest is a cRDCDbView
                 Set piUpdateColumn of hPrompt to 0
             End_Procedure
             
+            Procedure End_Construct_Object
+                String sISO_Long sISO_Short                   //LOCALE_SISO639LANGNAME
+                Forward Send End_Construct_Object             
+                Get WindowsLocaleValue of ghoCalendarHolidays LOCALE_SABBREVCTRYNAME to sISO_Long
+                Get ISO_ShortFromISO_Long of ghoCalendarHolidays sISO_Long to sISO_Short
+                Set Value to sISO_Short
+            End_Procedure
+                
         End_Object
 
 //        Object oValue3_fm is a cDateRDCForm
@@ -568,10 +576,11 @@ Object oDateFunctionsTest is a cRDCDbView
             Procedure LoadData
                 Handle hoDataSource
                 tDataSourceRow[] TheData     
-                tISO_ShortOfficial_Short[] ISO_ShortOfficial_ShortArray
+                tISO_Codes[] ISO_CodesArray
                 Handle[] ahoNationalHolidaysArray
                 Integer iCount iSize iFirst_col iSecond_col iItem
-                Handle hoNationalHolidays
+                Handle hoNationalHolidays 
+                String sISO_Short
                 
                 Get phoDataSource to hoDataSource
                 // Get the datasource indexes of the various columns
@@ -584,21 +593,21 @@ Object oDateFunctionsTest is a cRDCDbView
                 Move 0 to iItem
                 For iCount from 0 to iSize
                     Move ahoNationalHolidaysArray[iCount] to hoNationalHolidays
-                    Get psISO_Short      of hoNationalHolidays to ISO_ShortOfficial_ShortArray[iItem].sIso_Short
-                    Get psOfficial_Short of hoNationalHolidays to ISO_ShortOfficial_ShortArray[iItem].sOffical_Short
+                    Get psISO_Short      of hoNationalHolidays to ISO_CodesArray[iItem].sIso_Short
+                    Get psOfficial_Short of hoNationalHolidays to ISO_CodesArray[iItem].sOffical_Short
                     Increment iItem
                 Loop
 
-                Move (SortArray(ISO_ShortOfficial_ShortArray)) to ISO_ShortOfficial_ShortArray
-                Move (SizeOfArray(ISO_ShortOfficial_ShortArray)) to iSize
+                Move (SortArray(ISO_CodesArray)) to ISO_CodesArray
+                Move (SizeOfArray(ISO_CodesArray)) to iSize
                 Decrement iSize
                 For iCount from 0 to iSize
-                    Move ISO_ShortOfficial_ShortArray[iCount].sIso_Short     to TheData[iCount].sValue[iFirst_col]
-                    Move ISO_ShortOfficial_ShortArray[iCount].sOffical_Short to TheData[iCount].sValue[iSecond_col]
+                    Move ISO_CodesArray[iCount].sIso_Short     to TheData[iCount].sValue[iFirst_col]
+                    Move ISO_CodesArray[iCount].sOffical_Short to TheData[iCount].sValue[iSecond_col]
                 Loop
                 
                 Send ReInitializeData TheData True
-                Send MovetoFirstRow
+                Send MovetoFirstRow 
             End_Procedure
             
             Procedure OnCreate
