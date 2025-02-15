@@ -283,6 +283,9 @@ Object oDateFunctionsTest is a cRDCDbView
             // Set to zero to not trigger a Changed_State, when using prompt list.
             Set Server to 0
             
+            Procedure ClearData
+            End_Procedure
+
             Procedure Prompt_Callback Handle hPrompt
                 Set pbAutoServer   of hPrompt to False 
                 Set Server         of hPrompt to (oNations_DD(Self))
@@ -564,9 +567,10 @@ Object oDateFunctionsTest is a cRDCDbView
             
             Procedure LoadData
                 Handle hoDataSource
-                tDataSourceRow[] TheData
+                tDataSourceRow[] TheData     
+                tISO_ShortOfficial_Short[] ISO_ShortOfficial_ShortArray
                 Handle[] ahoNationalHolidaysArray
-                Integer iCount iSize iFirst_col iSecond_col
+                Integer iCount iSize iFirst_col iSecond_col iItem
                 Handle hoNationalHolidays
                 
                 Get phoDataSource to hoDataSource
@@ -577,12 +581,22 @@ Object oDateFunctionsTest is a cRDCDbView
                 Get phoNationalHolidaysArray of ghoCalendarHolidays to ahoNationalHolidaysArray
                 Move (SizeOfArray(ahoNationalHolidaysArray)) to iSize
                 Decrement iSize
+                Move 0 to iItem
                 For iCount from 0 to iSize
                     Move ahoNationalHolidaysArray[iCount] to hoNationalHolidays
-                    Get psISO_Short      of hoNationalHolidays to TheData[iCount].sValue[iFirst_col]
-                    Get psOfficial_Short of hoNationalHolidays to TheData[iCount].sValue[iSecond_col]
+                    Get psISO_Short      of hoNationalHolidays to ISO_ShortOfficial_ShortArray[iItem].sIso_Short
+                    Get psOfficial_Short of hoNationalHolidays to ISO_ShortOfficial_ShortArray[iItem].sOffical_Short
+                    Increment iItem
                 Loop
 
+                Move (SortArray(ISO_ShortOfficial_ShortArray)) to ISO_ShortOfficial_ShortArray
+                Move (SizeOfArray(ISO_ShortOfficial_ShortArray)) to iSize
+                Decrement iSize
+                For iCount from 0 to iSize
+                    Move ISO_ShortOfficial_ShortArray[iCount].sIso_Short     to TheData[iCount].sValue[iFirst_col]
+                    Move ISO_ShortOfficial_ShortArray[iCount].sOffical_Short to TheData[iCount].sValue[iSecond_col]
+                Loop
+                
                 Send ReInitializeData TheData True
                 Send MovetoFirstRow
             End_Procedure
