@@ -1,6 +1,6 @@
 # Demo for 'Library-HolidaysFuncLib'
 
-The `oCalendarHolidays.pkg` contains all the basic holiday date functions.
+The `oCalendarHolidays.pkg` contains all the basic holiday date functions. See the documentation near the top of cCalendarHolidays.pkg for details on how the function library works.
 
 Run the sample program `HolidaysFuncLibTest` to see how the holiday functions work.
 
