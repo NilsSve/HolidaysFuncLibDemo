@@ -535,7 +535,6 @@ Object oHolidays is a cRDCDbView
                 Date dStartDate dEndDate dDate
                 Boolean bNationalHoliday
                 String  sHolidayName sISO_Short
-                Handle hoNationalHolidays
 
                 Get psISO_Short to sISO_Short          // Panel property set by combobox above.
                 If (sISO_Short = "") Begin
@@ -544,7 +543,6 @@ Object oHolidays is a cRDCDbView
                     Procedure_Return
                 End
 
-                Get NationalHolidaysObject of ghoCalendarHolidays sISO_Short to hoNationalHolidays
                 Get Value of oStartDate_fm to dStartDate
                 Get Value of oEndDate_fm   to dEndDate
                 Move Holidays.Recnum to iRecnum
@@ -560,7 +558,7 @@ Object oHolidays is a cRDCDbView
                         Move (dStartDate + 1) to Holidays.DateNo
                         Find Eq Holidays.DateNo
     
-                        Get IsHoliday of hoNationalHolidays Holidays.DateNo (&bNationalHoliday) to sHolidayName
+                        Get IsHoliday of ghoCalendarHolidays Holidays.DateNo sISO_Short (&bNationalHoliday) to sHolidayName
     
                         Move sHolidayName     to Holidays.HolidayName
                         Move bNationalHoliday to Holidays.IsNatHoliday
