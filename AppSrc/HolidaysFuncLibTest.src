@@ -378,6 +378,18 @@ Object oMain is a Panel
                     End_Procedure
                 End_Object 
                 
+                Object oViewReadmeMenuItem is a cCJMenuItem
+                    Set psCaption to "View Readme file"
+                    Set psImage to "Readm.ico"
+
+                    Procedure OnExecute Variant vCommandBarControl
+                        String sHelpPath
+                        Get psHelpPath of (phoWorkspace(ghoApplication)) to sHelpPath
+                        
+                        Runprogram Shell Background (sHelpPath + "\Readme.html") sHelpPath
+                    End_Procedure
+                End_Object 
+                
                 Object oHelpMenuItem is a cCJHelpMenuItem
                     Procedure OnExecute Variant vCommandBarControl
                         String sHelpPath sHelpFile
@@ -493,8 +505,21 @@ Object oMain is a Panel
                 End_Procedure
             End_Object 
                 
+            Object oViewReadmeMenuItem is a cCJMenuItem
+                Set psToolTip to "Readme"
+                Set psDescription to "View Readme.md file"
+                Set psImage to "Readm.ico"
+
+                Procedure OnExecute Variant vCommandBarControl
+                    String sHelpPath
+                    Get psHelpPath of (phoWorkspace(ghoApplication)) to sHelpPath
+                    
+                    Runprogram Shell Background (sHelpPath + "\Readme.html") sHelpPath
+                End_Procedure
+            End_Object 
+                
             Object oHelpMenuItem is a cCJHelpMenuItem 
-                Set psToolTip to "Read documentation about various classes used."
+                Set psToolTip to "Read documentation about various classes used by the project."
                 Procedure OnExecute Variant vCommandBarControl
                     String sHelpPath sHelpFile
                     Get psHelpPath of (phoWorkspace(ghoApplication)) to sHelpPath
