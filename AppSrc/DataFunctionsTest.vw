@@ -112,6 +112,7 @@ Object oDateFunctionsTest is a cRDCDbView
             Set peUpdateMode to umPromptNonInvoking
             Set pbGrayIfDisable to False
             Set pbShadeSortColumn to False
+            Set pbShowFooter to True
             
             Object oCJGridColumnRowIndicator is a cCJGridColumnRowIndicator
             End_Object
@@ -151,6 +152,8 @@ Object oDateFunctionsTest is a cRDCDbView
                     End
                     Increment iRow
                 Loop
+
+                Set psFooterText of oFunction_col  to ("# of Functions" * String(iSize + 1))
 
                 // Initialize Grid with new data
                 Send InitializeData TheData
