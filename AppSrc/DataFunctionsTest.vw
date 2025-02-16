@@ -112,11 +112,18 @@ Object oDateFunctionsTest is a cRDCDbView
             Set peUpdateMode to umPromptNonInvoking
             Set pbGrayIfDisable to False
             Set pbShadeSortColumn to False
-            Set pbShowFooter to True
+            Set pbShowFooter to True 
+            Set piLayoutBuild to 2
+            
             
             Object oCJGridColumnRowIndicator is a cCJGridColumnRowIndicator
             End_Object
 
+            Object oNumber_col is a cCJGridColumn
+                Set piWidth to 5
+                Set psCaption to "#"
+            End_Object
+            
             Object oFunction_col is a cCJGridColumn
                 Set piWidth to 30
                 Set psCaption to "Function Name"
@@ -127,23 +134,25 @@ Object oDateFunctionsTest is a cRDCDbView
                 Set psCaption to "Help Text"
                 Set pbMultiLine to True
             End_Object
-            
+
             Procedure LoadData 
                 tHolidayFunc[] HolidayFuncArray
                 tHolidayFunc HolidayFunc
                 Integer iCount iSize
                 tDataSourceRow[] TheData
                 Boolean bFound
-                Integer iItem iRow iFunction_col iHelp_col
+                Integer iItem iRow iNumber_col iFunction_col iHelp_col
                 
                 Move 0 to iRow
+                Get piColumnId of oNumber_col   to iNumber_col
                 Get piColumnId of oFunction_col to iFunction_col
                 Get piColumnId of oHeltText_col to iHelp_col
                 
                 Get pHolidayFunctions of ghoCalendarHolidays to HolidayFuncArray
                 Move (SizeOfArray(HolidayFuncArray)) to iSize
                 Decrement iSize
-                For iCount from 0 to iSize
+                For iCount from 0 to iSize 
+                    Move (iCount +1)                    to TheData[iRow].sValue[iNumber_col]
                     Move HolidayFuncArray[iCount].sName to TheData[iRow].sValue[iFunction_col]
                     Move HolidayFuncArray[iCount].sName to HolidayFunc.sName // the current selected item to struct member.
                     Move (SearchArray(HolidayFunc, HolidayFuncArray)) to iItem
