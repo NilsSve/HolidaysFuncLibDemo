@@ -194,7 +194,7 @@ Object oDateFunctionsTest is a cRDCDbView
     Object oParam_grp is a Group
         Set Location to 139 9
         Set Size to 173 511
-        Set Label to "Enter Function Parameters and Call Function:"
+        Set Label to "Enter Function Parameters and click 'Call Function':"
         Set peAnchors to anBottomLeftRight
 
         Object oType1_fm is a cDateRDCForm
@@ -265,7 +265,7 @@ Object oDateFunctionsTest is a cRDCDbView
                 String sISO_Long sISO_Short
                 Forward Send End_Construct_Object             
                 Get WindowsLocaleValue of ghoCalendarHolidays LOCALE_SABBREVCTRYNAME to sISO_Long
-                Get ISO_ShortFromISO_Long of ghoCalendarHolidays sISO_Long to sISO_Short
+                Get ISO_LongToISO_Short of ghoCalendarHolidays sISO_Long to sISO_Short
                 Set Value to sISO_Short
             End_Procedure
                 
