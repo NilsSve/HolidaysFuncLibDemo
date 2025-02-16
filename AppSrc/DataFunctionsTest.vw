@@ -277,9 +277,11 @@ Object oDateFunctionsTest is a cRDCDbView
         Object oCallFunction_btn is a cRDCButton
             Set Location to 22 285
             Set Size to 31 57
-            Set Label to "Call Function" 
-            Set psToolTip to "Calls the selected function from the grid with the entered values to the left."
             Set MultiLineState to True
+            Set Label to "Call Function!" 
+            Set psToolTip to "Calls the selected function from the grid with the entered values to the left."
+            Set psImage to "Phone.ico"
+            Set piImageSize to 24
             
             Procedure OnClick
                 String sFuncName sType1 sValue1 sType2 sValue2 sISO_Short
@@ -480,7 +482,7 @@ Object oDateFunctionsTest is a cRDCDbView
             Set Location to 141 404
             Set Label to "Is Holiday"  
             Set Checked_State to False
-            Set Enabled_State to False
+            Set Entry_State to False
         End_Object
 
         Object oGridInfo_tb is a TextBox
