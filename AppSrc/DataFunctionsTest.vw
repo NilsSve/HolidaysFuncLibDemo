@@ -16,6 +16,7 @@ Use cNationsDataDictionary.dd
 Use cHolidaysDataDictionary.dd
 Use Windows.pkg
 Use cCJGrid.pkg
+Use dfLine.pkg
 
 Class cDateRDCForm is a Form
     Procedure Construct_Object
@@ -204,7 +205,7 @@ Object oDateFunctionsTest is a cRDCDbView
     End_Object
 
     Object oParam_grp is a Group
-        Set Location to 139 9
+        Set Location to 139 8
         Set Size to 173 511
         Set Label to "Enter Function Parameters and click 'Call Function':"
         Set peAnchors to anBottomLeftRight
@@ -342,6 +343,7 @@ Object oDateFunctionsTest is a cRDCDbView
                         Move "Not Found" to sHolidayName
                     End
                     Set Value of oExtra6_fm to sHolidayName
+                    Set psToolTip of oExtra6_fm to sHolidayName
                     Set psToolTip of (Label_Object(oExtra6_fm)) to sHolidayName
                 End
             End_Procedure 
@@ -386,9 +388,10 @@ Object oDateFunctionsTest is a cRDCDbView
 
         Object oFunctionName_fm is a cDateRDCForm
             Set Location to 26 404
-            Set Size to 13 93
+            Set Size to 13 68
             Set Label to "Function Name:"
             Set Enabled_State to False
+            Set peAnchors to anNone
         End_Object
 
         Object oResult_fm is a cDateRDCForm
@@ -462,28 +465,30 @@ Object oDateFunctionsTest is a cRDCDbView
         End_Object
         
         Object oExtra5_fm is a cDateRDCForm
-            Set Location to 105 478
+            Set Location to 105 456
             Set Size to 13 19
-            Set Label to "Week Number:"
+            Set Label to "Week #:"
             Set Enabled_State to False
         End_Object
         
         Object oExtra6_fm is a cDateRDCForm
             Set Location to 153 404
-            Set Size to 13 93
+            Set Size to 13 68
             Set Label to "(From Country packages)  Day Name:"
-            Set Enabled_State to False
-            Set peAnchors to anBottomLeftRight
+//            Set Enabled_State to False 
+            Set Entry_State to False
+            Set Skip_State to True
+            Set peAnchors to anNone
         End_Object
 
         Object oExtra7_fm is a cDateRDCForm
             Set Location to 122 404
-            Set Size to 13 93
+            Set Size to 13 68
             Set Label to "DateFormat:" 
             Set psToolTip to "Note that the date is spelled according to your computer's local date settings."
             Set psToolTip of (Label_Object(Self)) to "Note that the date is spelled according to your computer's local date settings."
             Set Enabled_State to False
-            Set peAnchors to anBottomLeftRight
+            Set peAnchors to anNone
         End_Object
 
         Object oIsHoliday_cg is a CheckBox
@@ -561,6 +566,19 @@ Object oDateFunctionsTest is a cRDCDbView
 
         End_Object
 
+        Object oLineControl1 is a LineControl
+            Set Size to 2 52
+            Set Location to 47 453
+            Set peAnchors to anNone
+        End_Object
+
+        Object oLineControl2 is a LineControl
+            Set Size to 113 99
+            Set Location to 47 505
+            Set Horizontal_State to False
+            Set peAnchors to anNone
+        End_Object
+
         Procedure SetParamValues tHolidayFunc HolidayFunc
             tHolidayFuncVar[] FuncVarArray
             Integer iCount iSize
@@ -590,6 +608,24 @@ Object oDateFunctionsTest is a cRDCDbView
             Broadcast Send ClearData 
             Set Checked_State of oIsHoliday_cg to False
         End_Procedure 
+
+        Object oLineControl1 is a LineControl
+            Set Size to 2 29
+            Set Location to 160 476
+            Set peAnchors to anNone
+        End_Object
+
+        Object oRightArrow_tb is a TextBox
+            Set Size to 10 6
+            Set Location to 43 448
+            Set Label to ">>"
+        End_Object
+
+        Object oLeftArrow_tb is a TextBox
+            Set Size to 10 11
+            Set Location to 155 472
+            Set Label to "<<"
+        End_Object
 
     End_Object
 
