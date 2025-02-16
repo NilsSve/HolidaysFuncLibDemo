@@ -2,9 +2,9 @@
 
 The `oCalendarHolidays.pkg` contains all the basic holiday date functions. See the documentation near the top of cCalendarHolidays.pkg for details on how the function library works.
 
-Run the sample program `HolidaysFuncLibTest` to see how the holiday functions work.
+Run the sample program `HolidaysFuncLibTest` to see the 'Holiday Functions Library' in action.
 
-In addition to the `oCalendarHolidays` package, there are also specific National Holidays Date Function Libraries that can be streamlined for each individual country.
+In addition to the `oCalendarHolidays` package, there are also specific 'National Holidays Date Functions' that is streamlined for each individual country. At a bare minimum such a country packge returns holiday names as a string.
 
 See the collection of country-specific libraries in `CountryPackages.pkg`. Use these files as templates for developing your own country-specific holiday package.
 
