@@ -558,7 +558,7 @@ Object oHolidays is a cRDCDbView
                         Move (dStartDate + 1) to Holidays.DateNo
                         Find Eq Holidays.DateNo
     
-                        Get IsHoliday of ghoCalendarHolidays Holidays.DateNo sISO_Short (&bNationalHoliday) to sHolidayName
+                        Get HolidayName of ghoCalendarHolidays Holidays.DateNo sISO_Short (&bNationalHoliday) to sHolidayName
     
                         Move sHolidayName     to Holidays.HolidayName
                         Move bNationalHoliday to Holidays.IsNatHoliday

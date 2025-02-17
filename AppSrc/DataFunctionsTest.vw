@@ -342,7 +342,7 @@ Object oDateFunctionsTest is a cRDCDbView
                 Set Value of oResult_fm to dDate
                 
                 If (sISO_Short <> "" and dDate <> "") Begin
-                    Get IsHoliday of ghoCalendarHolidays dDate sISO_Short (&bOfficialHoliday) to sHolidayName
+                    Get HolidayName of ghoCalendarHolidays dDate sISO_Short (&bOfficialHoliday) to sHolidayName
                     Set Checked_State of oIsHoliday_cg to bOfficialHoliday
                     If (sHolidayName = "") Begin
                         Move "Not Found" to sHolidayName
