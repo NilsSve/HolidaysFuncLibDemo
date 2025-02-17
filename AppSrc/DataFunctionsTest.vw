@@ -1,13 +1,15 @@
 ﻿Use cRDCDbView.pkg
-Use DFClient.pkg
 Use cCJGridColumnRowIndicator.pkg
 Use cRDCCJGrid.pkg
 Use cCJGridColumn.pkg
 Use cRDCComboForm.pkg
 Use cRDCForm.pkg
 Use cRDCButton.pkg
+Use cRDCSpinForm.pkg
 Use cRDCCJGridPromptList.pkg
-Use cRDCCheckbox.pkg 
+Use cRDCCheckbox.pkg
+Use cRDCHeaderGroup.pkg
+
 // Object with all Holiday date functions
 Use oCalendarHolidays.pkg
 
@@ -35,7 +37,7 @@ End_Class
 
 Activate_View Activate_oDateFunctionsTest for oDateFunctionsTest
 Object oDateFunctionsTest is a cRDCDbView
-    Set Size to 316 527
+    Set Size to 322 633
     Set Location to 3 1
     Set Label to "Dates Functions Test"
     Set Border_Style to Border_Thick
@@ -99,15 +101,17 @@ Object oDateFunctionsTest is a cRDCDbView
     Set Main_DD to oHolidays_DD
     Set Server to oHolidays_DD
 
-    Object oHeader_grp is a Group
-        Set Size to 126 511
+    Object oHeader_grp is a cRDCHeaderGroup
+        Set Size to 126 618
         Set Location to 6 9
-        Set Label to "Test of 'Holiday and Other Special Dates' Functions:"
+        Set Label to "Function List:"
+        Set psNote to "'Holiday and Other Special Dates' Library Functions:"
+        Set psImage to "FunctionLibrary.ico"
         Set peAnchors to anAll
 
         Object oDateFunctions_grd is a cRDCCJGridPromptList
-            Set Size to 102 497
-            Set Location to 13 6
+            Set Size to 95 604
+            Set Location to 25 6
             Set pbInitialSelectionEnable to True
             Set pbMultiSelectionMode to False
             Set peUpdateMode to umPromptNonInvoking
@@ -204,46 +208,47 @@ Object oDateFunctionsTest is a cRDCDbView
         
     End_Object
 
-    Object oParam_grp is a Group
+    Object oParam_grp is a cRDCHeaderGroup
         Set Location to 139 8
-        Set Size to 173 511
-        Set Label to "Enter Function Parameters and click 'Call Function':"
+        Set Size to 179 618
+        Set Label to "Test Function Call:"
+        Set psNote to "Enter Function Parameters and click 'Call Function':"
+        Set psImage to "CallFunction.ico"
         Set peAnchors to anBottomLeftRight
 
         Object oType1_fm is a cDateRDCForm
-            Set Location to 24 37
+            Set Location to 30 37
             Set Size to 13 43
             Set Label to "Type 1:"
             Set Enabled_State to False
         End_Object
 
         Object oType2_fm is a cDateRDCForm
-            Set Location to 40 37
+            Set Location to 46 37
             Set Size to 13 43
             Set Label to "Type 2:"
             Set Enabled_State to False
         End_Object
 
         Object oVarName1_fm is a cDateRDCForm
-            Set Location to 24 116
+            Set Location to 30 116
             Set Size to 13 53
             Set Label to "Name 1:"
             Set Enabled_State to False
         End_Object
 
         Object oVarName2_fm is a cDateRDCForm
-            Set Location to 40 116
+            Set Location to 46 116
             Set Size to 13 53
             Set Label to "Name 2:"
             Set Enabled_State to False
         End_Object
 
-        Object oValue1_fm is a cDateRDCForm
-            Set Location to 24 218
+        Object oValue1_fm is a cRDCSpinForm
+            Set Location to 30 218
             Set Size to 13 53
-            Set Label to "Enter Value 1:"
-            Procedure ClearData
-            End_Procedure
+            Set Label to "Enter Value 1:"     
+            
             Procedure End_Construct_Object
                 Date dDate
                 Integer iYear
@@ -255,7 +260,7 @@ Object oDateFunctionsTest is a cRDCDbView
         End_Object
 
         Object oValue2_fm is a cDateRDCForm
-            Set Location to 40 218
+            Set Location to 46 218
             Set Size to 13 53
             Set Label to "Enter Value 2:"
             Set Prompt_Button_Mode to PB_PromptOn
@@ -285,7 +290,7 @@ Object oDateFunctionsTest is a cRDCDbView
         End_Object
 
         Object oCallFunction_btn is a cRDCButton
-            Set Location to 22 285
+            Set Location to 28 285
             Set Size to 31 57
             Set MultiLineState to True
             Set Label to "Call Function!" 
@@ -382,12 +387,12 @@ Object oDateFunctionsTest is a cRDCDbView
 
         Object oInfo_tb is a TextBox
             Set Size to 10 177
-            Set Location to 11 322
+            Set Location to 17 322
             Set Label to "Note: Results according your computer's local settings."
         End_Object
 
         Object oFunctionName_fm is a cDateRDCForm
-            Set Location to 26 404
+            Set Location to 32 404
             Set Size to 13 68
             Set Label to "Function Name:"
             Set Enabled_State to False
@@ -395,7 +400,7 @@ Object oDateFunctionsTest is a cRDCDbView
         End_Object
 
         Object oResult_fm is a cDateRDCForm
-            Set Location to 41 404
+            Set Location to 47 404
             Set Size to 13 43
             Set Label to "Date:"
             
@@ -437,42 +442,42 @@ Object oDateFunctionsTest is a cRDCDbView
         End_Object
 
         Object oExtra1_fm is a cDateRDCForm
-            Set Location to 57 404
+            Set Location to 63 404
             Set Size to 13 43
             Set Label to "Year:"
             Set Enabled_State to False
         End_Object
         
         Object oExtra2_fm is a cDateRDCForm
-            Set Location to 73 404
+            Set Location to 79 404
             Set Size to 13 43
             Set Label to "Month:"
             Set Enabled_State to False
         End_Object
 
         Object oExtra3_fm is a cDateRDCForm
-            Set Location to 89 404
+            Set Location to 95 404
             Set Size to 13 43
             Set Label to "Week Day:"
             Set Enabled_State to False
         End_Object
 
         Object oExtra4_fm is a cDateRDCForm
-            Set Location to 105 404
+            Set Location to 111 404
             Set Size to 13 19
             Set Label to "Days in Month:"
             Set Enabled_State to False
         End_Object
         
         Object oExtra5_fm is a cDateRDCForm
-            Set Location to 105 456
+            Set Location to 111 456
             Set Size to 13 19
             Set Label to "Week #:"
             Set Enabled_State to False
         End_Object
         
         Object oExtra6_fm is a cDateRDCForm
-            Set Location to 153 404
+            Set Location to 159 404
             Set Size to 13 68
             Set Label to "(From Country packages)  Day Name:"
 //            Set Enabled_State to False 
@@ -482,7 +487,7 @@ Object oDateFunctionsTest is a cRDCDbView
         End_Object
 
         Object oExtra7_fm is a cDateRDCForm
-            Set Location to 122 404
+            Set Location to 128 404
             Set Size to 13 68
             Set Label to "DateFormat:" 
             Set psToolTip to "Note that the date is spelled according to your computer's local date settings."
@@ -493,7 +498,7 @@ Object oDateFunctionsTest is a cRDCDbView
 
         Object oIsHoliday_cg is a CheckBox
             Set Size to 13 46
-            Set Location to 141 404
+            Set Location to 147 404
             Set Label to "Is Holiday"  
             Set Checked_State to False
             Set Entry_State to False
@@ -501,13 +506,13 @@ Object oDateFunctionsTest is a cRDCDbView
 
         Object oGridInfo_tb is a TextBox
             Set Size to 10 157
-            Set Location to 66 35
+            Set Location to 72 35
             Set Label to "Existing Country packages (CountryPackages.pkg):"
         End_Object
 
         Object oNationHolidays_grd is a cRDCCJGrid
             Set Size to 85 237
-            Set Location to 76 34
+            Set Location to 82 34
             Set pbReadOnly to True 
             Set pbShowFooter to False
             Set peAnchors to anNone
@@ -557,26 +562,20 @@ Object oDateFunctionsTest is a cRDCDbView
                 
                 Send ReInitializeData TheData True
                 Send MovetoFirstRow 
-            End_Procedure
+            End_Procedure 
             
+            Procedure OnRowDoubleClick Integer iRow Integer iColumn
+                String sISO_Short 
+                Forward Send OnRowDoubleClick iRow iColumn
+                Get SelectedRowValue of oISO_Short_col to sISO_Short
+                Set Value of oValue2_fm to sISO_Short
+            End_Procedure
+
             Procedure OnCreate
                 Forward Send OnCreate
                 Send LoadData
             End_Procedure
 
-        End_Object
-
-        Object oLineControl1 is a LineControl
-            Set Size to 2 52
-            Set Location to 47 453
-            Set peAnchors to anNone
-        End_Object
-
-        Object oLineControl2 is a LineControl
-            Set Size to 113 99
-            Set Location to 47 505
-            Set Horizontal_State to False
-            Set peAnchors to anNone
         End_Object
 
         Procedure SetParamValues tHolidayFunc HolidayFunc
@@ -598,33 +597,161 @@ Object oDateFunctionsTest is a cRDCDbView
             End
             Set Enabled_State of oValue2_fm to True
         End_Procedure
-        
+
         Procedure DisableValueForms
             Set Enabled_State of oValue1_fm to False
             Set Enabled_State of oValue2_fm to False
         End_Procedure
-        
+
         Procedure ClearData
             Broadcast Send ClearData 
             Set Checked_State of oIsHoliday_cg to False
         End_Procedure 
 
-        Object oLineControl1 is a LineControl
-            Set Size to 2 29
-            Set Location to 160 476
-            Set peAnchors to anNone
-        End_Object
-
         Object oRightArrow_tb is a TextBox
             Set Size to 10 6
-            Set Location to 43 448
+            Set Location to 49 448
             Set Label to ">>"
+        End_Object
+
+        Object oTopHorizontalLine is a LineControl
+            Set Size to 2 52
+            Set Location to 53 453
+        End_Object
+
+        Object oVerticalLine is a LineControl
+            Set Size to 113 3
+            Set Location to 53 505
+            Set Horizontal_State to False
+        End_Object
+
+        Object oLowerHorizontalLine is a LineControl
+            Set Size to 2 29
+            Set Location to 166 476
         End_Object
 
         Object oLeftArrow_tb is a TextBox
             Set Size to 10 11
-            Set Location to 155 472
+            Set Location to 161 472
             Set Label to "<<"
+        End_Object
+
+        Object oReciprocalVerticalLine is a LineControl
+            Set Size to 170 3
+            Set Location to 4 520
+            Set Horizontal_State to False
+        End_Object
+
+        Object oReciprocalInfo_tb is a TextBox
+            Set Size to 10 71
+            Set Location to 17 530
+            Set Label to "Reciprocal Date Test:"
+            Set FontWeight to fw_Bold
+        End_Object
+
+        Object oReciprocalDate_fm is a cDateRDCForm
+            Set Location to 47 530
+            Set Size to 13 78
+            Set Label to "Enter a Date:"
+            Set Label_Justification_Mode to JMode_Top
+            Set Label_Col_Offset to 0
+            Set Label_Row_Offset to 1
+            Procedure ClearData
+            End_Procedure
+        End_Object
+
+        Object oISO_Short_fm is a cDateRDCForm
+            Set Location to 73 530
+            Set Size to 13 78
+            Set Label to "ISO Short:"
+            Set Prompt_Button_Mode to PB_PromptOn
+            Set Prompt_Object to Nations_sl
+            Set Capslock_State to True
+            // Set to zero to not trigger a Changed_State, when using prompt list.
+            Set Server to 0
+            Set Label_Justification_Mode to JMode_Top
+            Set Label_Row_Offset to 1
+            Set Label_Col_Offset to 0
+            
+            Procedure ClearData
+            End_Procedure
+
+            Procedure Prompt_Callback Handle hPrompt
+                Set pbAutoServer   of hPrompt to False 
+                Set Server         of hPrompt to (oNations_DD(Self))
+                Set peUpdateMode   of hPrompt to umPromptValue
+                Set piUpdateColumn of hPrompt to 0
+            End_Procedure
+            
+            Procedure End_Construct_Object
+                String sISO_Long sISO_Short
+                Forward Send End_Construct_Object             
+                Get WindowsLocaleValue of ghoCalendarHolidays LOCALE_SABBREVCTRYNAME to sISO_Long
+                Get ISO_LongToISO_Short of ghoCalendarHolidays sISO_Long to sISO_Short
+                Set Value to sISO_Short
+            End_Procedure
+                
+        End_Object
+
+        Object oReciprocalCall_btn is a Button
+            Set Size to 26 78
+            Set Location to 91 530
+            Set Label to "Call Function IsDateAHoliday"
+            Set MultiLineState to True
+        
+            Procedure OnClick
+                Date dDate
+                String sDate sISO_Short sHolidayName sFunctionName sFoundText
+                Boolean bOK bFound bIsHoliday
+                
+                Get Value of oReciprocalDate_fm to sDate
+                Get IsValidDateString of ghoCalendarHolidays sDate to bOK
+                If (bOK = False) Begin
+                    Send Info_Box "Not a valid Date value"
+                    Procedure_Return
+                End
+                Move sDate to dDate
+                Get Value of oISO_Short_fm to sISO_Short 
+                Get IsDateAHoliday of ghoCalendarHolidays dDate sISO_Short (&bIsHoliday) (&sHolidayName) (&sFunctionName) to bFound
+                If (bFound = True) Begin
+                    Move sFunctionName to sFoundText
+                End
+                Else Begin                       
+                    Move "Not Found!" to sFoundText
+                End
+                If (sHolidayName = "") Begin
+                    Move "Not Found!" to sHolidayName
+                End
+                Set Value of oCallReply_fm to sFoundText
+                Set Checked_State of oIsHoliday2_cg to bIsHoliday
+                Set Value of oHolidayName_fm to sHolidayName
+            End_Procedure
+        
+        End_Object
+
+        Object oCallReply_fm is a cDateRDCForm
+            Set Location to 121 530
+            Set Size to 13 78
+        End_Object
+
+        Object oIsHoliday2_cg is a CheckBox
+            Set Size to 10 78
+            Set Location to 137 530
+            Set Label to "Is Holiday"  
+            Set Checked_State to False
+            Set Entry_State to False
+        End_Object
+
+        Object oHolidayName_fm is a cDateRDCForm
+            Set Location to 159 530
+            Set Size to 13 78
+            Set Label to "Holiday Name:"
+            Set Entry_State to False
+            Set Skip_State to True
+            Set peAnchors to anNone
+            Set Label_Justification_Mode to JMode_Top
+            Set Label_Row_Offset to 1
+            Set Label_Col_Offset to 0
         End_Object
 
     End_Object
