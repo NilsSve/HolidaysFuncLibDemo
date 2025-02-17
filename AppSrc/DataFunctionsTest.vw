@@ -643,10 +643,12 @@ Object oDateFunctionsTest is a cRDCDbView
         End_Object
 
         Object oReciprocalInfo_tb is a TextBox
-            Set Size to 10 71
+            Set Auto_Size_State to False
+            Set Size to 19 85
             Set Location to 17 530
-            Set Label to "Reciprocal Date Test:"
+            Set Label to "Reciprocal Function 'IsDateAHoliday' Test:"
             Set FontWeight to fw_Bold
+            Set Justification_Mode to JMode_Left
         End_Object
 
         Object oReciprocalDate_fm is a cDateRDCForm
