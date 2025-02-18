@@ -1,18 +1,18 @@
 # Demo for 'Library-HolidaysFuncLib'
 
-The `oCalendarHolidays.pkg` contains all the basic holiday date functions. See the documentation near the top of cCalendarHolidays.pkg for details on how the function library works.
+The `oCalendarHolidays.pkg` contains essential functions for managing holiday dates. For detailed information on how this function library operates, please refer to the documentation located at the top of `cCalendarHolidays.pkg`.
 
-Run the sample program `HolidaysFuncLibTest` to see the 'Holiday Functions Library' in action. The 'Dates Functions Test' tab-page shows a grid with build-in 'Holidays and Other Important Dates'. Enter a year in the lower part and press the 'Call Function' button to see the date the holiday/special day falls on. Enter an ISO-2 character country code in 'Enter Value 2:' to see the name of the holiday/special day at the bottom of the view. Note that only a few 'National Holiday' packages are available at current. Those countries can be seen in the grid at the lower-left of the view.
+To see the 'Holiday Functions Library' in action, run the sample program `HolidaysFuncLibTest`. In the 'Dates Functions Test' tab, you will find a grid displaying built-in 'Holidays and Other Important Dates.' Enter a year in the lower section and click the 'Call Function' button to find out the date of a holiday or special day. You can also enter an ISO-2 character country code in the 'Enter Value 2:' field to view the name of the holiday or special day at the bottom of the screen. Please note that a limited number of 'National Holiday' packages are currently available, which are listed in the grid in the lower-left corner.
 
-Note: If your country is missing from the lower-left grid, it is really simple to create one! Just see the examples in 'CountryPackages.pkg' on how to do it.
+If your country is not included in the grid, creating a new one is quite simple! Just refer to the examples in `CountryPackages.pkg` for guidance on how to do this.
 
-On the 'Calendar Test' tab-page is a sample on making your own calendar inclusive holiday/special day names. There is also a sample of a generalized lookup list for holidays. Click the 'Test Holiday Lookup List' button to see how it can be used to return any selection of holidays.
+In the 'Calendar Test' tab, you can see an example of how to create your own calendar that includes the names of holidays and special days. Additionally, there is a sample of a generalized lookup list for holidays. Click the 'Test Holiday Lookup List' button to see how this feature can be used to retrieve any selection of holidays.
 
-In addition to the `oCalendarHolidays` package, there are also specific 'National Holidays Date Functions' that is streamlined for each individual country. At a bare minimum such a country packge returns holiday names as a string.
+In addition to the `oCalendarHolidays` package, there are specific 'National Holidays Date Functions' tailored to individual countries. Each country package will at least return holiday names as strings.
 
-See the collection of country-specific libraries in `CountryPackages.pkg`. Use these files as templates for developing your own country-specific holiday package.
+You can find a collection of country-specific libraries in `CountryPackages.pkg`. Use these files as templates to develop your own holiday packages for specific countries.
 
-The workspace also contains a database and a view for showing Nations of the World, providing all kinds of facts about all nations. This part is independent of the calendar holidays packages above.
+The workspace also includes a database and a view displaying facts about nations around the world, which is independent of the calendar holiday packages mentioned above.
 
 ![Sample of how the HolidaysFuncLib.src program looks like:](Bitmaps/HolidaysFuncLibTest.png)
 
