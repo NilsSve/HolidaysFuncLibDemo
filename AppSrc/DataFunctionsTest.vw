@@ -280,10 +280,9 @@ Object oDateFunctionsTest is a cRDCDbView
             End_Procedure
             
             Procedure End_Construct_Object
-                String sISO_Long sISO_Short
-                Forward Send End_Construct_Object             
-                Get WindowsLocaleValue of ghoCalendarHolidays LOCALE_SABBREVCTRYNAME to sISO_Long
-                Get ISO_LongToISO_Short of ghoCalendarHolidays sISO_Long to sISO_Short
+                String sISO_Short
+                Forward Send End_Construct_Object 
+                Get WindowsLocaleISO_Short of ghoCalendarHolidays to sISO_Short            
                 Set Value to sISO_Short
             End_Procedure
                 
