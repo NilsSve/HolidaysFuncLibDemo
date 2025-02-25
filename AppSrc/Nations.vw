@@ -208,6 +208,33 @@ Object oNations is a cRDCDbView
     Procedure Request_Cancel
     End_Procedure
 
+    Procedure OnStartup
+        Integer iRecnum iRetval
+        String sOfficial_Short sISO_Short sISO_Long
+
+        Move Nations.Recnum to iRecnum
+        Get WindowsLocaleValue of ghoCalendarHolidays LOCALE_SABBREVCTRYNAME 3 to sISO_Long
+        // Change global record buffer and DDO to auto-find a country based on the current machine.
+        Clear Nations
+        Move sISO_Long to Nations.ISO_Long
+        Find EQ Nations.ISO_Long
+        If (Found) Begin
+            Send Request_Assign of oNations_DD
+        End
+
+        // Reset record-buffer
+        If (iRecnum > 0) Begin
+            Clear Nations
+            Move iRecnum to Nations.Recnum
+            Find EQ Nations by 0
+        End
+    End_Procedure
+
+    Procedure Page Integer iMode
+        Forward Send Page iMode
+        Send OnStartup
+    End_Procedure
+
     //    On_Key Key_Ctrl+Key_C Send KeyAction of oCallWebService_btn
     //    On_Key Key_Alt+Key_C  Send KeyAction of oCallWebService_btn
     On_Key Key_Ctrl+Key_S Send Request_Save
