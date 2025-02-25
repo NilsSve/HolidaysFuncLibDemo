@@ -298,7 +298,7 @@ Object oDateFunctionsTest is a cRDCDbView
             Set piImageSize to 24
             
             Procedure OnClick
-                String sFuncName sType1 sValue1 sType2 sValue2 sISO_Short
+                String sFuncName sType1 sValue1 sType2 sValue2 sISO_Short sToolTip
                 String sType3 sValue3 sType4 sValue4 sRetval sHolidayName 
                 Date dDate
                 Boolean bOK bOfficialHoliday
@@ -347,8 +347,9 @@ Object oDateFunctionsTest is a cRDCDbView
                         Move "Not Found" to sHolidayName
                     End
                     Set Value of oExtra6_fm to sHolidayName
-                    Set psToolTip of oExtra6_fm to sHolidayName
-                    Set psToolTip of (Label_Object(oExtra6_fm)) to sHolidayName
+                    Move ("Call to the 'HolidayName' function with the'" * String(sISO_Short) + "' ISO_Short code and date:" * String(dDate) * ", returned holiday name:" * String(sHolidayName)) to sToolTip
+                    Set psToolTip of oExtra6_fm to sToolTip
+                    Set psToolTip of (Label_Object(oExtra6_fm)) to sToolTip
                 End
             End_Procedure 
             
