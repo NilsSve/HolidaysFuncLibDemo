@@ -42,7 +42,6 @@ loginEncryptionkey.inc
 **/Programs/*.log
 
 # Workspace specific
-**/Data/compileheader.h
 **/Help/**/*.hnd
 **/Help/**/Assets
 **/Help/**/Online Help
