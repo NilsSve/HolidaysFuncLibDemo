@@ -120,7 +120,6 @@ Object oDateFunctionsTest is a cRDCDbView
             Set pbShowFooter to True 
             Set piLayoutBuild to 2
             
-            
             Object oCJGridColumnRowIndicator is a cCJGridColumnRowIndicator
             End_Object
 
@@ -153,6 +152,8 @@ Object oDateFunctionsTest is a cRDCDbView
                 Get piColumnId of oFunction_col to iFunction_col
                 Get piColumnId of oHeltText_col to iHelp_col
                 
+                // *** Get the struct array with holiday functions data,
+                //     created by the cCalendarHolidays class RegisterInterface procedure ***
                 Get pHolidayFunctions of ghoCalendarHolidays to HolidayFuncArray
                 Move (SizeOfArray(HolidayFuncArray)) to iSize
                 Decrement iSize
@@ -698,7 +699,7 @@ Object oDateFunctionsTest is a cRDCDbView
         Object oReciprocalCall_btn is a Button
             Set Size to 26 78
             Set Location to 91 530
-            Set Label to "Call Function IsDateAHoliday"
+            Set Label to "Call 'IsDateAHoliday' Function"
             Set MultiLineState to True
         
             Procedure OnClick
