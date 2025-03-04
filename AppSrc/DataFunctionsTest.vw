@@ -155,6 +155,7 @@ Object oDateFunctionsTest is a cRDCDbView
                 // *** Get the struct array with holiday functions data,
                 //     created by the cCalendarHolidays class RegisterInterface procedure ***
                 Get pHolidayFunctions of ghoCalendarHolidays to HolidayFuncArray
+                
                 Move (SizeOfArray(HolidayFuncArray)) to iSize
                 Decrement iSize
                 For iCount from 0 to iSize 
