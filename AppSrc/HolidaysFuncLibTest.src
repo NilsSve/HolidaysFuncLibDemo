@@ -28,7 +28,8 @@ End_Object
 
 Use cDataBaseFunctions.pkg
 
-Object oApplication is a cApplication
+Use cRDCApplication.pkg
+Object oApplication is a cRDCApplication
     Set peHelpType to htHtmlHelp
     Set pbEnterKeyAsTabKey to True
     Set pbPreserveEnvironment to True
@@ -48,14 +49,6 @@ Object oApplication is a cApplication
         Forward Send DoOpenWorkspace sWorkspace
         Open Nations
         Send CheckCollatingSequence of ghoDatabaseFunctions File_Field Nations.ISO_Code
-
-#IF (!@ > 240)
-        UBigInt ullUnixUTC
-        DateTime dtCompileTime
-        Move COMP$TIMESTAMP to ullUnixUTC 
-        Move 1/1/1970 to dtCompileTime
-        Move (DateAddSecond(dtCompileTime, ullUnixUTC)) to dtCompileTime
-#ENDIF
     End_Procedure
 
 End_Object
