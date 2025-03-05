@@ -246,11 +246,14 @@ Object oDateFunctionsTest is a cRDCDbView
             Set Enabled_State to False
         End_Object
 
-        Object oValue1_fm is a cRDCSpinForm
+        Object oValue1_fm is a cDateRDCForm //cRDCSpinForm
             Set Location to 30 218
             Set Size to 13 53
             Set Label to "Enter Value 1:"     
             
+            Procedure ClearData
+            End_Procedure
+
             Procedure End_Construct_Object
                 Date dDate
                 Integer iYear
@@ -259,6 +262,7 @@ Object oDateFunctionsTest is a cRDCDbView
                 Get DateGetISOYear of ghoCalendarHolidays dDate to iYear
                 Set Value to iYear 
             End_Procedure
+
         End_Object
 
         Object oValue2_fm is a cDateRDCForm
@@ -327,8 +331,16 @@ Object oDateFunctionsTest is a cRDCDbView
                     Move (Uppercase(sValue2)) to sValue2
                 End
                 If (sType2 <> "") Begin
-                    Get CheckTypeValue sType2 sValue2 to bOK
+                    Get CheckTypeValue sType2 sValue2 to bOK 
+                    If (bOK = True) Begin
+                        Move (Length(sValue2) = 2) to bOK
+                        If (bOK = True) Begin
+                            Get IsInteger of ghoCalendarHolidays sValue2 to bOK
+                            Move (not(bOK)) to bOK
+                        End
+                    End
                     If (bOK = False) Begin
+                        Send Info_Box "Not a 2-character national ISO short code."
                         Procedure_Return
                     End
                 End
