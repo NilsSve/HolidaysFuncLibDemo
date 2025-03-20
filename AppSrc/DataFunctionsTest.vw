@@ -502,7 +502,7 @@ Object oDateFunctionsTest is a cRDCDbView
 
         Object oExtra7_fm is a cDateRDCForm
             Set Location to 128 404
-            Set Size to 13 68
+            Set Size to 13 95
             Set Label to "DateFormat:" 
             Set psToolTip to "Note that the date is spelled according to your computer's local date settings."
             Set psToolTip of (Label_Object(Self)) to "Note that the date is spelled according to your computer's local date settings."
