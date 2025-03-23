@@ -1,6 +1,5 @@
 ﻿Use DFAllEnt.pkg
 Use cRDCCJCommandBarSystem.pkg
-Use cDigitalSoftwareCertificate.pkg
 
 // If Is$GraphicsLibrary is defined, then the "DataFlex Graphics Library" needs to be used as a library.
 // Else the "Flags" object will not be used/visible in the application.
@@ -9,6 +8,7 @@ Use cDigitalSoftwareCertificate.pkg
 //       For that reason the .sws files does have a link to the library.
 //Define Is$GraphicsLibrary
 
+Use cDigitalSoftwareCertificate.pkg
 Object oDigitalSoftwareCertificate is a cDigitalSoftwareCertificate
     Move Self to ghoDigitalSoftwareCertificate
 
