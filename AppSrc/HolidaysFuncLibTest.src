@@ -75,6 +75,8 @@ Object oMain is a Panel
     End
 
     Object oCommandBarSystem is a cRDCCJCommandBarSystem
+        Set pbTabbedWorkspaces to True
+        
         Object oMenuBar is a cCJMenuBar
 
             Object oFileMenu is a cCJMenuItem
