@@ -608,7 +608,9 @@ Object oHolidays is a cRDCDbView
                 End
     
                 Send DoProcess to oCreateDates_bp
-                Send Request_Find of oNations_DD EQ False
+                Move sISO_Short to Nations.ISO_Short
+                Find Eq Nations.ISO_Short
+                Send Request_Assign of oNations_DD Nations.File_Number
                 Send InitFromTodaysDate of oHolidaysDetails_grd
                 Send Info_Box "The generation/update of date records is complete."
             End_Procedure
