@@ -16,3 +16,12 @@ The workspace also includes a database and a view displaying facts about nations
 
 ![Sample of how the HolidaysFuncLib.src program looks like:](Bitmaps/HolidaysFuncLibTest.png)
 
+## Setup after cloning
+
+After cloning this repository, run **`setup.bat`** once from the repository root. It:
+
+- downloads / updates the library submodules under `Libraries\` (DFAbout, DigitalCert, RDCToolsLib, vwin32fh, HolidaysFuncLib) to the versions this workspace expects;
+- configures this clone so a normal `git pull` keeps those libraries in sync automatically from then on.
+
+Re-run `setup.bat` any time the `Libraries\` folders look empty or out of date, or when a new submodule is added.
+
