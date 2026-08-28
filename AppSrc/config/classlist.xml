@@ -9,11 +9,6 @@
 			<libraryID>Lib1</libraryID>
 		</library>
 		<library>
-			<libraryPath>Libraries\DigitalCert\DigitalCert25.0.sws</libraryPath>
-			<libraryTimeStamp>2025-02-15T12:09:19</libraryTimeStamp>
-			<libraryID>Lib2</libraryID>
-		</library>
-		<library>
 			<libraryPath>Libraries\vwin32fh\StudioLibrary\vWin32fh-Library-DF25.0.sws</libraryPath>
 			<libraryTimeStamp>2025-02-15T12:29:10</libraryTimeStamp>
 			<libraryID>Lib4</libraryID>

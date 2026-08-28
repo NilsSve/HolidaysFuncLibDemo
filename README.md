@@ -18,7 +18,7 @@ The workspace also includes a database and a view displaying facts about nations
 
 ## Setup after cloning
 
-The libraries this workspace uses (DFAbout, DigitalCert, RDCToolsLib, vwin32fh, HolidaysFuncLib)
+The libraries this workspace uses (DFAbout, RDCToolsLib, vwin32fh, HolidaysFuncLib)
 are **not** stored in this repository (they are gitignored). Run **`setup.bat`** once from the
 repository root and it provides them, behaving differently by machine so one arrangement serves
 both maintainer and user:

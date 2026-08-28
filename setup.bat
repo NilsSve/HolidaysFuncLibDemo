@@ -13,7 +13,7 @@ REM      ..\Libraries folder carrying the marker file .rdc-library-pool), it
 REM      makes Libraries\ a JUNCTION to that pool. One shared, editable copy:
 REM      a fix made in a library here is a fix in the pool.
 REM
-REM    * Otherwise it CLONES the libraries it needs (DFAbout, DigitalCert,
+REM    * Otherwise it CLONES the libraries it needs (DFAbout,
 REM      RDCToolsLib, vwin32fh, HolidaysFuncLib) into this workspace's own
 REM      Libraries\ folder - isolated, self-contained, and it never writes
 REM      anywhere outside this workspace, so it cannot disturb libraries you
@@ -64,7 +64,7 @@ if exist "..\Libraries\.rdc-library-pool" (
     REM --------------------------------------------------------------- isolated
     REM No shared pool. Clone the flat library set into this workspace's own
     REM Libraries\ - never writes outside this workspace.
-    for %%N in (DFAbout DigitalCert RDCToolsLib vwin32fh HolidaysFuncLib) do (
+    for %%N in (DFAbout RDCToolsLib vwin32fh HolidaysFuncLib) do (
         if not exist "Libraries\%%N\.git" (
             echo Cloning %%N into Libraries\ ...
             git clone https://github.com/NilsSve/Library-%%N.git "Libraries\%%N"
