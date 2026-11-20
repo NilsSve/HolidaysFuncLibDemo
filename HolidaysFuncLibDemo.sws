@@ -1,0 +1,30 @@
+{
+    "dependencies": [
+        {
+            "source": "https://github.com/NilsSve/Library-RDCToolsLib.git",
+            "sws": "RDC-Windows-Sub-Classes-Library.sws",
+            "version": "1.0.19"
+        },
+        {
+            "source": "https://github.com/NilsSve/Library-DFAbout.git",
+            "sws": "RDC-DFAbout-Library.sws",
+            "version": "1.0.7"
+        },
+        {
+            "source": "https://github.com/NilsSve/Library-vwin32fh.git",
+            "sws": "StudioLibrary/vWin32fh-Library-DF26.0.sws",
+            "version": "1.0.1"
+        },
+        {
+            "source": "https://github.com/NilsSve/Library-HolidaysFuncLib.git",
+            "sws": "RDC-Holidays-Functions-Library.sws",
+            "version": "1.0.3"
+        }
+    ],
+    "description": "National Holidays",
+    "df": 26.0,
+    "projects": [
+        "HolidaysFuncLibTest.src"
+    ],
+    "workspaceName": "HolidaysFuncLibDemo"
+}

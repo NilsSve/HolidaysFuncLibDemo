@@ -54,3 +54,5 @@ loginEncryptionkey.inc
 **/HelpText**/*.*
 **/Install
 **/Capture
+# DataFlex 26 package cache: what df-cli installs for HolidaysFuncLibDemo.sws (filled again from the .sws.lock)
+/DfPkg/
