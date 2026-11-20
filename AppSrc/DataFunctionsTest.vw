@@ -2,12 +2,9 @@
 Use cCJGridColumnRowIndicator.pkg
 Use cRDCCJGrid.pkg
 Use cCJGridColumn.pkg
-Use cRDCComboForm.pkg
 Use cRDCForm.pkg
-Use cRDCButton.pkg
 Use cRDCSpinForm.pkg
 Use cRDCCJGridPromptList.pkg
-Use cRDCCheckbox.pkg
 Use cRDCHeaderGroup.pkg
 
 // Object with all Holiday date functions
@@ -18,26 +15,14 @@ Use cNationsDataDictionary.dd
 Use cHolidaysDataDictionary.dd
 Use Windows.pkg
 Use cCJGrid.pkg
-Use dfLine.pkg
 
-Class cDateRDCForm is a Form
-    Procedure Construct_Object
-        Forward Send Construct_Object
-
-        Set Label_Justification_mode to JMode_Right
-        Set Label_Col_Offset to 2
-        Set Label_Row_Offset to 0
-    End_Procedure
-    
-    Procedure ClearData
-        Set Value to ""
-    End_Procedure
-    
-End_Class
-
+// THE DATES FUNCTIONS TEST, in three steps (2026-11-20, Nils: "a bit confusing"). Pick a function from the list,
+// set the year and the country, and the answer is there: no button to press, no parameter types to read. The year
+// strip shows the same function for five years, which is how a rule such as "the Saturday between 20 and 26 June"
+// is checked at a glance. The reverse question - is this date a holiday? - has a row of its own at the bottom.
 Activate_View Activate_oDateFunctionsTest for oDateFunctionsTest
 Object oDateFunctionsTest is a cRDCDbView
-    Set Size to 322 633
+    Set Size to 342 633
     Set Location to 3 1
     Set Label to "Dates Functions Test"
     Set Border_Style to Border_Thick
@@ -45,21 +30,22 @@ Object oDateFunctionsTest is a cRDCDbView
     Set pbAutoActivate to True
     Set Icon to "Calendar.ico"
     Set Verify_Save_Msg to none
-    
-    Property Boolean pbUseRegisteredCountriesOnly True
-    // Array of short country codes for all registered countries,
-    // that can be found in CountryPackages.pkg.
+
+    Property Boolean pbUseRegisteredCountriesOnly False
+    // The short country codes of the country packages (CountryPackages.pkg).
     Property String[] pasISO_Short
-    // Selected function name.
+    // The selected function.
     Property String psFuncName ""
-    
+    // True once every control of the view exists: the year and the country report a change while they are built.
+    Property Boolean pbReady False
+
     // Constraint function:
     Function IsCountry String sISO_Short Returns Boolean
         String[] asISO_Short
         Get pasISO_Short to asISO_Short
         Function_Return (SearchArray(sISO_Short, asISO_Short) <> -1)
     End_Function
-        
+
     Object oContinen_DD is a cContinenDataDictionary
     End_Object
 
@@ -71,15 +57,14 @@ Object oDateFunctionsTest is a cRDCDbView
                 Constrain Nations as (IsCountry(Self, Nations.ISO_Short))
             End
         End_Procedure
-        
-        // Fill the pasISO_Short string array w ISO_Short values,
-        // for all registered language packages.
+
+        // Fill the pasISO_Short string array with the ISO_Short value of every country package.
         Procedure End_Construct_Object
             Handle[] hoNationalHolidaysArray
             String[] asISO_Short
             Handle ho
             Integer iSize iCount
-            
+
             Forward Send End_Construct_Object
 
             Get phoNationalHolidaysArray of ghoCalendarHolidays to hoNationalHolidaysArray
@@ -91,7 +76,7 @@ Object oDateFunctionsTest is a cRDCDbView
             Loop
             Set pasISO_Short to asISO_Short
         End_Procedure
-        
+
     End_Object
 
     Object oHolidays_DD is a cHolidaysDataDictionary
@@ -101,675 +86,604 @@ Object oDateFunctionsTest is a cRDCDbView
     Set Main_DD to oHolidays_DD
     Set Server to oHolidays_DD
 
-    Object oHeader_grp is a cRDCHeaderGroup
-        Set Size to 126 618
-        Set Location to 6 9
-        Set Label to "Function List:"
-        Set psNote to "'Holiday and Other Special Dates' Library Functions:"
+    // The library's description of a function, by name. False when there is no such function.
+    Function FunctionByName String sName tHolidayFunc ByRef HolidayFunc Returns Boolean
+        tHolidayFunc[] HolidayFuncArray
+        Integer i iLast
+
+        Get pHolidayFunctions of ghoCalendarHolidays to HolidayFuncArray
+        Move (SizeOfArray(HolidayFuncArray) - 1) to iLast
+        For i from 0 to iLast
+            If (HolidayFuncArray[i].sName = sName) Begin
+                Move HolidayFuncArray[i] to HolidayFunc
+                Function_Return True
+            End
+        Loop
+        Function_Return False
+    End_Function
+
+    // True when the function's second parameter is the country code.
+    Function TakesCountry tHolidayFunc HolidayFunc Returns Boolean
+        Function_Return (SizeOfArray(HolidayFunc.HolidayFuncVarArray) > 1)
+    End_Function
+
+    // The country a code names, with a note when the library has a language holiday package for it: "Sweden - holiday package".
+    Function CountryText String sISO_Short Returns String
+        String sName
+        Boolean bPackage
+
+        If (Trim(sISO_Short) = "") Begin
+            Function_Return "Choose a country"
+        End
+        Get ISO_ShortToOfficial_Short of ghoCalendarHolidays sISO_Short to sName
+        Move (IsCountry(Self, sISO_Short)) to bPackage
+        If (Trim(sName) = "") Begin
+            Function_Return "Not a country code that has a corresponding language library"
+        End
+        If (bPackage = True) Begin
+            Function_Return (Trim(sName) + " - has a language holiday package")
+        End
+        Function_Return (Trim(sName) + " - a holiday language package is missing, so no holiday names")
+    End_Function
+
+    // A date written out: "Saturday 21 June 2025", or "Saturday, 21st June 2025" in the US and the UK.
+    Function LongDateText Date dDate Returns String
+        String sISO_Long sFormat sText
+        Get WindowsLocaleValue of ghoCalendarHolidays LOCALE_SABBREVCTRYNAME 3 to sISO_Long
+        If (sISO_Long = "USA" or sISO_Long = "GBR") Begin
+            Move "dddd, dth MMMM yyyy" to sFormat
+        End
+        Else Begin
+            Move "dddd d MMMM yyyy" to sFormat
+        End
+        Get DateFormat of ghoCalendarHolidays dDate sFormat to sText
+        Function_Return sText
+    End_Function
+
+    // The selected function called for one year and country; "" when it gives no date.
+    Function CallFunction String sFuncName Integer iYear String sISO_Short Returns Date
+        Integer iFuncID
+        Date dDate
+
+        Move (Eval("get_" - (sFuncName))) to iFuncID
+        If (iFuncID = 0) Begin
+            Function_Return dDate
+        End
+        Get iFuncID of ghoCalendarHolidays iYear sISO_Short to dDate
+        Function_Return dDate
+    End_Function
+
+    // EVERYTHING the right-hand side shows, from the selected function, the year and the country. Sent by the list,
+    // the year and the country whenever one of them changes - there is no button to press.
+    Procedure ShowAnswer
+        Handle hoIn hoAns
+        tHolidayFunc HolidayFunc
+        String sFuncName sISO_Short sYear sHolidayName sCall sStrip sMonth
+        Date dDate dOther
+        Integer iYear i
+        Boolean bFound bTakesCountry bOfficial bOK
+
+        If (pbReady(Self) = False) Begin
+            Procedure_Return
+        End
+        Move (oInput_grp(Self))  to hoIn
+        Move (oAnswer_grp(Self)) to hoAns
+        Get psFuncName to sFuncName
+        Get FunctionByName sFuncName (&HolidayFunc) to bFound
+        Set Label of (oFunctionName_tb(hoIn)) to (If(bFound, sFuncName, ""))
+        Set Value of (oFunctionHelp_ed(hoIn)) to (If(bFound, HolidayFunc.sHelp, ""))
+        Get Value of (oCountry_fm(hoIn)) to sISO_Short
+        Move (Uppercase(Trim(sISO_Short))) to sISO_Short
+        Set Label of (oCountryName_tb(hoIn)) to (CountryText(Self, sISO_Short))
+        Move (TakesCountry(Self, HolidayFunc)) to bTakesCountry
+        Set Label of (oCountryUse_tb(hoIn)) to (If(bTakesCountry, "The function takes a country as param, and the holiday name comes from its language package.", "This function's country param is optional."))
+
+        Send ClearAnswer
+        If (bFound = False) Begin
+            Procedure_Return
+        End
+        Get Value of (oYear_sf(hoIn)) to sYear
+        Get IsInteger of ghoCalendarHolidays sYear to bOK
+        If (bOK = True) Begin
+            Move sYear to iYear
+            Move (iYear >= 1753 and iYear <= 2500) to bOK
+        End
+        If (bOK = False) Begin
+            Set Label of (oLongDate_tb(hoAns)) to "Enter a year from 1753 to 2500"
+            Procedure_Return
+        End
+
+        Get CallFunction sFuncName iYear sISO_Short to dDate
+        If (dDate = 0) Begin
+            Set Label of (oLongDate_tb(hoAns)) to ("No date for" * String(iYear) + (If(bTakesCountry, " in " + sISO_Short, "")))
+            Set Label of (oHolidayName_tb(hoAns)) to "The function returns no date for this year and country."
+            Procedure_Return
+        End
+
+        Set Label of (oLongDate_tb(hoAns)) to (LongDateText(Self, dDate))
+        Move "" to sHolidayName
+        Move False to bOfficial
+        If (sISO_Short <> "") Begin
+            Get HolidayName of ghoCalendarHolidays dDate sISO_Short (&bOfficial) to sHolidayName
+        End
+        If (sHolidayName = "") Begin
+            Set Label of (oHolidayName_tb(hoAns)) to ("No holiday name for this date in the" * sISO_Short * "language package")
+            Set Label of (oOfficial_tb(hoAns)) to ""
+        End
+        Else Begin
+            Set Label of (oHolidayName_tb(hoAns)) to (sHolidayName + " - the name from the" * sISO_Short * "language package for this date")
+            Set Label of (oOfficial_tb(hoAns)) to (If(bOfficial, "Official holiday", "Not an official holiday"))
+        End
+
+        Get DateGetMonthNameLong of ghoCalendarHolidays dDate to sMonth
+        Set Value of (oWeek_fm(hoAns))        to (DateGetISOWeek(ghoCalendarHolidays, dDate))
+        Set Label of (oDaysInMonth_fm(hoAns)) to ("Days in" * Trim(sMonth) + ":")
+        Set Value of (oDaysInMonth_fm(hoAns)) to (DateGetDaysInMonth(ghoCalendarHolidays, dDate))
+        Set Value of (oDateFormat_fm(hoAns))  to dDate
+        Move ("Get" * String(sFuncName) * "of ghoCalendarHolidays" * String(iYear)) to sCall
+        If (bTakesCountry = True) Begin
+            Move (sCall * '"' + sISO_Short + '"') to sCall
+        End
+        Set Value of (oCall_fm(hoAns)) to (String(sCall) * "to sRetval")
+
+        // The same function for the two years before and after: a rule shows itself in five dates.
+        For i from -2 to 2
+            Get CallFunction sFuncName (iYear + i) sISO_Short to dOther
+            Move (String(iYear + i)) to sStrip
+            If (dOther <> 0) Begin
+                Move (sStrip + ":" * Left(DateGetDayNameLong(ghoCalendarHolidays, dOther), 3) * String(DateGetDay(dOther)) * Left(DateGetMonthNameLong(ghoCalendarHolidays, dOther), 3)) to sStrip
+            End
+            Else Begin
+                Move (sStrip + ": -") to sStrip
+            End
+            Send SetYearStrip (i + 2) sStrip (i = 0)
+        Loop
+    End_Procedure
+
+    Procedure ClearAnswer
+        Handle hoAns
+        Integer i
+        Move (oAnswer_grp(Self)) to hoAns
+        Set Label of (oLongDate_tb(hoAns))    to ""
+        Set Label of (oHolidayName_tb(hoAns)) to ""
+        Set Label of (oOfficial_tb(hoAns))    to ""
+        Set Value of (oWeek_fm(hoAns))        to ""
+        Set Label of (oDaysInMonth_fm(hoAns)) to "Days in month:"
+        Set Value of (oDaysInMonth_fm(hoAns)) to ""
+        Set Value of (oDateFormat_fm(hoAns))  to ""
+        Set Value of (oCall_fm(hoAns))        to ""
+        For i from 0 to 4
+            Send SetYearStrip i "" False
+        Loop
+    End_Procedure
+
+    // One box of the year strip; the year asked for in bold.
+    Procedure SetYearStrip Integer iBox String sText Boolean bThisYear
+        Handle ho hoAns
+        Move (oAnswer_grp(Self)) to hoAns
+        Case Begin
+            Case (iBox = 0)
+                Move (oYear1_tb(hoAns)) to ho
+                Case Break
+            Case (iBox = 1)
+                Move (oYear2_tb(hoAns)) to ho
+                Case Break
+            Case (iBox = 2)
+                Move (oYear3_tb(hoAns)) to ho
+                Case Break
+            Case (iBox = 3)
+                Move (oYear4_tb(hoAns)) to ho
+                Case Break
+            Case Else
+                Move (oYear5_tb(hoAns)) to ho
+        Case End
+        Set Label of ho to sText
+        Set FontWeight of ho to (If(bThisYear, fw_Bold, fw_Normal))
+    End_Procedure
+
+    // ---- 1. The function list, with a search box ----
+    Object oFunctions_grp is a cRDCHeaderGroup
+        Set Size to 334 190
+        Set Location to 4 4
+        Set Label to "1. Pick a function"
+        Set psNote to "Type to search the names and descriptions."
         Set psImage to "FunctionLibrary.ico"
-        Set peAnchors to anAll
+        Set peAnchors to anTopBottomLeft
+
+        Object oSearch_fm is a cRDCForm
+            Set Size to 13 178
+            Set Location to 26 6
+            Set peAnchors to anTopLeftRight
+            Set psToolTip to "Part of a function name or description, for example midsummer or bank holiday."
+
+            Procedure OnChange
+                Send LoadData of oDateFunctions_grd
+            End_Procedure
+        End_Object
 
         Object oDateFunctions_grd is a cRDCCJGridPromptList
-            Set Size to 95 604
-            Set Location to 25 6
+            Set Size to 286 178
+            Set Location to 43 6
             Set pbInitialSelectionEnable to True
             Set pbMultiSelectionMode to False
             Set peUpdateMode to umPromptNonInvoking
             Set pbGrayIfDisable to False
             Set pbShadeSortColumn to False
-            Set pbShowFooter to True 
-            Set piLayoutBuild to 2
-            
-            Object oCJGridColumnRowIndicator is a cCJGridColumnRowIndicator
-            End_Object
+            Set pbShowFooter to True
+            Set piLayoutBuild to 3
+            Set peAnchors to anAll
 
-            Object oNumber_col is a cCJGridColumn
-                Set piWidth to 5
-                Set psCaption to "#"
-            End_Object
-            
             Object oFunction_col is a cCJGridColumn
-                Set piWidth to 30
-                Set psCaption to "Function Name"
+                Set piWidth to 120
+                Set psCaption to "Function"
             End_Object
 
-            Object oHeltText_col is a cCJGridColumn
-                Set piWidth to 100
-                Set psCaption to "Help Text"
-                Set pbMultiLine to True
+            Object oAsks_col is a cCJGridColumn
+                Set piWidth to 70
+                Set psCaption to "Asks for"
             End_Object
 
-            Procedure LoadData 
+            // The functions whose name or description holds the search text, in the library's order.
+            Procedure LoadData
                 tHolidayFunc[] HolidayFuncArray
-                tHolidayFunc HolidayFunc
-                Integer iCount iSize
                 tDataSourceRow[] TheData
-                Boolean bFound
-                Integer iItem iRow iNumber_col iFunction_col iHelp_col
-                
+                String sSearch
+                Integer iCount iLast iRow iFunction_col iAsks_col
+
+                Get piColumnId of oFunction_col to iFunction_col
+                Get piColumnId of oAsks_col     to iAsks_col
+                Get Value of oSearch_fm to sSearch
+                Move (Lowercase(Trim(sSearch))) to sSearch
+                Get pHolidayFunctions of ghoCalendarHolidays to HolidayFuncArray
                 Move 0 to iRow
-                Get piColumnId of oNumber_col   to iNumber_col
-                Get piColumnId of oFunction_col to iFunction_col
-                Get piColumnId of oHeltText_col to iHelp_col
-                
-                // *** Get the struct array with holiday functions data,
-                //     created by the cCalendarHolidays class RegisterInterface procedure ***
-                Get pHolidayFunctions of ghoCalendarHolidays to HolidayFuncArray
-                
-                Move (SizeOfArray(HolidayFuncArray)) to iSize
-                Decrement iSize
-                For iCount from 0 to iSize 
-                    Move (iCount +1)                    to TheData[iRow].sValue[iNumber_col]
-                    Move HolidayFuncArray[iCount].sName to TheData[iRow].sValue[iFunction_col]
-                    Move HolidayFuncArray[iCount].sName to HolidayFunc.sName // the current selected item to struct member.
-                    Move (SearchArray(HolidayFunc, HolidayFuncArray)) to iItem
-                    If (iItem <> -1) Begin
-                        Move HolidayFuncArray[iItem].sHelp to TheData[iRow].sValue[iHelp_col]
+                Move (SizeOfArray(HolidayFuncArray) - 1) to iLast
+                For iCount from 0 to iLast
+                    If (sSearch = "" or Lowercase(HolidayFuncArray[iCount].sName) contains sSearch or Lowercase(HolidayFuncArray[iCount].sHelp) contains sSearch) Begin
+                        Move HolidayFuncArray[iCount].sName to TheData[iRow].sValue[iFunction_col]  
+//                        Set psToolTip of TheData[iRow].sValue[iFunction_col] to HolidayFuncArray[iCount].sHelp
+                        Move (If(SizeOfArray(HolidayFuncArray[iCount].HolidayFuncVarArray) > 1, "year, country", "year")) to TheData[iRow].sValue[iAsks_col]
+                        Increment iRow
                     End
-                    Increment iRow
                 Loop
-
-                Set psFooterText of oFunction_col  to ("# of Functions" * String(iSize + 1))
-
-                // Initialize Grid with new data
-                Send InitializeData TheData
-                Send MovetoFirstRow
-            End_Procedure
-     
-            Procedure OnRowChanged Integer iOldRow Integer iNewSelectedRow
-                tDataSourceRow[] TheData
-                Handle hoDataSource
-                tHolidayFunc[] HolidayFuncArray
-                tHolidayFunc HolidayFunc
-                Integer iRow iFunction_Col iItem
-                String sFunctionName
-                                
-                Get piColumnId of oFunction_col to iFunction_col
-                Get phoDataSource to hoDataSource
-                Get DataSource of hoDataSource to TheData
-                Get SelectedRow of hoDataSource to iRow
-                Move TheData[iRow].sValue[iFunction_Col] to sFunctionName
-                Set psFuncName to sFunctionName
-                Move sFunctionName to HolidayFunc.sName
-                Get pHolidayFunctions of ghoCalendarHolidays to HolidayFuncArray
-                Move (SearchArray(HolidayFunc, HolidayFuncArray)) to iItem
-                If (iItem <> -1) Begin
-                    Send SetParamValues of oParam_grp HolidayFuncArray[iItem]
+                Set psFooterText of oFunction_col to (String(iRow) * "of" * String(iLast + 1) * "functions")
+                Send ReInitializeData TheData False
+                // The first function is the selected one; its answer shows whether or not the grid reports a row change.
+                If (iRow > 0) Begin
+                    Send MovetoFirstRow
+                    Set psFuncName to TheData[0].sValue[iFunction_col]
+                    Send ShowAnswer
                 End
                 Else Begin
-                    Send SetParamValues of oParam_grp HolidayFuncArray[0]
+                    Set psFuncName to ""
+                    Send ShowAnswer
                 End
             End_Procedure
-            
+
+            Procedure OnRowChanged Integer iOldRow Integer iNewSelectedRow
+                String sFunctionName
+                Forward Send OnRowChanged iOldRow iNewSelectedRow
+                Get SelectedRowValue of oFunction_col to sFunctionName
+                Set psFuncName to sFunctionName
+                Send ShowAnswer
+            End_Procedure
+
             Procedure Activating
                 Forward Send Activating
                 Send LoadData
             End_Procedure
-                    
+
         End_Object
-        
+
     End_Object
 
-    Object oParam_grp is a cRDCHeaderGroup
-        Set Location to 139 8
-        Set Size to 179 618
-        Set Label to "Test Function Call:"
-        Set psNote to "Enter Function Parameters and click 'Call Function':"
+    // ---- 2. The function, the year and the country ----
+    Object oInput_grp is a cRDCHeaderGroup
+        Set Size to 109 432
+        Set Location to 4 198
+        Set Label to "2. Year and country"
+        Set psNote to "The answer below changes as soon as you change one of them."
         Set psImage to "CallFunction.ico"
-        Set peAnchors to anBottomLeftRight
+        Set peAnchors to anTopLeftRight
 
-        Object oType1_fm is a cDateRDCForm
-            Set Location to 30 37
-            Set Size to 13 43
-            Set Label to "Type 1:"
-            Set Enabled_State to False
+        Object oFunctionName_tb is a TextBox
+            Set Auto_Size_State to False
+            Set Size to 10 88
+            Set Location to 40 8
+            Set Label to "Function:"
+            Set FontWeight to fw_Bold
         End_Object
 
-        Object oType2_fm is a cDateRDCForm
-            Set Location to 46 37
-            Set Size to 13 43
-            Set Label to "Type 2:"
+        Object oFunctionHelp_ed is a cTextEdit
+            Set Size to 26 313
+            Set Location to 40 110
             Set Enabled_State to False
+            Set peAnchors to anTopLeftRight
+            Set Label to " -- "
+            Set Label_Justification_Mode to JMode_Right
         End_Object
 
-        Object oVarName1_fm is a cDateRDCForm
-            Set Location to 30 116
-            Set Size to 13 53
-            Set Label to "Name 1:"
-            Set Enabled_State to False
-        End_Object
-
-        Object oVarName2_fm is a cDateRDCForm
-            Set Location to 46 116
-            Set Size to 13 53
-            Set Label to "Name 2:"
-            Set Enabled_State to False
-        End_Object
-
-        Object oValue1_fm is a cDateRDCForm //cRDCSpinForm
-            Set Location to 30 218
-            Set Size to 13 53
-            Set Label to "Enter Value 1:"     
-            
-            Procedure ClearData
-            End_Procedure
+        Object oYear_sf is a cRDCSpinForm
+            Set Size to 13 44
+            Set Location to 71 34
+            Set Label to "Year:"
+            Set Label_Justification_Mode to JMode_Right
+            Set Label_Col_Offset to 2
+            Set Minimum_Position to 1753
+            Set Maximum_Position to 2500
 
             Procedure End_Construct_Object
                 Date dDate
-                Integer iYear
                 Forward Send End_Construct_Object
                 Sysdate dDate
-                Get DateGetISOYear of ghoCalendarHolidays dDate to iYear
-                Set Value to iYear 
+                Set Value to (DateGetYear(dDate))
             End_Procedure
 
-        End_Object
-
-        Object oValue2_fm is a cDateRDCForm
-            Set Location to 46 218
-            Set Size to 13 53
-            Set Label to "Enter Value 2:"
-            Set Prompt_Button_Mode to PB_PromptOn
-            Set Prompt_Object to Nations_sl
-            Set Capslock_State to True
-            // Set to zero to not trigger a Changed_State, when using prompt list.
-            Set Server to 0
-            
-            Procedure ClearData
-            End_Procedure
-
-            Procedure Prompt_Callback Handle hPrompt
-                Set pbAutoServer   of hPrompt to False 
-                Set Server         of hPrompt to (oNations_DD(Self))
-                Set peUpdateMode   of hPrompt to umPromptValue
-                Set piUpdateColumn of hPrompt to 0
-            End_Procedure
-            
-            Procedure End_Construct_Object
-                String sISO_Short
-                Forward Send End_Construct_Object 
-                Get WindowsLocaleISO_Short of ghoCalendarHolidays to sISO_Short            
-                Set Value to sISO_Short
-            End_Procedure
-                
-        End_Object
-
-        Object oCallFunction_btn is a cRDCButton
-            Set Location to 28 285
-            Set Size to 31 57
-            Set MultiLineState to True
-            Set Label to "Call Function!" 
-            Set psToolTip to "Calls the selected function from the grid with the entered values to the left."
-            Set psImage to "Phone.ico"
-            Set piImageSize to 24
-            
-            Procedure OnClick
-                String sFuncName sType1 sValue1 sType2 sValue2 sISO_Short sToolTip
-                String sType3 sValue3 sType4 sValue4 sRetval sHolidayName 
-                Date dDate
-                Boolean bOK bOfficialHoliday
-                Integer iFuncID
-                Handle ho
-                
-                Move False to bOK
-                Move False to bOfficialHoliday 
-                Move "" to sHolidayName
-                Get Value of oType1_fm  to sType1
-                Get Value of oValue1_fm to sValue1
-                If (sType1 = "String") Begin
-                    Move (Uppercase(sValue1)) to sValue1
-                End
-                Get CheckTypeValue sType1 sValue1 to bOK
-                If (bOK = False) Begin
-                    Procedure_Return
-                End
-
-                Move "" to sISO_Short
-                Get Value of oType2_fm to sType2
-                Get Value of oValue2_fm to sValue2    
-                If (sType2 = "String") Begin
-                    Move (Uppercase(sValue2)) to sValue2
-                End
-                If (sType2 <> "") Begin
-                    Get CheckTypeValue sType2 sValue2 to bOK 
-                    If (bOK = True) Begin
-                        Move (Length(sValue2) = 2) to bOK
-                        If (bOK = True) Begin
-                            Get IsInteger of ghoCalendarHolidays sValue2 to bOK
-                            Move (not(bOK)) to bOK
-                        End
-                    End
-                    If (bOK = False) Begin
-                        Send Info_Box "Not a 2-character national ISO short code."
-                        Procedure_Return
-                    End
-                End
-                Move sValue2 to sISO_Short
-                
-                Get psFuncName to sFuncName
-                Set Value of oFunctionName_fm to sFuncName
-                Move (Eval("get_" - (sFuncName))) to iFuncID
-                If (sValue1 <> "") Begin
-                    Get iFuncID of ghoCalendarHolidays sValue1 sValue2 to dDate
-                End        
-                Set Value of oResult_fm to dDate
-                
-                If (sISO_Short <> "" and dDate <> "") Begin
-                    Get HolidayName of ghoCalendarHolidays dDate sISO_Short (&bOfficialHoliday) to sHolidayName
-                    Set Checked_State of oIsHoliday_cg to bOfficialHoliday
-                    If (sHolidayName = "") Begin
-                        Move "Not Found" to sHolidayName
-                    End
-                    Set Value of oExtra6_fm to sHolidayName
-                    Move ("Call to the 'HolidayName' function with the'" * String(sISO_Short) + "' ISO_Short code and date:" * String(dDate) * ", returned holiday name:" * String(sHolidayName)) to sToolTip
-                    Set psToolTip of oExtra6_fm to sToolTip
-                    Set psToolTip of (Label_Object(oExtra6_fm)) to sToolTip
-                End
-            End_Procedure 
-            
-            Function CheckTypeValue String sType String sValue Returns Boolean
-                Boolean bOK
-                Move True to bOK
-                If (sType = "Integer") Begin
-                    Get IsInteger of ghoCalendarHolidays sValue to bOK
-                    If (bOK = True) Begin
-                        Move (Length(sValue) = 4) to bOK
-                    End
-                    If (bOK = False) Begin
-                        Send Info_Box "Not a valid 4-digit year value"
-                    End
-                End
-                If (sType = "Date") Begin
-                    Get IsValidDateString of ghoCalendarHolidays sValue to bOK
-                    If (bOK = False) Begin
-                        Send Info_Box "Not a valid Date value"
-                    End
-                End
-                If (sType = "String") Begin
-                    Get IsInteger of ghoCalendarHolidays sValue to bOK
-                    If (bOK = False) Begin
-                        Move (Length(sValue) <> 0) to bOK
-                    End
-                    If (bOK = False) Begin
-                        Send Info_Box "Not a valid string value"
-                    End
-                End
-                Function_Return bOK
-            End_Function
-        
-        End_Object
-
-        Object oInfo_tb is a TextBox
-            Set Size to 10 177
-            Set Location to 17 322
-            Set Label to "Note: Results according your computer's local settings."
-        End_Object
-
-        Object oFunctionName_fm is a cDateRDCForm
-            Set Location to 32 404
-            Set Size to 13 68
-            Set Label to "Function Name:"
-            Set Enabled_State to False
-            Set peAnchors to anNone
-        End_Object
-
-        Object oResult_fm is a cDateRDCForm
-            Set Location to 47 404
-            Set Size to 13 43
-            Set Label to "Date:"
-            
             Procedure OnChange
-                String sValue sYear sMonth sDay sLastDayOfMonth sTextDate sISO_Long sFormat
-                Integer iMonthDays iWeekNo 
-                Boolean bOK
-                
-                Get Value to sValue
-                If (sValue = "") Begin
-                    Procedure_Return
-                End
-                Get IsValidDateString of ghoCalendarHolidays sValue to bOK
-                If (bOK = False) Begin
-                    Procedure_Return
-                End
-                
-                Get DateGetISOYear       of ghoCalendarHolidays sValue to sYear
-                Get DateGetMonthNameLong of ghoCalendarHolidays sValue to sMonth
-                Get DateGetDayNameLong   of ghoCalendarHolidays sValue to sDay 
-                Get DateGetDaysInMonth   of ghoCalendarHolidays sValue to iMonthDays
-                Get DateGetISOWeek       of ghoCalendarHolidays sValue to iWeekNo
-                Get WindowsLocaleValue   of ghoCalendarHolidays LOCALE_SABBREVCTRYNAME 3 to sISO_Long
-                If (sISO_Long = "USA" or sISO_Long = "GBR") Begin
-                    Move "dddd, dth MMMM yyyy" to sFormat
-                End
-                Else Begin
-                    Move "dddd d MMMM yyyy" to sFormat
-                End
-                Get DateFormat          of ghoCalendarHolidays sValue sFormat to sTextDate
-                Set Value of oExtra1_fm to sYear
-                Set Value of oExtra2_fm to sMonth
-                Set Value of oExtra3_fm to sDay
-                Set Value of oExtra4_fm to iMonthDays
-                Set Value of oExtra5_fm to iWeekNo
-                Set Value of oExtra7_fm to sTextDate
-            End_Procedure
-            
-        End_Object
-
-        Object oExtra1_fm is a cDateRDCForm
-            Set Location to 63 404
-            Set Size to 13 43
-            Set Label to "Year:"
-            Set Enabled_State to False
-        End_Object
-        
-        Object oExtra2_fm is a cDateRDCForm
-            Set Location to 79 404
-            Set Size to 13 43
-            Set Label to "Month:"
-            Set Enabled_State to False
-        End_Object
-
-        Object oExtra3_fm is a cDateRDCForm
-            Set Location to 95 404
-            Set Size to 13 43
-            Set Label to "Week Day:"
-            Set Enabled_State to False
-        End_Object
-
-        Object oExtra4_fm is a cDateRDCForm
-            Set Location to 111 404
-            Set Size to 13 19
-            Set Label to "Days in Month:"
-            Set Enabled_State to False
-        End_Object
-        
-        Object oExtra5_fm is a cDateRDCForm
-            Set Location to 111 456
-            Set Size to 13 19
-            Set Label to "Week #:"
-            Set Enabled_State to False
-        End_Object
-        
-        Object oExtra6_fm is a cDateRDCForm
-            Set Location to 159 404
-            Set Size to 13 68
-            Set Label to "(From Country packages)  Day Name:"
-//            Set Enabled_State to False 
-            Set Entry_State to False
-            Set Skip_State to True
-            Set peAnchors to anNone
-        End_Object
-
-        Object oExtra7_fm is a cDateRDCForm
-            Set Location to 128 404
-            Set Size to 13 95
-            Set Label to "DateFormat:" 
-            Set psToolTip to "Note that the date is spelled according to your computer's local date settings."
-            Set psToolTip of (Label_Object(Self)) to "Note that the date is spelled according to your computer's local date settings."
-            Set Enabled_State to False
-            Set peAnchors to anNone
-        End_Object
-
-        Object oIsHoliday_cg is a CheckBox
-            Set Size to 13 46
-            Set Location to 147 404
-            Set Label to "Is Holiday"  
-            Set Checked_State to False
-            Set Entry_State to False
-        End_Object
-
-        Object oGridInfo_tb is a TextBox
-            Set Size to 10 157
-            Set Location to 72 35
-            Set Label to "Existing Country packages (CountryPackages.pkg):"
-        End_Object
-
-        Object oNationHolidays_grd is a cRDCCJGrid
-            Set Size to 85 237
-            Set Location to 82 34
-            Set pbReadOnly to True 
-            Set pbShowFooter to False
-            Set peAnchors to anNone
-
-            Object oISO_Short_col is a cCJGridColumn
-                Set piWidth to 40
-                Set psCaption to "ISO Short"
-            End_Object
-
-            Object oOfficial_Short_col is a cCJGridColumn
-                Set piWidth to 160
-                Set psCaption to "Official_Short"
-            End_Object 
-            
-            Procedure LoadData
-                Handle hoDataSource
-                tDataSourceRow[] TheData     
-                tISO_Codes[] ISO_CodesArray
-                Handle[] ahoNationalHolidaysArray
-                Integer iCount iSize iFirst_col iSecond_col iItem
-                Handle hoNationalHolidays 
-                String sISO_Short
-                
-                Get phoDataSource to hoDataSource
-                // Get the datasource indexes of the various columns
-                Get piColumnId of oISO_Short_col      to iFirst_col
-                Get piColumnId of oOfficial_Short_col to iSecond_col
-                
-                Get phoNationalHolidaysArray of ghoCalendarHolidays to ahoNationalHolidaysArray
-                Move (SizeOfArray(ahoNationalHolidaysArray)) to iSize
-                Decrement iSize
-                Move 0 to iItem
-                For iCount from 0 to iSize
-                    Move ahoNationalHolidaysArray[iCount] to hoNationalHolidays
-                    Get psISO_Short      of hoNationalHolidays to ISO_CodesArray[iItem].sIso_Short
-                    Get psOfficial_Short of hoNationalHolidays to ISO_CodesArray[iItem].sOffical_Short
-                    Increment iItem
-                Loop
-
-                Move (SortArray(ISO_CodesArray)) to ISO_CodesArray
-                Move (SizeOfArray(ISO_CodesArray)) to iSize
-                Decrement iSize
-                For iCount from 0 to iSize
-                    Move ISO_CodesArray[iCount].sIso_Short     to TheData[iCount].sValue[iFirst_col]
-                    Move ISO_CodesArray[iCount].sOffical_Short to TheData[iCount].sValue[iSecond_col]
-                Loop
-                
-                Send ReInitializeData TheData True
-                Send MovetoFirstRow 
-            End_Procedure 
-            
-            Procedure OnRowDoubleClick Integer iRow Integer iColumn
-                String sISO_Short 
-                Forward Send OnRowDoubleClick iRow iColumn
-                Get SelectedRowValue of oISO_Short_col to sISO_Short
-                Set Value of oValue2_fm to sISO_Short
-            End_Procedure
-
-            Procedure OnCreate
-                Forward Send OnCreate
-                Send LoadData
-            End_Procedure
-
-        End_Object
-
-        Procedure SetParamValues tHolidayFunc HolidayFunc
-            tHolidayFuncVar[] FuncVarArray
-            Integer iCount iSize
-            
-            Move HolidayFunc.HolidayFuncVarArray to FuncVarArray
-            Send ClearData 
-            Send DisableValueForms
-
-            If (SizeOfArray(FuncVarArray) > 0) Begin
-                Set Value of oType1_fm    to FuncVarArray[0].sType
-                Set Value of oVarName1_fm to FuncVarArray[0].sVarName
-                Set Enabled_State of oValue1_fm to True
-            End
-            If (SizeOfArray(FuncVarArray) > 1) Begin
-                Set Value of oType2_fm    to FuncVarArray[1].sType
-                Set Value of oVarName2_fm to FuncVarArray[1].sVarName
-            End
-            Set Enabled_State of oValue2_fm to True
-        End_Procedure
-
-        Procedure DisableValueForms
-            Set Enabled_State of oValue1_fm to False
-            Set Enabled_State of oValue2_fm to False
-        End_Procedure
-
-        Procedure ClearData
-            Broadcast Send ClearData 
-            Set Checked_State of oIsHoliday_cg to False
-        End_Procedure 
-
-        Object oRightArrow_tb is a TextBox
-            Set Size to 10 6
-            Set Location to 49 448
-            Set Label to ">>"
-        End_Object
-
-        Object oTopHorizontalLine is a LineControl
-            Set Size to 2 52
-            Set Location to 53 453
-        End_Object
-
-        Object oVerticalLine is a LineControl
-            Set Size to 113 3
-            Set Location to 53 505
-            Set Horizontal_State to False
-        End_Object
-
-        Object oLowerHorizontalLine is a LineControl
-            Set Size to 2 29
-            Set Location to 166 476
-        End_Object
-
-        Object oLeftArrow_tb is a TextBox
-            Set Size to 10 11
-            Set Location to 161 472
-            Set Label to "<<"
-        End_Object
-
-        Object oReciprocalVerticalLine is a LineControl
-            Set Size to 170 3
-            Set Location to 4 520
-            Set Horizontal_State to False
-        End_Object
-
-        Object oReciprocalInfo_tb is a TextBox
-            Set Auto_Size_State to False
-            Set Size to 19 85
-            Set Location to 17 530
-            Set Label to "Reciprocal Function 'IsDateAHoliday' Test:"
-            Set FontWeight to fw_Bold
-            Set Justification_Mode to JMode_Left
-        End_Object
-
-        Object oReciprocalDate_fm is a cDateRDCForm
-            Set Location to 47 530
-            Set Size to 13 78
-            Set Label to "Enter a Date:"
-            Set Label_Justification_Mode to JMode_Top
-            Set Label_Col_Offset to 0
-            Set Label_Row_Offset to 1
-            Procedure ClearData
+                Send ShowAnswer
             End_Procedure
         End_Object
 
-        Object oISO_Short_fm is a cDateRDCForm
-            Set Location to 73 530
-            Set Size to 13 78
-            Set Label to "ISO Short:"
+        Object oCountry_fm is a cRDCForm
+            Set Size to 13 30
+            Set Location to 71 110
+            Set Label to "Country:"
+            Set Label_Justification_Mode to JMode_Right
+            Set Label_Col_Offset to 2
             Set Prompt_Button_Mode to PB_PromptOn
             Set Prompt_Object to Nations_sl
             Set Capslock_State to True
-            // Set to zero to not trigger a Changed_State, when using prompt list.
+            Set psToolTip to "The two-letter ISO code. The prompt lists every country."
+            // Zero, so a pick from the prompt list does not change a record.
             Set Server to 0
-            Set Label_Justification_Mode to JMode_Top
-            Set Label_Row_Offset to 1
-            Set Label_Col_Offset to 0
-            
-            Procedure ClearData
-            End_Procedure
 
             Procedure Prompt_Callback Handle hPrompt
-                Set pbAutoServer   of hPrompt to False 
+                Set pbAutoServer   of hPrompt to False
                 Set Server         of hPrompt to (oNations_DD(Self))
                 Set peUpdateMode   of hPrompt to umPromptValue
                 Set piUpdateColumn of hPrompt to 0
             End_Procedure
-            
+
             Procedure End_Construct_Object
-                String sISO_Long sISO_Short
-                Forward Send End_Construct_Object             
-                Get WindowsLocaleValue of ghoCalendarHolidays LOCALE_SABBREVCTRYNAME to sISO_Long
-                Get ISO_LongToISO_Short of ghoCalendarHolidays sISO_Long to sISO_Short
+                String sISO_Short
+                Forward Send End_Construct_Object
+                Get WindowsLocaleISO_Short of ghoCalendarHolidays to sISO_Short
                 Set Value to sISO_Short
             End_Procedure
-                
-        End_Object
 
-        Object oReciprocalCall_btn is a Button
-            Set Size to 26 78
-            Set Location to 91 530
-            Set Label to "Call 'IsDateAHoliday' Function"
-            Set MultiLineState to True
-        
-            Procedure OnClick
-                Date dDate
-                String sDate sISO_Short sHolidayName sFunctionName sFoundText
-                Boolean bOK bFound bIsHoliday
-                
-                Get Value of oReciprocalDate_fm to sDate
-                Get IsValidDateString of ghoCalendarHolidays sDate to bOK
-                If (bOK = False) Begin
-                    Send Info_Box "Not a valid Date value"
-                    Procedure_Return
-                End
-                Move sDate to dDate
-                Get Value of oISO_Short_fm to sISO_Short 
-                Get IsDateAHoliday of ghoCalendarHolidays dDate sISO_Short (&bIsHoliday) (&sHolidayName) (&sFunctionName) to bFound
-                If (bFound = True) Begin
-                    Move sFunctionName to sFoundText
-                End
-                Else Begin                       
-                    Move "Not Found!" to sFoundText
-                End
-                If (sHolidayName = "") Begin
-                    Move "Not Found!" to sHolidayName
-                End
-                Set Value of oCallReply_fm to sFoundText
-                Set Checked_State of oIsHoliday2_cg to bIsHoliday
-                Set Value of oHolidayName_fm to sHolidayName
+            Procedure OnChange
+                Send ShowAnswer
             End_Procedure
-        
         End_Object
 
-        Object oCallReply_fm is a cDateRDCForm
-            Set Location to 121 530
-            Set Size to 13 78
+        Object oCountryName_tb is a TextBox
+            Set Auto_Size_State to False
+            Set Size to 13 136
+            Set Location to 71 147
         End_Object
 
-        Object oIsHoliday2_cg is a CheckBox
-            Set Size to 10 78
-            Set Location to 137 530
-            Set Label to "Is Holiday"  
-            Set Checked_State to False
-            Set Entry_State to False
-        End_Object
-
-        Object oHolidayName_fm is a cDateRDCForm
-            Set Location to 159 530
-            Set Size to 13 78
-            Set Label to "Holiday Name:"
-            Set Entry_State to False
-            Set Skip_State to True
-            Set peAnchors to anNone
-            Set Label_Justification_Mode to JMode_Top
-            Set Label_Row_Offset to 1
-            Set Label_Col_Offset to 0
+        Object oCountryUse_tb is a TextBox
+            Set Auto_Size_State to False
+            Set Size to 13 136
+            Set Location to 71 289
+            Set peAnchors to anTopLeftRight
         End_Object
 
     End_Object
+
+    // ---- 3. The answer ----
+    Object oAnswer_grp is a cRDCHeaderGroup
+        Set Size to 128 432
+        Set Location to 117 198
+        Set Label to "3. The answer"
+        Set psNote to "Dates are shown according to your computer's settings."
+        Set psImage to "Calendar.ico"
+        Set peAnchors to anTopLeftRight
+
+        Object oLongDate_tb is a TextBox
+            Set Auto_Size_State to False
+            Set Size to 14 188
+            Set Location to 24 8
+            Set FontWeight to fw_Bold
+            Set FontPointHeight to 14
+        End_Object
+
+        Object oOfficial_tb is a TextBox
+            Set Auto_Size_State to False
+            Set Size to 10 109
+            Set Location to 32 235
+            Set Justification_Mode to JMode_Right
+            Set FontWeight to fw_Bold
+        End_Object
+
+        Object oHolidayName_tb is a TextBox
+            Set Auto_Size_State to False
+            Set Size to 10 279
+            Set Location to 46 8
+        End_Object
+
+        Object oWeek_fm is a cRDCForm
+            Set Size to 13 24
+            Set Location to 62 34
+            Set Label to "Week:"
+            Set Label_Justification_Mode to JMode_Right
+            Set Label_Col_Offset to 2
+            Set Enabled_State to False
+        End_Object
+
+        Object oDaysInMonth_fm is a cRDCForm
+            Set Size to 13 24
+            Set Location to 62 128
+            Set Label to "Days in month:"
+            Set Label_Justification_Mode to JMode_Right
+            Set Label_Col_Offset to 2
+            Set Enabled_State to False
+        End_Object
+
+        Object oDateFormat_fm is a cRDCForm
+            Set Size to 13 56
+            Set Location to 62 236
+            Set Label to "Your date format:"
+            Set Label_Justification_Mode to JMode_Right
+            Set Label_Col_Offset to 2
+            Set Enabled_State to False
+        End_Object
+
+        Object oCall_fm is a cRDCForm
+            Set Size to 13 258
+            Set Location to 79 34
+            Set Label to "The call:"
+            Set Label_Justification_Mode to JMode_Right
+            Set Label_Col_Offset to 2
+            Set Enabled_State to False
+            Set psToolTip to "What to write to get this date from the library."
+        End_Object
+
+        Object oAround_tb is a TextBox
+            Set Size to 10 118
+            Set Location to 97 8
+            Set Label to "The same function, around that year:"
+        End_Object
+
+        Object oYear1_tb is a TextBox
+            Set Auto_Size_State to False
+            Set Size to 10 80
+            Set Location to 111 8
+        End_Object
+
+        Object oYear2_tb is a TextBox
+            Set Auto_Size_State to False
+            Set Size to 10 80
+            Set Location to 111 92
+        End_Object
+
+        Object oYear3_tb is a TextBox
+            Set Auto_Size_State to False
+            Set Size to 10 80
+            Set Location to 111 176
+        End_Object
+
+        Object oYear4_tb is a TextBox
+            Set Auto_Size_State to False
+            Set Size to 10 80
+            Set Location to 111 260
+        End_Object
+
+        Object oYear5_tb is a TextBox
+            Set Auto_Size_State to False
+            Set Size to 10 80
+            Set Location to 111 344
+        End_Object
+
+    End_Object
+
+    // ---- The reverse question: which holiday is this date? ----
+    Object oReverse_grp is a cRDCHeaderGroup
+        Set Size to 89 432
+        Set Location to 249 198
+        Set Label to "Is this date a holiday?"
+        Set psNote to "IsDateAHoliday: a date and a country give the holiday and the function that finds it."
+        Set psImage to "Calendar.ico"
+        Set peAnchors to anTopLeftRight
+
+        Object oReverseDate_fm is a cRDCForm
+            Set Size to 13 60
+            Set Location to 32 30
+            Set Label to "Date:"
+            Set Label_Justification_Mode to JMode_Right
+            Set Label_Col_Offset to 2
+            Set psToolTip to "A date, written the way your computer writes dates."
+
+            Procedure OnChange
+                Send ShowReverse
+            End_Procedure
+        End_Object
+
+        Object oReverseCountry_fm is a cRDCForm
+            Set Size to 13 30
+            Set Location to 32 140
+            Set Label to "Country:"
+            Set Label_Justification_Mode to JMode_Right
+            Set Label_Col_Offset to 2
+            Set Prompt_Button_Mode to PB_PromptOn
+            Set Prompt_Object to Nations_sl
+            Set Capslock_State to True
+            Set Server to 0
+
+            Procedure Prompt_Callback Handle hPrompt
+                Set pbAutoServer   of hPrompt to False
+                Set Server         of hPrompt to (oNations_DD(Self))
+                Set peUpdateMode   of hPrompt to umPromptValue
+                Set piUpdateColumn of hPrompt to 0
+            End_Procedure
+
+            Procedure End_Construct_Object
+                String sISO_Short
+                Forward Send End_Construct_Object
+                Get WindowsLocaleISO_Short of ghoCalendarHolidays to sISO_Short
+                Set Value to sISO_Short
+            End_Procedure
+
+            Procedure OnChange  
+                If (Active_State(Self)) Begin
+                    Send ShowReverse
+                End
+            End_Procedure
+        End_Object
+
+        Object oReverseAnswer_tb is a TextBox
+            Set Auto_Size_State to False
+            Set Size to 10 390
+            Set Location to 52 34
+            Set FontWeight to fw_Bold
+        End_Object
+
+        Object oReverseFunction_tb is a TextBox
+            Set Auto_Size_State to False
+            Set Size to 10 390
+            Set Location to 67 34
+        End_Object
+
+        // The answer to the reverse question, as soon as the date is a whole date.
+        Procedure ShowReverse
+            Date dDate
+            String sDate sISO_Short sHolidayName sFunctionName
+            Boolean bOK bFound bIsHoliday
+
+            If (pbReady(Self) = False) Begin
+                Procedure_Return
+            End
+            Set Label of oReverseAnswer_tb   to ""
+            Set Label of oReverseFunction_tb to ""
+            Get Value of oReverseDate_fm to sDate
+            If (Trim(sDate) = "") Begin
+                Set Label of oReverseAnswer_tb to "Enter a date"
+                Procedure_Return
+            End
+            Get IsValidDateString of ghoCalendarHolidays sDate to bOK
+            If (bOK = False) Begin
+                Set Label of oReverseAnswer_tb to "Not a whole date yet"
+                Procedure_Return
+            End
+            Move sDate to dDate
+            Get Value of oReverseCountry_fm to sISO_Short
+            Move (Uppercase(Trim(sISO_Short))) to sISO_Short
+            Get IsDateAHoliday of ghoCalendarHolidays dDate sISO_Short (&bIsHoliday) (&sHolidayName) (&sFunctionName) to bFound
+            If (bFound = False or sHolidayName = "") Begin
+                Set Label of oReverseAnswer_tb to (LongDateText(Self, dDate) + ": no holiday in the" * sISO_Short * "language package")
+                If (bFound = True) Begin
+                    Set Label of oReverseFunction_tb to ("Found by the function" * sFunctionName + ", but the package returns no name.")
+                End
+                Procedure_Return
+            End
+            Set Label of oReverseAnswer_tb   to (LongDateText(Self, dDate) + ":" * sHolidayName * (If(bIsHoliday, "- official holiday", "- not an official holiday")))
+            Set Label of oReverseFunction_tb to ("Found by the function" * sFunctionName + ".")
+        End_Procedure
+
+    End_Object
+
+    Procedure End_Construct_Object
+        Forward Send End_Construct_Object
+        Set pbReady to True
+    End_Procedure
 
 End_Object
