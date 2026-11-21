@@ -14,6 +14,8 @@
 **/AppSrc/**/*.dep
 **/AppSrc/**/*.dbg
 **/AppSrc/**/*.exe.manifest
+**/AppSrc/**/*.exe-*.manifest
+**/AppSrc/**/*.manifest.Backup
 **/AppSrc/**/*.err
 **/AppSrc/**/*.fld
 **/AppSrc/**/*.pbg
@@ -45,6 +47,8 @@ loginEncryptionkey.inc
 **/Programs/*.dbg
 **/Programs/*.exe
 **/Programs/*.exe.manifest
+# CodeJock controls COM Manifest Studio copies beside the program (registration-free COM) - vendor files
+**/Programs/*.ocx
 **/Programs/*.log
 
 # Workspace specific
