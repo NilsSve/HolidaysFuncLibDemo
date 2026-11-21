@@ -8,6 +8,8 @@ If your country is not included in the grid, creating a new one is quite simple!
 
 In the 'Calendar Test' tab, you can see an example of how to create your own calendar that includes the names of holidays and special days. Additionally, there is a sample of a generalized lookup list for holidays. Click the 'Test Holiday Lookup List' button to see how this feature can be used to retrieve any selection of holidays.
 
+The 'Working Days Test' tab (View > Working Days) shows the working-day functions of HolidaysFuncLib 1.0.4: `IsWorkingDay`, `AddWorkingDays` and `WorkingDaysBetween`. On the left are the library's settings - the country, the UK region (`piHolidayRegion`), the days off every week (`psWeekendMask`) and the company's closure days (`padClosedDays`). On the right, each function has a group of its own, and the answer says why a day is not a working day: a weekend day, an official holiday (named), or a closure day. The grid at the bottom lists every day between the two dates and how it was counted. It opens on Christmas 2026 in the UK, where the Boxing Day bank holiday moves to Monday 28 December.
+
 In addition to the `oCalendarHolidays` package, there are specific 'National Holidays Date Functions' tailored to individual countries. Each country package will at least return holiday names as strings.
 
 You can find a collection of country-specific libraries in `CountryPackages.pkg`. Use these files as templates to develop your own holiday packages for specific countries.

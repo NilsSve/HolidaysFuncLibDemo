@@ -136,6 +136,19 @@ Object oMain is a Panel
                     End_Procedure
                 End_Object
 
+                Object oWorkingDaysMenuItem is a cCJMenuItem
+                    Set psCaption to "Working Days"
+                    Set psDescription to "Working days, weekends and closure days - IsWorkingDay, AddWorkingDays, WorkingDaysBetween"
+                    Set peControlStyle to xtpButtonCaptionAndDescription
+                    Set psImage to "Calendar.ico"
+
+                    Procedure OnExecute Variant vCommandBarControl
+                        Handle hoClient
+                        Get Client_Id to hoClient
+                        Send Activate_oWorkingDays of hoClient
+                    End_Procedure
+                End_Object
+
                 Object oSimpleHolidaysMenuItem is a cCJMenuItem
                     Set psCaption to "Calendar"
                     Set psDescription to "Sample on using the Holiday Function Library"
@@ -484,6 +497,7 @@ Object oMain is a Panel
         Use Holidays.vw
 //        Use DataFunctionsTest.vw
         Use DataFunctionsTest.vw        
+        Use WorkingDays.vw
         Procedure Activate_About
             Send DoAbout "" "" "" "" "World64x64.bmp" "E-mail: mailto:support@rdctools.com" "This is a FREE program. Please make a contribution if you find it useful. Just click the toolbar button to make a small donation." ("This tool was created with DataFlex" * String(C_DFVersion) * "from Data Access Worldwide. Please visit http://www.dataaccess.com for a free personal copy of DataFlex.")
         End_Procedure
