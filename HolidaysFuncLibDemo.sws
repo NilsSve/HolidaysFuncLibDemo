@@ -18,7 +18,7 @@
         {
             "source": "https://github.com/NilsSve/Library-HolidaysFuncLib.git",
             "sws": "RDC-Holidays-Functions-Library.sws",
-            "version": "1.0.3"
+            "version": "1.0.4"
         }
     ],
     "description": "National Holidays",
