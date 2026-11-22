@@ -280,10 +280,7 @@ Object oMain is a Panel
                 
                 Object oHelpMenuItem is a cCJHelpMenuItem
                     Procedure OnExecute Variant vCommandBarControl
-                        String sHelpPath sHelpFile
-                        Get psHelpPath of (phoWorkspace(ghoApplication)) to sHelpPath
-                        Move "ClassReference.htm" to sHelpFile
-                        Runprogram Shell Background (sHelpPath + "\" + sHelpFile)
+                        Runprogram Shell Background "https://nilssve.github.io/HolidaysFuncLibDemo/"
                     End_Procedure
                 End_Object
 
@@ -407,12 +404,9 @@ Object oMain is a Panel
             End_Object 
                 
             Object oHelpMenuItem is a cCJHelpMenuItem 
-                Set psToolTip to "Read documentation about various classes used by the project."
+                Set psToolTip to "Open the online help for the demo and the library."
                 Procedure OnExecute Variant vCommandBarControl
-                    String sHelpPath sHelpFile
-                    Get psHelpPath of (phoWorkspace(ghoApplication)) to sHelpPath
-                    Move "ClassReference.htm" to sHelpFile
-                    Runprogram Shell Background (sHelpPath + "\" + sHelpFile)
+                    Runprogram Shell Background "https://nilssve.github.io/HolidaysFuncLibDemo/"
                 End_Procedure
             End_Object
 
