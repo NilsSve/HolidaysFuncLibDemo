@@ -403,11 +403,39 @@ Object oMain is a Panel
                 End_Procedure
             End_Object 
                 
-            Object oHelpMenuItem is a cCJHelpMenuItem 
-                Set psToolTip to "Open the online help for the demo and the library."
+            // The button opens the online help; its arrow offers the online help or the local CHM file.
+            Object oHelpToolItem is a cCJMenuItem
+                Set psCaption to "Help"
+                Set psToolTip to "Help"
+                Set psDescription to "Open the help for the demo and the library - click the arrow to choose online or local help"
+                Set psImage to "ActionHelp.ico"
+                Set peControlType to xtpControlSplitButtonPopup
+
                 Procedure OnExecute Variant vCommandBarControl
                     Runprogram Shell Background "https://nilssve.github.io/HolidaysFuncLibDemo/"
                 End_Procedure
+
+                Object oHelpOnlineToolItem is a cCJMenuItem
+                    Set psCaption to "Online help"
+                    Set psDescription to "The newest help, on the internet"
+                    Set psImage to "ActionHelpInternet.ico"
+
+                    Procedure OnExecute Variant vCommandBarControl
+                        Runprogram Shell Background "https://nilssve.github.io/HolidaysFuncLibDemo/"
+                    End_Procedure
+                End_Object
+
+                Object oHelpLocalToolItem is a cCJMenuItem
+                    Set psCaption to "Local help"
+                    Set psDescription to "The help file in the Help folder (HolidayFuncLib.chm) - works without an internet connection"
+                    Set psImage to "ActionHelp.ico"
+
+                    Procedure OnExecute Variant vCommandBarControl
+                        String sHelpPath
+                        Get psHelpPath of (phoWorkspace(ghoApplication)) to sHelpPath
+                        Runprogram Shell Background (sHelpPath + "\HolidayFuncLib.chm")
+                    End_Procedure
+                End_Object
             End_Object
 
             Object oExitMenuItem is a cCJExitMenuItem
