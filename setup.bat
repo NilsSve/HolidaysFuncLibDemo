@@ -1,28 +1,17 @@
 @echo off
-setlocal enabledelayedexpansion
+setlocal
 
 REM ===========================================================================
-REM  HolidaysFuncLibDemo - one-time setup
+REM  HolidaysFuncLibDemo - one-time setup (DataFlex 26)
 REM
-REM  The libraries this workspace needs are NOT stored in this repository (see
-REM  .gitignore). This script provides them, and it behaves differently by
-REM  machine so that one arrangement serves both maintainer and user:
+REM  The libraries the demo uses - HolidaysFuncLib, RDCToolsLib, DFAbout,
+REM  vWin32fh, RDCFlexTron and Data Access's Web UI FlexTron - are NOT stored
+REM  in this repository. HolidaysFuncLibDemo.sws names them as dependencies,
+REM  and DataFlex's package manager installs them: into DfPkg\, and the web
+REM  files into AppHtml\ and Bitmaps\. This script asks it to do that
+REM  ("df-cli config"), then protects your local database (skip-local-data.cmd).
 REM
-REM    * If a shared RDC library pool sits next to this workspace (a sibling
-REM      ..\Libraries folder carrying the marker file .rdc-library-pool), it
-REM      makes Libraries\ a JUNCTION to that pool. One shared, editable copy:
-REM      a fix made in a library here is a fix in the pool.
-REM
-REM    * Otherwise it CLONES the libraries it needs (DFAbout,
-REM      RDCToolsLib, vwin32fh, HolidaysFuncLib) into this workspace's own
-REM      Libraries\ folder - isolated, self-contained, and it never writes
-REM      anywhere outside this workspace, so it cannot disturb libraries you
-REM      already have elsewhere.
-REM
-REM  vwin32fh is listed even though this demo's own source does not Use it
-REM  directly: RDCToolsLib requires it.
-REM
-REM  Re-run any time Libraries\ looks missing or out of date.
+REM  Re-run it any time - after a pull that moves a library version, say.
 REM ===========================================================================
 
 cd /d "%~dp0"
@@ -32,56 +21,30 @@ echo === HolidaysFuncLibDemo setup ===
 echo Working folder: %CD%
 echo.
 
-where git >nul 2>nul
-if errorlevel 1 (
-    echo [ERROR] Git was not found on your PATH.
-    echo         Install Git ^(or the GitHub Desktop app^), reopen the
-    echo         command prompt, and run setup.bat again.
+REM DataFlex 26's command-line tool: from the registry, else the default folder, else the PATH.
+set "DFCLI="
+for /f "tokens=2,*" %%A in ('reg query "HKLM\SOFTWARE\Data Access Worldwide\DataFlex\26.0\Defaults" /v VDFRootDir 2^>nul ^| find "VDFRootDir"') do set "DFROOT=%%B"
+if defined DFROOT if exist "%DFROOT%Bin64\df-cli.exe" set "DFCLI=%DFROOT%Bin64\df-cli.exe"
+if not defined DFCLI if exist "%ProgramFiles%\DataFlex 26.0\Bin64\df-cli.exe" set "DFCLI=%ProgramFiles%\DataFlex 26.0\Bin64\df-cli.exe"
+if not defined DFCLI for /f "delims=" %%P in ('where df-cli 2^>nul') do if not defined DFCLI set "DFCLI=%%P"
+
+if not defined DFCLI (
+    echo [ERROR] DataFlex 26 was not found ^(df-cli.exe^).
+    echo         The demo needs DataFlex 26. Install it, then run setup.bat again.
     echo.
     pause
     exit /b 1
 )
 
-if exist "..\Libraries\.rdc-library-pool" (
-    REM ------------------------------------------------------------------ pool
-    if exist "Libraries" (
-        echo Libraries\ already present - assuming it is linked. Skipping.
-    ) else (
-        echo Shared library pool found next door - linking Libraries\ to it...
-        mklink /J "Libraries" "..\Libraries" >nul
-        if errorlevel 1 (
-            echo.
-            echo [ERROR] Could not create the junction to ..\Libraries.
-            echo         Create it by hand with:
-            echo             mklink /J "%CD%\Libraries" "%CD%\..\Libraries"
-            echo.
-            pause
-            exit /b 1
-        )
-        echo Linked: Libraries  -^>  ..\Libraries
-    )
-) else (
-    REM --------------------------------------------------------------- isolated
-    REM No shared pool. Clone the flat library set into this workspace's own
-    REM Libraries\ - never writes outside this workspace.
-    for %%N in (DFAbout RDCToolsLib vwin32fh HolidaysFuncLib) do (
-        if not exist "Libraries\%%N\.git" (
-            echo Cloning %%N into Libraries\ ...
-            git clone https://github.com/NilsSve/Library-%%N.git "Libraries\%%N"
-            if errorlevel 1 (
-                echo.
-                echo [ERROR] Could not clone Library-%%N.
-                echo         Check your connection and that you can reach:
-                echo           https://github.com/NilsSve/Library-%%N.git
-                echo.
-                pause
-                exit /b 1
-            )
-        ) else (
-            echo Updating Libraries\%%N ...
-            git -C "Libraries\%%N" pull --ff-only
-        )
-    )
+echo Installing the libraries the workspace names ^(df-cli config^)...
+"%DFCLI%" config HolidaysFuncLibDemo.sws
+if errorlevel 1 (
+    echo.
+    echo [ERROR] df-cli could not install the libraries - see the messages above.
+    echo         Check your internet connection, then run setup.bat again.
+    echo.
+    pause
+    exit /b 1
 )
 
 echo.
@@ -95,9 +58,8 @@ if exist "%~dp0skip-local-data.cmd" (
 echo.
 echo === Setup complete ===
 echo.
-echo Libraries\ is ready. Open HolidaysFuncLibDemo25.0.sws in the Studio and
-echo build. If Libraries\ is a junction to the shared pool, editing a library
-echo file here edits the pool - there is no separate copy to drift.
+echo Open HolidaysFuncLibDemo.sws in DataFlex Studio 26, then compile and run
+echo HolidaysFuncLibTest.src.
 echo.
 pause
 exit /b 0
