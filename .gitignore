@@ -60,3 +60,11 @@ loginEncryptionkey.inc
 **/Capture
 # DataFlex 26 package cache: what df-cli installs for HolidaysFuncLibDemo.sws (filled again from the .sws.lock)
 /DfPkg/
+
+# What the package manager installs into AppHtml (Web UI FlexTron, its theme, RDCFlexTron)
+AppHtml/WebUI/
+AppHtml/WebUI_Designer/
+AppHtml/CssThemes/
+AppHtml/RDCFlexTron/
+# ... and into Bitmaps: RDCFlexTron's dark toolbar and menu icons
+Bitmaps/RDCFlexTron/

@@ -1,4 +1,5 @@
 ﻿Use cRDCDbView.pkg
+Use DemoTheme.pkg                   // the theme: DemoDarkView, DemoDarkGrid
 Use cCJGridColumnRowIndicator.pkg
 Use cRDCCJGrid.pkg
 Use cCJGridColumn.pkg
@@ -302,6 +303,12 @@ Object oDateFunctionsTest is a cRDCDbView
         End_Object
 
         Object oDateFunctions_grd is a cRDCCJGridPromptList
+            // The theme's colours in the dark theme (DemoTheme.pkg).
+            Procedure End_Construct_Object
+                Forward Send End_Construct_Object
+                Send DemoDarkGrid Self
+            End_Procedure
+
             Set Size to 286 178
             Set Location to 43 6
             Set pbInitialSelectionEnable to True
@@ -684,6 +691,7 @@ Object oDateFunctionsTest is a cRDCDbView
     Procedure End_Construct_Object
         Forward Send End_Construct_Object
         Set pbReady to True
+        Send DemoDarkView Self
     End_Procedure
 
 End_Object

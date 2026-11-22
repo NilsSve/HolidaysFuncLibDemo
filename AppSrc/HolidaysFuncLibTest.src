@@ -1,6 +1,9 @@
 ﻿Use DFAllEnt.pkg
 Use cRDCCJCommandBarSystem.pkg
 
+// giFTThemeMode and the CI_FTTheme* modes (RDCFlexTron): the theme is read after the application object (DemoTheme.pkg).
+Use FTConstants.h.pkg
+
 // If Is$GraphicsLibrary is defined, then the "DataFlex Graphics Library" needs to be used as a library.
 // Else the "Flags" object will not be used/visible in the application.
 // NOTE: The Studio will complain if the library is defined in the .sws file, but
@@ -36,6 +39,10 @@ Object oApplication is a cRDCApplication
 
 End_Object
 
+// THE THEME - Light, Dark or Follow Windows, the toolbar's Theme button: read now, before the windows are built.
+Use DemoTheme.pkg
+Send DemoSeedTheme
+
 Use cRDCTooltipController.pkg
 Object oToolTipController is a cRDCTooltipController
 End_Object
@@ -51,6 +58,12 @@ Object oMain is a Panel
     Set Icon to "NationalHolidays.ico"
     
     Property Handle phoViewMenu 0
+
+    // In the dark theme the title bar is dark too - once the window exists.
+    Procedure Page Integer iPageObject
+        Forward Send Page iPageObject
+        Send DemoDarkTitleBar (Window_Handle(Self))
+    End_Procedure
     Property Handle phoReportMenu 0
 
     If ghoStatusPanel Begin
@@ -59,6 +72,16 @@ Object oMain is a Panel
 
     Object oCommandBarSystem is a cRDCCJCommandBarSystem
         Set pbTabbedWorkspaces to True
+        Set peVisualTheme to (FTCJTheme())    // Visual Studio 2022 Light, or 2017 Dark (RDCFlexTron)
+
+        // The views' tab strip in the dark theme: Visual Studio 2012's dark colours.
+        Procedure OnCreateTabbedWorkspace Handle hoTabWorkspace Handle hoTabPaintManager
+            Forward Send OnCreateTabbedWorkspace hoTabWorkspace hoTabPaintManager
+            If (DemoIsDark()) Begin
+                Set ComAppearance of hoTabPaintManager to xtpTabAppearanceVisualStudio2012
+                Set ComColor      of hoTabPaintManager to xtpTabColorVisualStudio2012Dark
+            End
+        End_Procedure
         
         Object oMenuBar is a cCJMenuBar
 
@@ -146,6 +169,19 @@ Object oMain is a Panel
                         Handle hoClient
                         Get Client_Id to hoClient
                         Send Activate_oWorkingDays of hoClient
+                    End_Procedure
+                End_Object
+
+                Object oYearOverviewMenuItem is a cCJMenuItem
+                    Set psCaption to "Year Overview"
+                    Set psDescription to "A country's whole year - holidays, special days and working days (a FlexTron page)"
+                    Set peControlStyle to xtpButtonCaptionAndDescription
+                    Set psImage to "Calendar.ico"
+
+                    Procedure OnExecute Variant vCommandBarControl
+                        Handle hoClient
+                        Get Client_Id to hoClient
+                        Send Activate_oYearOverview of hoClient
                     End_Procedure
                 End_Object
 
@@ -403,6 +439,50 @@ Object oMain is a Panel
                 End_Procedure
             End_Object 
                 
+            // THE THEME: a drop-down of the three choices, the one in use ticked. A new choice is saved and the demo
+            // restarts in it (DemoSwitchTheme).
+            Object oThemeToolItem is a cCJMenuItem
+                Set psCaption to "Theme"
+                Set psToolTip to "Theme"
+                Set psDescription to "Light, Dark or Follow Windows - the demo restarts in the new theme"
+                Set psImage to "Colors.ico"
+                Set peControlType to xtpControlPopup
+                Set pbControlBeginGroup to True
+
+                Object oThemeLightToolItem is a cCJMenuItem
+                    Set psCaption to "Light"
+                    Set psDescription to "The light theme"
+                    Function IsChecked Returns Boolean
+                        Function_Return (DemoThemeChoice() = CI_FTThemeLight)
+                    End_Function
+                    Procedure OnExecute Variant vCommandBarControl
+                        Send DemoSwitchTheme CI_FTThemeLight
+                    End_Procedure
+                End_Object
+
+                Object oThemeDarkToolItem is a cCJMenuItem
+                    Set psCaption to "Dark"
+                    Set psDescription to "The dark theme"
+                    Function IsChecked Returns Boolean
+                        Function_Return (DemoThemeChoice() = CI_FTThemeDark)
+                    End_Function
+                    Procedure OnExecute Variant vCommandBarControl
+                        Send DemoSwitchTheme CI_FTThemeDark
+                    End_Procedure
+                End_Object
+
+                Object oThemeSystemToolItem is a cCJMenuItem
+                    Set psCaption to "Follow Windows"
+                    Set psDescription to "Light or dark, as Windows has it for apps (read when the demo starts)"
+                    Function IsChecked Returns Boolean
+                        Function_Return (DemoThemeChoice() = CI_FTThemeSystem)
+                    End_Function
+                    Procedure OnExecute Variant vCommandBarControl
+                        Send DemoSwitchTheme CI_FTThemeSystem
+                    End_Procedure
+                End_Object
+            End_Object
+
             // The button opens the online help; its arrow offers the online help or the local CHM file.
             Object oHelpToolItem is a cCJMenuItem
                 Set psCaption to "Help"
@@ -513,13 +593,14 @@ Object oMain is a Panel
 
     Object oClientArea is a ClientArea
 //        Use Dd_debug.dg // This Provides access to dd debugger by pressing ctrl+d within any view. Good for debugging
-        Use StdAbout.pkg
+        Use FTStdAbout.pkg              // the About dialog as a FlexTron page (RDCFlexTron); Help\About.html is its file
 
         Use Nations.vw
         Use Holidays.vw
 //        Use DataFunctionsTest.vw
         Use DataFunctionsTest.vw        
         Use WorkingDays.vw
+        Use YearOverview.vw
         Procedure Activate_About
             Send DoAbout "" "" "" "" "World64x64.bmp" "E-mail: mailto:support@rdctools.com" "This is a FREE program. Please make a contribution if you find it useful. Just click the toolbar button to make a small donation." ("This tool was created with DataFlex" * String(C_DFVersion) * "from Data Access Worldwide. Please visit http://www.dataaccess.com for a free personal copy of DataFlex.")
         End_Procedure

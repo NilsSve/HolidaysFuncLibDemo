@@ -6,6 +6,9 @@ Use cRDCComboForm.pkg
 Use cRDCButton.pkg
 Use cRDCCJGrid.pkg
 Use cCJGridColumn.pkg
+Use DemoTheme.pkg                   // the theme: DemoDarkView, DemoDarkGrid
+Use cFTCheckBoxCaption.pkg          // a check box's caption as a TextBox (RDCFlexTron)
+Use cFTRadioGroup.pkg               // cFTGroupCaption: a group box's caption as a TextBox (RDCFlexTron)
 
 // The holiday function library: ghoCalendarHolidays, and the UK region constants (BrittishHolidays.pkg).
 Use oCalendarHolidays.pkg
@@ -333,73 +336,109 @@ Object oWorkingDays is a cRDCView
         End_Object
 
         Object oDay1_cb is a CheckBox
-            Set Size to 10 26
+            Set Size to 10 10
             Set Location to 82 8
-            Set Label to "Mon"
             Set Checked_State to False
             Procedure OnChange
                 Send ApplySettings
             End_Procedure
+        End_Object
+
+        // The caption, readable in both themes: a check box draws its own in the Windows colours.
+        Object oDay1_cap is a cFTCheckBoxCaption
+            Set Location to 83 18
+            Set Label to "Mon"
+            Set phoCheckBox to (oDay1_cb(Self))
         End_Object
 
         Object oDay2_cb is a CheckBox
-            Set Size to 10 26
-            Set Location to 82 33
-            Set Label to "Tue"
+            Set Size to 10 10
+            Set Location to 82 34
             Set Checked_State to False
             Procedure OnChange
                 Send ApplySettings
             End_Procedure
+        End_Object
+
+        Object oDay2_cap is a cFTCheckBoxCaption
+            Set Location to 83 44
+            Set Label to "Tue"
+            Set phoCheckBox to (oDay2_cb(Self))
         End_Object
 
         Object oDay3_cb is a CheckBox
-            Set Size to 10 26
-            Set Location to 82 58
-            Set Label to "Wed"
+            Set Size to 10 10
+            Set Location to 82 60
             Set Checked_State to False
             Procedure OnChange
                 Send ApplySettings
             End_Procedure
+        End_Object
+
+        Object oDay3_cap is a cFTCheckBoxCaption
+            Set Location to 83 70
+            Set Label to "Wed"
+            Set phoCheckBox to (oDay3_cb(Self))
         End_Object
 
         Object oDay4_cb is a CheckBox
-            Set Size to 10 26
-            Set Location to 82 83
-            Set Label to "Thu"
+            Set Size to 10 10
+            Set Location to 82 86
             Set Checked_State to False
             Procedure OnChange
                 Send ApplySettings
             End_Procedure
+        End_Object
+
+        Object oDay4_cap is a cFTCheckBoxCaption
+            Set Location to 83 96
+            Set Label to "Thu"
+            Set phoCheckBox to (oDay4_cb(Self))
         End_Object
 
         Object oDay5_cb is a CheckBox
-            Set Size to 10 26
-            Set Location to 82 108
-            Set Label to "Fri"
+            Set Size to 10 10
+            Set Location to 82 112
             Set Checked_State to False
             Procedure OnChange
                 Send ApplySettings
             End_Procedure
         End_Object
 
+        Object oDay5_cap is a cFTCheckBoxCaption
+            Set Location to 83 122
+            Set Label to "Fri"
+            Set phoCheckBox to (oDay5_cb(Self))
+        End_Object
+
         Object oDay6_cb is a CheckBox
-            Set Size to 10 26
-            Set Location to 82 133
-            Set Label to "Sat"
+            Set Size to 10 10
+            Set Location to 82 138
             Set Checked_State to True
             Procedure OnChange
                 Send ApplySettings
             End_Procedure
         End_Object
 
+        Object oDay6_cap is a cFTCheckBoxCaption
+            Set Location to 83 148
+            Set Label to "Sat"
+            Set phoCheckBox to (oDay6_cb(Self))
+        End_Object
+
         Object oDay7_cb is a CheckBox
-            Set Size to 10 26
-            Set Location to 82 158
-            Set Label to "Sun"
+            Set Size to 10 10
+            Set Location to 82 164
             Set Checked_State to True
             Procedure OnChange
                 Send ApplySettings
             End_Procedure
+        End_Object
+
+        Object oDay7_cap is a cFTCheckBoxCaption
+            Set Location to 83 174
+            Set Label to "Sun"
+            Set phoCheckBox to (oDay7_cb(Self))
         End_Object
 
         Object oMask_tb is a TextBox
@@ -473,6 +512,12 @@ Object oWorkingDays is a cRDCView
         End_Object
 
         Object oClosed_grd is a cRDCCJGrid
+            // The theme's colours in the dark theme (DemoTheme.pkg).
+            Procedure End_Construct_Object
+                Forward Send End_Construct_Object
+                Send DemoDarkGrid Self
+            End_Procedure
+
             Set Size to 186 178
             Set Location to 146 8
             Set pbReadOnly to True
@@ -642,6 +687,12 @@ Object oWorkingDays is a cRDCView
         End_Object
 
         Object oDays_grd is a cRDCCJGrid
+            // The theme's colours in the dark theme (DemoTheme.pkg).
+            Procedure End_Construct_Object
+                Forward Send End_Construct_Object
+                Send DemoDarkGrid Self
+            End_Procedure
+
             Set Size to 150 416
             Set Location to 54 8
             Set pbReadOnly to True
@@ -689,6 +740,7 @@ Object oWorkingDays is a cRDCView
         Set Value of oTo3_fm    to (DateSetDate(ghoCalendarHolidays, 2027, 1, 1))
         Set pbReady to True
         Send ApplySettings
+        Send DemoDarkView Self
     End_Procedure
 
 End_Object

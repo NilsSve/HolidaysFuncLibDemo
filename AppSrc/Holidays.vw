@@ -17,6 +17,9 @@ Use cRDCDbForm.pkg
 Use cRDCDbGroup.pkg
 Use cRDCDbCJGrid.pkg
 Use cRDCDbCJGridColumn.pkg
+Use DemoTheme.pkg                   // the theme: DemoDarkView, DemoDarkGrid
+Use cFTCheckBoxCaption.pkg          // a check box's caption as a TextBox (RDCFlexTron)
+Use cFTRadioGroup.pkg               // cFTGroupCaption: a group box's caption as a TextBox (RDCFlexTron)
 Use cRDCForm.pkg
 Use cRDCButton.pkg
 #IFDEF Is$GraphicsLibrary
@@ -191,10 +194,14 @@ Object oHolidays is a cRDCDbView
     Object oDateMaintenance_grp is a cRDCDbGroup
         Set Size to 208 508
         Set Location to 3 5
-        Set Label to "Sample - Calendar Dates Including Holidays and Other Special Dates"
         Set peAnchors to anAll
         Set piMinSize to 204 457
         Set Bitmap_Style to Bitmap_Stretch
+
+        // The caption, readable in both themes: a group box draws its own in the Windows colours.
+        Object oDateMaintenance_grp_cap is a cFTGroupCaption
+            Set Label to "Sample - Calendar Dates Including Holidays and Other Special Dates"
+        End_Object
 
         Object oNations_ISO_Short is a cRDCDbForm
             Entry_Item Nations.ISO_Short
@@ -346,6 +353,7 @@ Object oHolidays is a cRDCDbView
             Procedure End_Construct_Object
                 Forward Send End_Construct_Object
                 Set phoContextMenu to 0
+                Send DemoDarkGrid Self      // the theme's colours in the dark theme (DemoTheme.pkg)
             End_Procedure
 
             On_Key kCancel Send None
@@ -383,9 +391,8 @@ Object oHolidays is a cRDCDbView
         End_Object
 #ENDIF
         Object oOnlyHolsCB is a CheckBox
-            Set Size to 10 120
+            Set Size to 10 10
             Set Location to 194 75
-            Set Label to "Only Show Holiday Dates"
             Set psToolTip to "Check this to hide dates that are not holidays"
             Set peAnchors to anBottomLeft
 
@@ -400,13 +407,25 @@ Object oHolidays is a cRDCDbView
 
         End_Object
 
+        // The caption, readable in both themes: a check box draws its own in the Windows colours.
+        Object oOnlyHols_cap is a cFTCheckBoxCaption
+            Set Location to 195 86
+            Set Label to "Only Show Holiday Dates"
+            Set peAnchors to anBottomLeft
+            Set phoCheckBox to (oOnlyHolsCB(Self))
+        End_Object
+
     End_Object
 
     Object oAddDays_grp is a cRDCDbGroup
         Set Size to 52 404
         Set Location to 217 6
-        Set Label to "Test - Generate Calendar Dates (including Holidays)"
         Set peAnchors to anBottomLeft
+
+        // The caption, readable in both themes: a group box draws its own in the Windows colours.
+        Object oAddDays_grp_cap is a cFTGroupCaption
+            Set Label to "Test - Generate Calendar Dates (including Holidays)"
+        End_Object
 
         Object oStartDate_fm is a Form
             Set Size to 13 45
@@ -646,6 +665,12 @@ Object oHolidays is a cRDCDbView
 
     // Do not allow to close panel:
     Procedure Request_Cancel
+    End_Procedure
+
+    // The theme's ground and ink on the view and its controls, in the dark theme (DemoTheme.pkg).
+    Procedure End_Construct_Object
+        Forward Send End_Construct_Object
+        Send DemoDarkView Self
     End_Procedure
 
 End_Object

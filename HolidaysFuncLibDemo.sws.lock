@@ -1,10 +1,22 @@
 {
     "dependencies": {
+        "DataFlex-dev/Web UI": {
+            "ref": "1.0.56"
+        },
+        "DataFlex-dev/Web UI FlexTron": {
+            "ref": "1.0.56"
+        },
+        "DataFlex-dev/Web UI Material Theme": {
+            "ref": "1.0.4"
+        },
         "github.com/NilsSve/Library-DFAbout.git/RDC-DFAbout-Library": {
             "ref": "1.0.7"
         },
         "github.com/NilsSve/Library-HolidaysFuncLib.git/RDC-Holidays-Functions-Library": {
             "ref": "1.0.4"
+        },
+        "github.com/NilsSve/Library-RDCFlexTron.git/RDC-FlexTron-Library": {
+            "ref": "0.9.39"
         },
         "github.com/NilsSve/Library-RDCToolsLib.git/RDC-Windows-Sub-Classes-Library": {
             "ref": "1.0.21"

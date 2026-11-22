@@ -5,6 +5,8 @@ Use cRDCDbView.pkg
 Use cRDCDbCJGrid.pkg
 Use cRDCDbForm.pkg
 Use cRDCDbGroup.pkg
+Use DemoTheme.pkg                   // the theme: DemoDarkView
+Use cFTRadioGroup.pkg               // cFTGroupCaption: a group box's caption as a TextBox (RDCFlexTron)
 #IFDEF Is$GraphicsLibrary
     Use cDbImageContainer.pkg
 #ENDIF    
@@ -45,8 +47,12 @@ Object oNations is a cRDCDbView
     Object oNation_grp is a cRDCDbGroup
         Set Size to 219 507
         Set Location to 3 7
-        Set Label to "National Characterestics"
         Set peAnchors to anAll
+
+        // The caption, readable in both themes: a group box draws its own in the Windows colours.
+        Object oNation_grp_cap is a cFTGroupCaption
+            Set Label to "National Characterestics"
+        End_Object
 
         Object oNationsISO_Short is a cRDCDbForm
             Entry_Item Nations.ISO_Short
@@ -238,4 +244,10 @@ Object oNations is a cRDCDbView
     //    On_Key Key_Ctrl+Key_C Send KeyAction of oCallWebService_btn
     //    On_Key Key_Alt+Key_C  Send KeyAction of oCallWebService_btn
     On_Key Key_Ctrl+Key_S Send Request_Save
+
+    // The theme's ground and ink on the view and its controls, in the dark theme (DemoTheme.pkg).
+    Procedure End_Construct_Object
+        Forward Send End_Construct_Object
+        Send DemoDarkView Self
+    End_Procedure
 End_Object

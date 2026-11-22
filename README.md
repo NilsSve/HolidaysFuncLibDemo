@@ -10,6 +10,10 @@ In the 'Calendar Test' tab, you can see an example of how to create your own cal
 
 The 'Working Days Test' tab (View > Working Days) shows the working-day functions of HolidaysFuncLib 1.0.4: `IsWorkingDay`, `AddWorkingDays` and `WorkingDaysBetween`. On the left are the library's settings - the country, the UK region (`piHolidayRegion`), the days off every week (`psWeekendMask`) and the company's closure days (`padClosedDays`). On the right, each function has a group of its own, and the answer says why a day is not a working day: a weekend day, an official holiday (named), or a closure day. The grid at the bottom lists every day between the two dates and how it was counted. It opens on Christmas 2026 in the UK, where the Boxing Day bank holiday moves to Monday 28 December.
 
+The 'Year Overview' tab (View > Year Overview) shows a country's whole year, month by month: each day marked as a weekend day, a day off for an official holiday, a special day or a closure day, the working days of each month and of the year, and the list of the year's holidays and special days. Click a country or a year to change it. It is a FlexTron page, built with the [RDCFlexTron](https://github.com/NilsSve/Library-RDCFlexTron) library, and it follows the settings of the Working Days view. The About dialog (Help > About) is RDCFlexTron's too.
+
+The demo needs DataFlex 26: open `HolidaysFuncLibDemo.sws`. The library itself works with DataFlex 24, 25 and 26.
+
 In addition to the `oCalendarHolidays` package, there are specific 'National Holidays Date Functions' tailored to individual countries. Each country package will at least return holiday names as strings.
 
 You can find a collection of country-specific libraries in `CountryPackages.pkg`. Use these files as templates to develop your own holiday packages for specific countries.

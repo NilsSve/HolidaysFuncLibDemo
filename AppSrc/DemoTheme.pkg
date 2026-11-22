@@ -1,0 +1,170 @@
+﻿//****************************************************************************
+// $Module type: Package
+// $Module name: DemoTheme.pkg
+// $Author     : Nils Svedmyr, RDC Tools International
+// Created     : 2026-11-22
+//
+// Description : The demo's theme - Light, Dark or Follow Windows - with RDCFlexTron. The choice is saved where
+//               RDCFlexTron's cFTApplication saves it (CS_FTThemeSection / CS_FTTheme, under the program's own
+//               registry key), read once as the program starts, and a new choice restarts the program. The FlexTron
+//               pages follow giFTThemeMode by themselves; this package gives the native parts the same colours:
+//               the title bar, the views and their controls, and the CodeJock grids.
+//
+// This code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+//****************************************************************************
+Use Windows.pkg
+Use cRegistry.pkg
+Use FTConstants.h.pkg               // giFTThemeMode, CI_FTTheme*, CS_FTThemeSection, CS_FTTheme
+Use FTThemeColors.pkg               // FTThemeLateObjects, FTColorPanel, FTCJTheme, FTCJGridTheme, FTThemeInk
+Use FTThemeIcons.pkg                // FTSeedThemeIcons - the dark toolbar and menu icons
+Use cCJGridControl.pkg              // xtpBorderNone
+Use FTMessageBox.dg                 // FTInfoBox: the message box in the theme's colours (RDCFlexTron)
+
+// Windows' own choice for apps (Settings > Personalization > Colors): True when apps are light.
+Function DemoWindowsAppsUseLight Global Returns Boolean
+    Handle hoRegistry
+    Boolean bOpen bLight
+    Move True to bLight
+    Get Create (RefClass(cRegistry)) to hoRegistry
+    Set phRootKey      of hoRegistry to HKEY_CURRENT_USER
+    Set pfAccessRights of hoRegistry to KEY_READ
+    Get OpenKey of hoRegistry "Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" to bOpen
+    If (bOpen) Begin
+        If (ValueExists(hoRegistry, "AppsUseLightTheme")) Begin
+            Move (ReadDword(hoRegistry, "AppsUseLightTheme") <> 0) to bLight
+        End
+        Send CloseKey of hoRegistry
+    End
+    Send Destroy of hoRegistry
+    Function_Return bLight
+End_Function
+
+// The saved choice: CI_FTThemeLight (the default - how the demo has always looked), CI_FTThemeDark or
+// CI_FTThemeSystem (Follow Windows).
+Function DemoThemeChoice Global Returns Integer
+    Integer iMode
+    Get ReadInteger of ghoApplication CS_FTThemeSection CS_FTTheme CI_FTThemeLight to iMode
+    If ((iMode < CI_FTThemeDark) or (iMode > CI_FTThemeSystem)) ;
+        Move CI_FTThemeLight to iMode
+    Function_Return iMode
+End_Function
+
+/* THE THEME, read once as the program starts - after the application object, which knows the registry key and
+   opens the workspace, and before the windows are built, as the command bars, the views and the FlexTron pages
+   take the theme as they are made. Follow Windows is settled here, from Windows' own setting, so that the native
+   windows and the web pages agree. Then the dark icon folders go in front of the bitmap path (FTSeedThemeIcons):
+   the menus and toolbars load their icons as they are built. */
+Procedure DemoSeedTheme Global
+    Integer iMode
+    Get DemoThemeChoice to iMode
+    If (iMode = CI_FTThemeSystem) Begin
+        If (DemoWindowsAppsUseLight()) ;
+            Move CI_FTThemeLight to iMode
+        Else ;
+            Move CI_FTThemeDark to iMode
+    End
+    Move iMode to giFTThemeMode
+    Send FTThemeLateObjects
+    Send FTSeedThemeIcons
+End_Procedure
+
+Function DemoIsDark Global Returns Boolean
+    Function_Return (giFTThemeMode = CI_FTThemeDark)
+End_Function
+
+Function DemoThemeName Global Integer iMode Returns String
+    If (iMode = CI_FTThemeDark) ;
+        Function_Return "Dark"
+    If (iMode = CI_FTThemeSystem) ;
+        Function_Return "Follow Windows"
+    Function_Return "Light"
+End_Function
+
+// A new choice: saved, and the demo starts again in it when the message is closed.
+Procedure DemoSwitchTheme Global Integer iMode
+    String sExe
+    If (iMode = DemoThemeChoice()) ;
+        Procedure_Return
+    Send WriteInteger of ghoApplication CS_FTThemeSection CS_FTTheme iMode
+    Send FTInfoBox (DemoThemeName(iMode) + " is saved. The demo restarts when you close this message.") "Theme"
+    Get GetApplicationFileName of ghoApplication to sExe
+    Move ('"' + sExe + '"') to sExe
+    Runprogram Background sExe
+    Send Exit_Application
+End_Procedure
+
+// ---- The native parts in the dark theme ----
+
+// The title bar: Windows 10 (20H1) and later draw a window's title bar dark when the window asks for it
+// (DWMWA_USE_IMMERSIVE_DARK_MODE, 20). Earlier Windows answer with an error and keep it light.
+#IFNDEF get_HFL_DwmSetWindowAttribute
+    External_Function HFL_DwmSetWindowAttribute "DwmSetWindowAttribute" dwmapi.dll ;
+        Handle hWnd ;
+        DWord dwAttribute ;
+        Pointer pvAttribute ;
+        DWord cbAttribute ;
+        Returns Integer
+#ENDIF
+
+Procedure DemoDarkTitleBar Global Handle hWnd
+    Integer iDark iVoid
+    If ((DemoIsDark()) and (hWnd <> 0)) Begin
+        Move 1 to iDark
+        Move (HFL_DwmSetWindowAttribute(hWnd, 20, AddressOf(iDark), 4)) to iVoid
+    End
+End_Procedure
+
+// A CodeJock grid in the theme's own colours: the RDC grids set fixed light ones (SetGridLook) - a white focus
+// cell, a pale alternate row, a dark caption - that a dark grid cannot show. Sent from the grid's
+// End_Construct_Object, before the grid is created.
+Procedure DemoDarkGrid Global Handle hoGrid
+    If (DemoIsDark() = False) ;
+        Procedure_Return
+    Set peVisualTheme                    of hoGrid to (FTCJGridTheme())
+    Set peBorderStyle                    of hoGrid to xtpBorderNone
+    Set pbUseAlternateRowBackgroundColor of hoGrid to False
+    Set piSelectedRowBackColor           of hoGrid to clDefault
+    Set piSelectedRowForeColor           of hoGrid to clDefault
+    Set piHighlightBackColor             of hoGrid to clDefault
+    Set piCaptionBackColor               of hoGrid to clDefault
+    Set piCaptionForeColor               of hoGrid to clDefault
+    Set piFocusCellBackColor             of hoGrid to clDefault
+    Set piFocusCellForeColor             of hoGrid to (FTThemeInk())
+End_Procedure
+
+/* A DISABLED FIELD keeps Windows' own colours: Windows paints a disabled edit's ground itself, light, while the text
+   takes the theme's light ink - white on white (Nils 2026-11-22, Dates Functions Test). So in the dark theme a field
+   that only shows a value is enabled again but cannot be entered: a form cannot take the focus (Focus_Mode
+   NonFocusable), a text edit is read-only (Read_Only_State True). Every object understands the message; only the fields act on it. */
+Procedure DemoDarkDisabled for cObject
+End_Procedure
+
+Procedure DemoDarkDisabled for DfBaseForm
+    If (Enabled_State(Self) = False) Begin
+        // Enabling it gives back the colour it had before it was disabled - white - so the theme's colours go on after.
+        Set Enabled_State to True
+        Set Color         to (FTViewBg())
+        Set TextColor     to (FTThemeInk())
+        Set Focus_Mode    to NonFocusable  // read-only would not do: Windows paints a read-only edit as a disabled one
+    End
+End_Procedure
+
+Procedure DemoDarkDisabled for DfBaseTextEdit
+    If (Enabled_State(Self) = False) Begin
+        Set Enabled_State   to True
+        Set Color           to (FTViewBg())
+        Set TextColor       to (FTThemeInk())
+        Set Read_Only_State to True
+    End
+End_Procedure
+
+// A native view, and everything in it, in the theme's ground and ink (RDCFlexTron's FTColorPanel). Sent from the
+// view's End_Construct_Object, once its controls exist. A check box's and a group box's own caption keep the
+// Windows colours, so the views draw those captions as TextBoxes (cFTCheckBoxCaption, cFTGroupCaption).
+Procedure DemoDarkView Global Handle hoView
+    If (DemoIsDark()) Begin
+        Send FTColorPanel hoView
+        Broadcast Recursive Send DemoDarkDisabled of hoView
+    End
+End_Procedure

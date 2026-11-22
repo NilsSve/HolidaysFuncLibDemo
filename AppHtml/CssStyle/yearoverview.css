@@ -1,0 +1,65 @@
+/* The Year Overview page (YearOverview.vw): one country's year, month by month. Colours from the RDCFlexTron
+   palette (palette.css), so the page follows the theme. */
+
+.yo { font-size: 12px; color: var(--dfr-ink); }
+
+/* ---- the bar: the countries, and the year ---- */
+.yo-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.yo-countries, .yo-years { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.yo-chip, .yo-btn {
+    cursor: pointer; padding: 3px 10px; border-radius: 12px; user-select: none;
+    border: 1px solid var(--dfr-btn-line); background: var(--dfr-btn-bg); color: var(--dfr-btn-ink);
+}
+.yo-chip:hover, .yo-btn:hover { border-color: var(--dfr-btn-line-hover); background: var(--dfr-btn-bg-hover); }
+.yo-chip.on { border-color: var(--dfr-amber); background: var(--dfr-amber-bg); color: var(--dfr-ink-bright); font-weight: bold; }
+.yo-year { font-size: 18px; font-weight: bold; padding: 0 6px; color: var(--dfr-ink-bright); }
+
+/* ---- the year's sums ---- */
+.yo-sum { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0; }
+.yo-pill { padding: 3px 10px; border-radius: 12px; background: var(--dfr-bg-pill); border: 1px solid var(--dfr-line-soft); }
+.yo-pill b { color: var(--dfr-ink-bright); }
+.yo-pill.hol { border-color: var(--dfr-coral); }
+.yo-pill.spc { border-color: var(--dfr-violet-line); }
+.yo-pill.wkd { border-color: var(--dfr-line-mid); }
+.yo-note { color: var(--dfr-ink-muted); margin: 4px 0 8px 0; }
+
+/* ---- the months, and the list beside them ---- */
+.yo-main { display: flex; gap: 12px; align-items: flex-start; }
+.yo-months { flex: 1 1 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(196px, 1fr)); gap: 10px; }
+.yo-m { background: var(--dfr-bg-card); border: 1px solid var(--dfr-line-card); border-radius: 6px; padding: 6px 8px; }
+.yo-mh { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+.yo-mh span:first-child { font-weight: bold; color: var(--dfr-ink-bright); }
+.yo-mw { color: var(--dfr-ink-muted); font-size: 11px; }
+
+.yo-t { border-collapse: collapse; width: 100%; }
+.yo-t th { font-weight: normal; color: var(--dfr-ink-muted); font-size: 11px; padding: 1px 0; text-align: center; }
+.yo-t td { text-align: center; padding: 2px 0; }
+.yo-t .wn { color: var(--dfr-ink-faint); font-size: 10px; width: 22px; }
+
+/* a day: the cell, and the legend's swatch (i.d) */
+.d { border-radius: 4px; }
+td.d { cursor: default; }
+.d.wkd { background: var(--dfr-bg-sunken); color: var(--dfr-ink-muted); }
+.d.hol { background: var(--dfr-coral); color: var(--dfr-ink-on-fill); font-weight: bold; }
+.d.hol.wkd { background: var(--dfr-coral-2); }
+.d.spc { background: var(--dfr-violet-bg); color: var(--dfr-ink-bright); box-shadow: inset 0 0 0 1px var(--dfr-violet-line); }
+.d.spc.wkd { background: var(--dfr-bg-sunken); color: var(--dfr-ink-muted); }
+.d.cls { background: var(--dfr-warn-bg); color: var(--dfr-ink-bright); box-shadow: inset 0 0 0 1px var(--dfr-amber-line); }
+.d.today { box-shadow: inset 0 0 0 2px var(--dfr-amber); font-weight: bold; }
+
+.yo-list { flex: 0 0 340px; background: var(--dfr-bg-card); border: 1px solid var(--dfr-line-card); border-radius: 6px; padding: 6px 8px; }
+.yo-list h3 { margin: 0 0 6px 0; font-size: 13px; color: var(--dfr-ink-bright); }
+.yo-l { border-collapse: collapse; width: 100%; }
+.yo-l td { padding: 3px 4px; border-top: 1px solid var(--dfr-line-soft); vertical-align: top; }
+.yo-l .ld { white-space: nowrap; }
+.yo-l .lw { color: var(--dfr-ink-muted); }
+.yo-l .lk { color: var(--dfr-ink-muted); font-size: 11px; white-space: nowrap; }
+.yo-l tr.hol .ln { font-weight: bold; }
+.yo-l tr.hol td:first-child { box-shadow: inset 3px 0 0 var(--dfr-coral); }
+.yo-l tr.spc td:first-child { box-shadow: inset 3px 0 0 var(--dfr-violet-line); }
+.yo-l tr.cls td:first-child { box-shadow: inset 3px 0 0 var(--dfr-amber-line); }
+
+/* ---- the legend ---- */
+.yo-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; color: var(--dfr-ink-muted); }
+.yo-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.yo-legend i.d { display: inline-block; width: 14px; height: 14px; }
