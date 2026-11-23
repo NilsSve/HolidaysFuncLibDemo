@@ -185,22 +185,26 @@
 
             <div class="main-content">
                 
-<p class="rvps2"><span class="rvts6">Holiday names come from a country package: one object per country, based on the </span><span class="rvts11">cNationalHolidays</span><span class="rvts6"> class. The library has packages for the US, GB, NL, NO, ES and SE; they are listed in </span><span class="rvts11">CountryPackages.pkg</span><span class="rvts6">.</span></p>
-<p class="rvps2"><span class="rvts6">To add a country:</span></p>
+<p class="rvps2"><span class="rvts6">Holiday names come from a country package: one object per country, based on the </span><span class="rvts11">cNationalHolidays</span><span class="rvts6"> class. The library has packages for the US, GB, NL, NO, ES and SE.</span></p>
+<p class="rvps2"><span class="rvts6">To add a country to your program:</span></p>
 <ol style="text-indent: 0px; padding: 0; margin: 0 0 0 48px; list-style-position: outside;">
- <li class="rvps4 noindent"><span class="rvts6">Copy a country package that is close to yours, such as </span><span class="rvts11">NorwegianHolidays.pkg</span><span class="rvts6">, and give the copy your country's name.</span></li>
- <li class="rvps4 noindent"><span class="rvts6">Set </span><span class="rvts11">psISO_Short</span><span class="rvts6"> to your country's two-letter code. Set </span><span class="rvts11">psLocaleName</span><span class="rvts6"> to the Windows name of its language, such as "de-DE": the month and day names in that language come from it.</span></li>
+ <li class="rvps4 noindent"><span class="rvts6">Copy a country package that is close to yours, such as </span><span class="rvts11">NorwegianHolidays.pkg</span><span class="rvts6"> from the library, into your own workspace's AppSrc folder, and give the copy your country's name.</span></li>
+ <li class="rvps4 noindent"><span class="rvts6">Set </span><span class="rvts11">psISO_Short</span><span class="rvts6"> to your country's two-letter code, and </span><span class="rvts11">psLocaleName</span><span class="rvts6"> to the Windows name of its language, such as "de-DE": the month and day names in that language come from it.</span></li>
  <li class="rvps4 noindent"><span class="rvts6">Change the </span><span class="rvts11">HolidayName</span><span class="rvts6"> function: for each holiday or special day in your country, call the library's date function, compare the date, and return the name in your language. Set bOfficialHoliday to True for the days that are off by law.</span></li>
- <li class="rvps4 noindent"><span class="rvts6">Add a </span><span class="rvts15">Use</span><span class="rvts6"> line for your package to </span><span class="rvts11">CountryPackages.pkg</span><span class="rvts6">.</span></li>
+ <li class="rvps4 noindent"><span class="rvts6">Use your package in your program, after the library: </span><span class="rvts15">Use GermanHolidays.pkg</span><span class="rvts6"> after </span><span class="rvts15">Use oCalendarHolidays.pkg</span><span class="rvts6">. The object registers itself with the library as it is created.</span></li>
 </ol>
-<p class="rvps6"><span class="rvts16">Object oNorwegianHolidays is a cNationalHolidays</span></p>
-<p class="rvps6"><span class="rvts16">&nbsp; &nbsp; Move Self to ghoNationalHolidayObject</span></p>
-<p class="rvps6"><span class="rvts16">&nbsp; &nbsp; Set psISO_Short to "NO"</span></p>
+<p class="rvps6"><span class="rvts16">Use cNationalHolidays.pkg</span></p>
+<p class="rvps6"><span class="rvts16"><br/></span></p>
+<p class="rvps6"><span class="rvts16">Object oGermanHolidays is a cNationalHolidays</span></p>
+<p class="rvps6"><span class="rvts16">&nbsp; &nbsp; Set psISO_Short to "DE"</span></p>
+<p class="rvps6"><span class="rvts16">&nbsp; &nbsp; Set psLocaleName to "de-DE"</span></p>
 <p class="rvps6"><span class="rvts16"><br/></span></p>
 <p class="rvps6"><span class="rvts16">&nbsp; &nbsp; Function HolidayName Date dInDate Boolean ByRef bOfficialHoliday Returns String</span></p>
 <p class="rvps6"><span class="rvts16">&nbsp; &nbsp; &nbsp; &nbsp; ...</span></p>
 <p class="rvps6"><span class="rvts16">&nbsp; &nbsp; End_Function</span></p>
 <p class="rvps6"><span class="rvts16">End_Object</span></p>
+<p class="rvps2"><span class="rvts6">That is all: every function of the library knows the country from then on, and so does the demo - Year Overview gets a button for it, and Working Days and Dates Functions Test list it.</span></p>
+<p class="rvps2"><span class="rvts6">The library's own country packages are Used in </span><span class="rvts11">CountryPackages.pkg</span><span class="rvts6">. Do not add yours there: in DataFlex 26 the library is an installed package, which is read-only. Edit CountryPackages.pkg only when you add the country to the library itself - see </span><span class="rvts11">Share it</span><span class="rvts6"> below.</span></p>
 <p class="rvps2"><span class="rvts11">Working days</span></p>
 <p class="rvps2"><span class="rvts6">The working-day functions ask the country package which days are official days off. By default these are the days HolidayName marks as official. When a country's days off differ by region, as in the UK, the package can override the </span><span class="rvts11">IsOfficialDayOff</span><span class="rvts6"> function; see </span><span class="rvts11">BrittishHolidays.pkg</span><span class="rvts6"> for an example.</span></p>
 <p class="rvps2"><span class="rvts11">Share it</span></p>
