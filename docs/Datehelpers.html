@@ -345,6 +345,57 @@
 <p class="rvps2"><span class="rvts6">All are called the same way:</span></p>
 <p class="rvps6"><span class="rvts16">Integer iWeek</span></p>
 <p class="rvps6"><span class="rvts16">Get DateGetISOWeek of ghoCalendarHolidays dDate to iWeek</span></p>
+<p class="rvps2"><span class="rvts11">Month and day names in a country's language</span></p>
+<p class="rvps2"><span class="rvts6">DateGetMonthName and DateGetDayName answer in the computer's language. These answer in the language of a country's holiday package - Swedish for "SE", Norwegian for "NO" - on any computer, and in the computer's language for a country without a package:</span></p>
+<div class="rvps2">
+<table style="border-color: #000000; border-style: solid; border-width: 2px; background-color: #ffffff; border-collapse: collapse;">
+ <tr style="vertical-align: top;">
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts11">Function</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts11">Returns</span></p>
+  </td>
+ </tr>
+ <tr style="vertical-align: top;">
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">MonthNameOfCountry iMonth bLongName bCapsFirstLetter sISO_Short</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">The month's name (1-12): long ("januari") or short ("jan").</span></p>
+  </td>
+ </tr>
+ <tr style="vertical-align: top;">
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">DayNameOfCountry iDay bLongName bCapsFirstLetter sISO_Short</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">The day's name, day 1 being Monday: long ("måndag") or short ("mån").</span></p>
+  </td>
+ </tr>
+ <tr style="vertical-align: top;">
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">ShortestDayNameOfCountry iDay bCapsFirstLetter sISO_Short</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">The shortest day name, as a calendar's column heading writes it ("Mo", "må").</span></p>
+  </td>
+ </tr>
+ <tr style="vertical-align: top;">
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">CountryLocaleName sISO_Short</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">The country package's language, such as "sv-SE".</span></p>
+  </td>
+ </tr>
+</table>
+</div>
+<p class="rvps2"><span class="rvts6">bCapsFirstLetter True writes the first letter in upper case: "Januari".</span></p>
+<p class="rvps6"><span class="rvts16">String sMonth sDay</span></p>
+<p class="rvps6"><span class="rvts16">Get MonthNameOfCountry of ghoCalendarHolidays 1 True True "SE" to sMonth</span></p>
+<p class="rvps6"><span class="rvts16">Get DayNameOfCountry of ghoCalendarHolidays 1 False True "NO" to sDay</span></p>
+<p class="rvps2"><span class="rvts6">The demo's </span><a class="rvts12" href="YearOverview.html">Year Overview</a><span class="rvts6"> view uses them for its month names and day headings. A new country package sets its language with </span><span class="rvts11">psLocaleName</span><span class="rvts6"> - see </span><a class="rvts12" href="Addingacountry.html">Adding a country</a><span class="rvts6">.</span></p>
 
             </div>
             

@@ -189,7 +189,7 @@
 <p class="rvps2"><span class="rvts6">To add a country:</span></p>
 <ol style="text-indent: 0px; padding: 0; margin: 0 0 0 48px; list-style-position: outside;">
  <li class="rvps4 noindent"><span class="rvts6">Copy a country package that is close to yours, such as </span><span class="rvts11">NorwegianHolidays.pkg</span><span class="rvts6">, and give the copy your country's name.</span></li>
- <li class="rvps4 noindent"><span class="rvts6">Set </span><span class="rvts11">psISO_Short</span><span class="rvts6"> to your country's two-letter code.</span></li>
+ <li class="rvps4 noindent"><span class="rvts6">Set </span><span class="rvts11">psISO_Short</span><span class="rvts6"> to your country's two-letter code. Set </span><span class="rvts11">psLocaleName</span><span class="rvts6"> to the Windows name of its language, such as "de-DE": the month and day names in that language come from it.</span></li>
  <li class="rvps4 noindent"><span class="rvts6">Change the </span><span class="rvts11">HolidayName</span><span class="rvts6"> function: for each holiday or special day in your country, call the library's date function, compare the date, and return the name in your language. Set bOfficialHoliday to True for the days that are off by law.</span></li>
  <li class="rvps4 noindent"><span class="rvts6">Add a </span><span class="rvts15">Use</span><span class="rvts6"> line for your package to </span><span class="rvts11">CountryPackages.pkg</span><span class="rvts6">.</span></li>
 </ol>
