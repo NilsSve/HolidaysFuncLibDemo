@@ -22,10 +22,12 @@ Use cFTCheckBoxCaption.pkg          // a check box's caption as a TextBox (RDCFl
 Use cFTRadioGroup.pkg               // cFTGroupCaption: a group box's caption as a TextBox (RDCFlexTron)
 Use cRDCForm.pkg
 Use cRDCButton.pkg
-#IFDEF Is$GraphicsLibrary
-    Use cImageContainer.pkg
-    Use cDbImageContainer.pkg
-#ENDIF    
+// The nation's flag as HTML (RDCFlexTron) - until 2026-11-23 a Graphics Library image, under Is$GraphicsLibrary.
+Use cFTGridHost.pkg                 // the host - Used before the web controls
+Use cFlagHtmlBox.pkg                // cFlagHtmlBox: the flag
+
+// The flag is drawn again whenever the record changes (the ISO code form's Refresh), below the objects it reaches.
+Register_Procedure ShowNationFlag
 Use oCalendarHolidays.pkg
 Use HolidaysLookup.dg
 
@@ -210,6 +212,12 @@ Object oHolidays is a cRDCDbView
             Set Label to "ISO Short"
             Set psToolTip to "The two character long ISO code for the country"
             Set psToolTip to "Only Nations defined in the 'CountryPackes.pkg' appears here!"
+
+            // A find, a clear or a relate: the flag follows.
+            Procedure Refresh Integer notifyMode
+                Forward Send Refresh notifyMode
+                Send ShowNationFlag
+            End_Procedure
         End_Object
 
         Object oToday_fm is a cRDCForm
@@ -359,37 +367,21 @@ Object oHolidays is a cRDCDbView
             On_Key kCancel Send None
         End_Object
 
-#IFDEF Is$GraphicsLibrary
-        Object oFlagPole is a cImageContainer
-            Set Size to 115 26
-            Set Location to 43 433
-            Set pbSelectImage to False
-            Set psImage to "Flag Pole.png"
-            Set pcBackColor to clBtnFace 
-            Set Focus_Mode to NonFocusable
+        // THE FLAG, as HTML in a small FlexTron host - drawn again on every find, clear and relate (ShowNationFlag).
+        Object oFlag_host is a cFTGridHost
+            Set Size to 62 70
+            Set Location to 40 430
             Set peAnchors to anTopRight
-            Set pbShowScrollBars to False
+            Set piColumnCount to 1
+            Set psColumnWidths to "0/1fr"
+            Set psRowHeights to "0/1fr"
 
-            // Needed because the flag had to be made smaller to
-            // fit the calendar in.
-            //
-            Set peImageStyle to ifFitOneSide
-            Set pbAutoTooltip to False
+            Object oFlag_box is a cFlagHtmlBox
+                Set piRowIndex to 0
+                Set piColumnSpan to 1
+                Set pbFillHeight to True
+            End_Object
         End_Object
-
-        Object oNationsFlag is a cDbImageContainer
-            Entry_Item Nations.Flag
-            Set Size to 48 47
-            Set Location to 45 445
-            Set psSelectImageCaption to ""
-            Set pbSelectImage to True
-            Set pcBackColor to clBtnFace 
-            Set peImageStyle to ifFitOneSide
-            Set peAnchors to anTopRight
-            Set pbAutoTooltip to False
-            Set pbShowScrollBars to False
-        End_Object
-#ENDIF
         Object oOnlyHolsCB is a CheckBox
             Set Size to 10 10
             Set Location to 194 75
@@ -671,6 +663,11 @@ Object oHolidays is a cRDCDbView
     Procedure End_Construct_Object
         Forward Send End_Construct_Object
         Send DemoDarkView Self
+    End_Procedure
+
+    // The nation's flag, from the Nations buffer the data dictionaries keep current.
+    Procedure ShowNationFlag
+        Send ShowFlag of (oFlag_box(oFlag_host(oDateMaintenance_grp(Self)))) (Trim(Nations.Flag)) (Trim(Nations.Official_Short))
     End_Procedure
 
 End_Object

@@ -1,0 +1,142 @@
+﻿//****************************************************************************
+// $Module type: Class Package
+// $Module name: cFlagHtmlBox.pkg
+// $Author     : Nils Svedmyr, RDC Tools International
+// Created     : 2026-11-23
+//
+// Description : A nation's flag, shown as HTML in a FlexTron box - in place of the Graphics Library's
+//               cDbImageContainer, which the demo used until then (Is$GraphicsLibrary, off by default).
+//
+// This code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+//****************************************************************************
+Use cFTWebHtmlBox.pkg
+Use FTMarkupBuilders.pkg       // FTHtmlEscape
+Use cCharTranslate.pkg         // Base64EncodeToStr
+Use seq_chnl.pkg
+Use RgbColor.pkg               // GetSysColor - a system colour's real value
+Use FTThemeColors.pkg          // FTColorHex
+
+/* THE FLAG. The Nations table names each nation's flag file in Nations.Flag ("Sweden.gif"), and the files are in the
+   workspace's Bitmaps folder. The box shows the file as an <img> whose address is the file itself, base64 encoded (a
+   data: address), so the files stay where they are - nothing is copied under AppHtml, which is all a FlexTron page
+   can reach by a path. The way RDCFlexTron's About dialog shows its picture. A view sends ShowFlag whenever its record
+   changes: from the Refresh of a data entry object on the Nations table, which runs on every find, clear and relate. */
+{ OverrideProperty=psHtml InitialValue="<div class='ftph-cards'><b>Flag</b></div>" }
+Class cFlagHtmlBox is a cFTWebHtmlBox
+
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set psHtml to "<div class='ftph-cards'><b>Flag</b></div>"
+        Set pbServerOnClick to False
+        // The file shown, so that the same flag is not read and sent again on every refresh.
+        { Visibility=Private }
+        Property String private.psFlagFile "-"
+    End_Procedure
+
+    // The full path of a file on the workspace's bitmap path, or "".
+    Function BitmapFile String sFile Returns String
+        String sPaths sFolder sPath
+        Integer iPos
+        Boolean bExists
+        If (Trim(sFile) = "") ;
+            Function_Return ""
+        Get psBitmapPath of (phoWorkspace(ghoApplication)) to sPaths
+        While (sPaths <> "")
+            Move (Pos(";", sPaths)) to iPos
+            If (iPos > 0) Begin
+                Move (Left(sPaths, iPos - 1)) to sFolder
+                Move (Mid(sPaths, Length(sPaths), iPos + 1)) to sPaths
+            End
+            Else Begin
+                Move sPaths to sFolder
+                Move "" to sPaths
+            End
+            Move (Trim(sFolder)) to sFolder
+            If (sFolder <> "") Begin
+                If (Right(sFolder, 1) <> "\") ;
+                    Move (sFolder + "\") to sFolder
+                Move (sFolder + sFile) to sPath
+                File_Exist sPath bExists
+                If (bExists) ;
+                    Function_Return sPath
+            End
+        Loop
+        Function_Return ""
+    End_Function
+
+    // The file as a data: address - "data:image/gif;base64,R0lGOD..." - or "" when it cannot be read.
+    Function ImageDataUrl String sPath Returns String
+        UChar[] ucaData
+        String sMime sLow sData
+        Integer iCh
+        Handle hoTrans
+        Move (Lowercase(sPath)) to sLow
+        Move "image/gif" to sMime
+        If (Right(sLow, 4) = ".png") ;
+            Move "image/png" to sMime
+        If ((Right(sLow, 4) = ".jpg") or (Right(sLow, 5) = ".jpeg")) ;
+            Move "image/jpeg" to sMime
+        Move (Seq_New_Channel()) to iCh
+        If (iCh < 0) ;
+            Function_Return ""
+        Direct_Input channel iCh ("binary:" + sPath)
+        Read_Block channel iCh ucaData -1
+        Close_Input channel iCh
+        Send Seq_Release_Channel iCh
+        If (SizeOfArray(ucaData) = 0) ;
+            Function_Return ""
+        Get Create (RefClass(cCharTranslate)) to hoTrans
+        Get Base64EncodeToStr of hoTrans (AddressOf(ucaData)) (SizeOfArray(ucaData)) to sData
+        Send Destroy of hoTrans
+        Function_Return ("data:" + sMime + ";base64," + sData)
+    End_Function
+
+    /* THE COLOUR AROUND THE FLAG: the native window's the host sits in, so that the host does not show as a patch of
+       the FlexTron page colour on the view (Nils 2026-11-23). The first window up from the host with a colour of
+       its own; a system colour (clBtnFace ...) is turned into its value. "RRGGBB". */
+    Function NativeBackHex Returns String
+        Handle ho
+        Integer iColor
+        Get Parent to ho                    // the host
+        Move clDefault to iColor
+        While (ho <> 0)
+            Get Parent of ho to ho
+            If (ho = 0) ;
+                Break
+            Get Color of ho to iColor
+            If ((iColor <> clDefault) and (iColor <> clNone)) ;
+                Break
+        Loop
+        If ((iColor = clDefault) or (iColor = clNone)) ;
+            Move clBtnFace to iColor
+        If (iColor < 0) ;
+            Move (GetSysColor(iColor iand $000000FF)) to iColor
+        Function_Return (FTColorHex(iColor))
+    End_Function
+
+    // Show a nation's flag: sFile as Nations.Flag names it, sName for its tooltip. No file, or none found: an empty
+    // frame.
+    Procedure ShowFlag String sFile String sName
+        String sPath sUrl sHtml
+        Move (Trim(sFile)) to sFile
+        If (sFile = private.psFlagFile(Self)) ;
+            Procedure_Return
+        Set private.psFlagFile to sFile
+        Get BitmapFile sFile to sPath
+        If (sPath <> "") ;
+            Get ImageDataUrl sPath to sUrl
+        // The host's whole page in the view's colour - its body and the framework's containers ("!" is Character(33):
+        // a "!" in a literal can be read as a compiler directive).
+        Move ("<style>html,body,#viewport,.WebApp.WebContainer,.WebCon_ContentWrp,.WebControl.WebHtmlBox{background:" + ;
+              Character(35) + NativeBackHex(Self) + " " + Character(33) + "important}</style>") to sHtml
+        Append sHtml '<div style="display:flex;align-items:center;justify-content:center;height:100%;min-height:60px">'
+        If (sUrl <> "") ;
+            Append sHtml '<img src="' sUrl '" alt="' (FTHtmlEscape(sName)) '" title="' (FTHtmlEscape(sName)) ;
+                '" style="max-width:100%;max-height:72px;border:1px solid var(--dfr-line-card,#3a3936);border-radius:3px">'
+        Else ;
+            Append sHtml '<div style="width:72px;height:48px;border:1px dashed var(--dfr-line-card,#3a3936);border-radius:3px" title="No flag"></div>'
+        Send UpdateHtml (sHtml + "</div>")
+    End_Procedure
+
+End_Class

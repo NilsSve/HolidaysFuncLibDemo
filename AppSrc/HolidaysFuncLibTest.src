@@ -4,12 +4,6 @@ Use cRDCCJCommandBarSystem.pkg
 // giFTThemeMode and the CI_FTTheme* modes (RDCFlexTron): the theme is read after the application object (DemoTheme.pkg).
 Use FTConstants.h.pkg
 
-// If Is$GraphicsLibrary is defined, then the "DataFlex Graphics Library" needs to be used as a library.
-// Else the "Flags" object will not be used/visible in the application.
-// NOTE: The Studio will complain if the library is defined in the .sws file, but
-//       the library is not accessible. Don't think there's a way around that problem.
-//       For that reason the .sws files does have a link to the library.
-//Define Is$GraphicsLibrary
 
 Object oHtmlHelp is a cHtmlHelp
 End_Object
