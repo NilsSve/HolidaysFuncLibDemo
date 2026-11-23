@@ -48,21 +48,31 @@ Object oYearOverview is a cRDCView
         Function_Return (String(iYear) + "-" + TwoDigits(Self, iMonth) + "-" + TwoDigits(Self, iDay))
     End_Function
 
-    // In English, as the rest of the program: the library's month names follow the computer's language.
-    Function MonthName Integer iMonth Returns String
-//        String sNames
-        String sMonthName   
-        Get MonthNameFromInteger of ghoCalendarHolidays iMonth True True to sMonthName
-//        Move "January  February March    April    May      June     July     August   SeptemberOctober  November December " to sNames
-//        Function_Return (Trim(Mid(sNames, 9, ((iMonth - 1) * 9 + 1))))
+    // The month and day names in the language of the country the page shows - the country button that is chosen -
+    // whatever the computer's own language is (the library's MonthNameOfCountry and DayNameOfCountry, 1.0.6).
+    Function MonthName Integer iMonth String sISO_Short Returns String
+        String sMonthName
+        Get MonthNameOfCountry of ghoCalendarHolidays iMonth True True sISO_Short to sMonthName
         Function_Return sMonthName
     End_Function
 
-    Function DayName Integer iIsoDay Returns String    
+    // The abbreviated day name (Mon, mån ...). Day 1 is Monday.
+    Function DayName Integer iIsoDay String sISO_Short Returns String
         String sDayName
-        Get GetDayNameShort of ghoCalendarHolidays iIsoDay to sDayName
+        Get DayNameOfCountry of ghoCalendarHolidays iIsoDay False True sISO_Short to sDayName
         Function_Return sDayName
-//        Function_Return (Mid("MonTueWedThuFriSatSun", 3, ((iIsoDay - 1) * 3 + 1)))
+    End_Function
+
+    // The calendar's column headings: the shortest day names, Monday first (Mo Tu ..., må ti ...).
+    Function DayHeadings String sISO_Short Returns String
+        String sHtml sName
+        Integer iDay
+        Move '<tr><th class="wn">Wk</th>' to sHtml
+        For iDay from 1 to 7
+            Get ShortestDayNameOfCountry of ghoCalendarHolidays iDay True sISO_Short to sName
+            Append sHtml "<th>" (FTHtmlEscape(sName)) "</th>"
+        Loop
+        Function_Return (sHtml + "</tr>")
     End_Function
 
     Function CountryName String sISO_Short Returns String
@@ -115,17 +125,9 @@ Object oYearOverview is a cRDCView
     //   cls  a closure day (padClosedDays)          hol  a day off for an official holiday
     //   wkd  a day off every week (psWeekendMask)   spc  a named day that is not an official holiday
     // An official holiday or a special day on a weekend day takes both: "hol wkd", "spc wkd".
-    Function DayClass Date dDate String sISO_Short String sName Boolean bOfficial String ByRef sWhat Returns String
-        Boolean bWorking bClosed bWeekend
-        String sMask
-        Integer iIsoDay
-
-        Get psWeekendMask of ghoCalendarHolidays to sMask
-        Move (DateGetISODayOfWeek(ghoCalendarHolidays, dDate)) to iIsoDay
-        Move (Mid(sMask, 1, iIsoDay) = "1") to bWeekend
-        Get IsClosedDay of ghoCalendarHolidays dDate sISO_Short to bClosed
-        Get IsWorkingDay of ghoCalendarHolidays dDate sISO_Short to bWorking
-
+    // What the day is was worked out by the caller (MonthHtml): its name and official flag, whether it is a day off
+    // every week, a closure day and a working day.
+    Function DayClass String sName Boolean bOfficial Boolean bWeekend Boolean bClosed Boolean bWorking String ByRef sWhat Returns String
         If (bClosed) Begin
             Move "Closed" to sWhat
             Function_Return "cls"
@@ -188,19 +190,23 @@ Object oYearOverview is a cRDCView
     // One month: a table of its weeks, Monday first, the ISO week number on the left.
     // It counts the month's working days, its days off for a holiday on a weekday and its special days, and adds
     // its named days and closure days to the list.
-    Function MonthHtml String sISO_Short Integer iYear Integer iMonth Date dToday Integer ByRef iWorking ;
-                       Integer ByRef iHolidays Integer ByRef iSpecial String ByRef sListHtml Returns String
-        String sHtml sCls sName sWhat sTip
-        Integer iDays iDay iIsoDay iCol
-        Boolean bOfficial bWorking
+    // Each day's cell carries what the page's script shows for a clicked day (yearoverview.js): its date (data-d),
+    // its week (data-wk), and its place among the year's working days (data-n: the working days up to and
+    // including it, data-w: 1 when it is one itself). iWorkedBefore is the working days of the months before.
+    Function MonthHtml String sISO_Short Integer iYear Integer iMonth Date dToday Integer iWorkedBefore String sHeadings ;
+                       Integer ByRef iWorking Integer ByRef iHolidays Integer ByRef iSpecial String ByRef sListHtml Returns String
+        String sHtml sCls sName sWhat sTip sIso sMask
+        Integer iDays iDay iIsoDay iCol iWeek
+        Boolean bOfficial bWorking bWeekend bClosed
         Date dDate dFirst
 
         Move 0 to iWorking
+        Get psWeekendMask of ghoCalendarHolidays to sMask
         Get DateSetDate of ghoCalendarHolidays iYear iMonth 1 to dFirst
         Move (DateGetDaysInMonth(ghoCalendarHolidays, dFirst)) to iDays
 
         Move "" to sHtml
-        Append sHtml '<table class="yo-t"><tr><th class="wn">Wk</th><th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th><th>Sa</th><th>Su</th></tr>'
+        Append sHtml '<table class="yo-t">' sHeadings
         For iDay from 1 to iDays
             Move (dFirst + iDay - 1) to dDate
             Move (DateGetISODayOfWeek(ghoCalendarHolidays, dDate)) to iIsoDay
@@ -215,11 +221,22 @@ Object oYearOverview is a cRDCView
                 End
             End
 
+            /* ONE HolidayName PER DAY (2026-11-23: a new year took up to 20 s). HolidayName works out the year's
+               holiday dates on every call, and IsWorkingDay calls it again (IsOfficialDayOff) - the page asked
+               three times a day. A day with no name is no official holiday, so only a named weekday needs
+               IsWorkingDay: the official flag of the UK's regions is the country's to answer, not HolidayName's. */
             Move False to bOfficial
             Get HolidayName of ghoCalendarHolidays dDate sISO_Short (&bOfficial) to sName
             Move (Trim(sName)) to sName
-            Get DayClass dDate sISO_Short sName bOfficial (&sWhat) to sCls
-            Get IsWorkingDay of ghoCalendarHolidays dDate sISO_Short to bWorking
+            Move (Mid(sMask, 1, iIsoDay) = "1") to bWeekend
+            Get IsClosedDay of ghoCalendarHolidays dDate sISO_Short to bClosed
+            If (bWeekend or bClosed) ;
+                Move False to bWorking
+            Else If (sName = "") ;
+                Move True to bWorking
+            Else ;
+                Get IsWorkingDay of ghoCalendarHolidays dDate sISO_Short to bWorking
+            Get DayClass sName bOfficial bWeekend bClosed bWorking (&sWhat) to sCls
             If (bWorking) ;
                 Increment iWorking
             If ((sCls = "hol") or (sCls = "hol today")) ;
@@ -229,18 +246,21 @@ Object oYearOverview is a cRDCView
             If (dDate = dToday) ;
                 Move (Trim(sCls + " today")) to sCls
 
-            Move (DayName(Self, iIsoDay) + " " + IsoDate(Self, dDate)) to sTip
+            Get IsoDate dDate to sIso
+            Move (DateGetISOWeek(ghoCalendarHolidays, dDate)) to iWeek
+            Move (DayName(Self, iIsoDay, sISO_Short) + " " + sIso) to sTip
             If (sName <> "") ;
                 Move (sTip + " - " + sName) to sTip
             Move (sTip + " - " + sWhat) to sTip
-            Append sHtml '<td class="d ' sCls '" title="' (FTHtmlEscape(sTip)) '">' (String(iDay)) "</td>"
+            Append sHtml '<td class="d ' sCls '" data-d="' sIso '" data-wk="' (String(iWeek)) '" data-n="' (String(iWorkedBefore + iWorking)) ;
+                '" data-w="' (If(bWorking, "1", "0")) '" title="' (FTHtmlEscape(sTip)) '">' (String(iDay)) "</td>"
 
             // A named day, or a closure day, goes in the list too.
             If ((sName <> "") or (Pos("cls", sCls) > 0)) Begin
                 If (sName = "") ;
                     Move "Closure day" to sName
-                Append sListHtml '<tr class="' sCls '"><td class="ld">' (IsoDate(Self, dDate)) '</td><td class="lw">' ;
-                    (DayName(Self, iIsoDay)) '</td><td class="ln">' (FTHtmlEscape(sName)) '</td><td class="lk">' (FTHtmlEscape(sWhat)) "</td></tr>"
+                Append sListHtml '<tr class="' sCls '" data-d="' sIso '"><td class="ld">' sIso '</td><td class="lw">' ;
+                    (FTHtmlEscape(DayName(Self, iIsoDay, sISO_Short))) '</td><td class="ln">' (FTHtmlEscape(sName)) '</td><td class="lk">' (FTHtmlEscape(sWhat)) "</td></tr>"
             End
         Loop
         Append sHtml "</tr></table>"
@@ -248,7 +268,7 @@ Object oYearOverview is a cRDCView
     End_Function
 
     Function YearHtml Returns String
-        String sHtml sMonths sList sISO_Short sMask sWeekend sTable
+        String sHtml sMonths sList sISO_Short sMask sWeekend sTable sHeadings
         Integer iYear iMonth iWorking iYearWorking iHolidays iSpecial i
         Date dToday
 
@@ -262,11 +282,12 @@ Object oYearOverview is a cRDCView
         Move "" to sList
         Move 0 to iHolidays
         Move 0 to iSpecial
+        Get DayHeadings sISO_Short to sHeadings
         For iMonth from 1 to 12
             // The table first: the month's heading shows the working days it counted.
-            Get MonthHtml sISO_Short iYear iMonth dToday (&iWorking) (&iHolidays) (&iSpecial) (&sList) to sTable
+            Get MonthHtml sISO_Short iYear iMonth dToday iYearWorking sHeadings (&iWorking) (&iHolidays) (&iSpecial) (&sList) to sTable
             Append sMonths (DivOpen("yo-m")) (DivOpen("yo-mh"))
-            Append sMonths (TagText("span", "", MonthName(Self, iMonth)))
+            Append sMonths (TagText("span", "", MonthName(Self, iMonth, sISO_Short)))
             Append sMonths (TagText("span", "yo-mw", (String(iWorking) + " working days"))) "</div>"
             Append sMonths sTable "</div>"
             Move (iYearWorking + iWorking) to iYearWorking
@@ -278,13 +299,14 @@ Object oYearOverview is a cRDCView
             If (Mid(sMask, 1, i) = "1") Begin
                 If (sWeekend <> "") ;
                     Move (sWeekend + ", ") to sWeekend
-                Move (sWeekend + DayName(Self, i)) to sWeekend
+                Move (sWeekend + DayName(Self, i, sISO_Short)) to sWeekend
             End
         Loop
         If (sWeekend = "") ;
             Move "none" to sWeekend
 
-        Move (CS_PaletteCssLink + CssLink("yearoverview") + DivOpen("yo")) to sHtml
+        // The root carries the year's working days, for the clicked day's "left in the year" (yearoverview.js).
+        Move (CS_PaletteCssLink + CssLink("yearoverview") + '<div class="yo" data-total="' + String(iYearWorking) + '">') to sHtml
         Append sHtml (BarHtml(Self, sISO_Short, iYear))
         Append sHtml (DivOpen("yo-sum"))
         Append sHtml '<span class="yo-pill"><b>' (String(iYearWorking)) "</b> working days in " (String(iYear)) " in " (FTHtmlEscape(CountryName(Self, sISO_Short))) "</span>"
@@ -292,17 +314,23 @@ Object oYearOverview is a cRDCView
         Append sHtml '<span class="yo-pill spc"><b>' (String(iSpecial)) "</b> special days that are worked</span>"
         Append sHtml '<span class="yo-pill wkd">Off every week: ' sWeekend "</span>"
         Append sHtml "</div>"
-        Append sHtml (TagText("p", "yo-note", "The working days follow the settings of the Working Days view: the days off every week, the closure days and the UK region - click Refresh after a change there. Point at a day to see its name."))
+        Append sHtml (TagText("p", "yo-note", "Click a day, or a row in the list, to see it in both places and read about it above the list. Click a colour in the legend to show only those days. The working days follow the settings of the Working Days view - click Refresh after a change there."))
         Append sHtml (DivOpen("yo-main")) (DivOpen("yo-months")) sMonths "</div>"
-        Append sHtml (DivOpen("yo-list")) (TagText("h3", "", "Holidays and special days"))
+        Append sHtml (DivOpen("yo-list"))
+        Append sHtml '<div class="yo-detail"><span class="yo-hint">Click a day in the calendar, or a row in the list.</span></div>'
+        Append sHtml (TagText("h3", "", "Holidays and special days"))
         If (sList = "") ;
             Append sHtml (TagText("p", "yo-note", "No named days this year."))
         Else ;
             Append sHtml '<table class="yo-l">' sList "</table>"
         Append sHtml "</div></div>"
         Append sHtml (DivOpen("yo-legend"))
-        Append sHtml '<span><i class="d hol"></i>Day off: official holiday</span><span><i class="d wkd"></i>Off every week</span>'
-        Append sHtml '<span><i class="d spc"></i>Special day, worked</span><span><i class="d cls"></i>The company is closed</span><span><i class="d today"></i>Today</span>'
+        // A click on a colour shows only those days (yearoverview.js); Today is no filter.
+        Append sHtml '<span class="yo-lg" data-kind="hol" title="Show only these days - click again for all"><i class="d hol"></i>Day off: official holiday</span>'
+        Append sHtml '<span class="yo-lg" data-kind="wkd" title="Show only these days - click again for all"><i class="d wkd"></i>Off every week</span>'
+        Append sHtml '<span class="yo-lg" data-kind="spc" title="Show only these days - click again for all"><i class="d spc"></i>Special day</span>'
+        Append sHtml '<span class="yo-lg" data-kind="cls" title="Show only these days - click again for all"><i class="d cls"></i>The company is closed</span>'
+        Append sHtml '<span><i class="d today"></i>Today</span>'
         Append sHtml "</div></div>"
         Function_Return sHtml
     End_Function
@@ -314,6 +342,12 @@ Object oYearOverview is a cRDCView
         Set piColumnCount to 1
         Set psColumnWidths to "0/1fr"
         Set psRowHeights to "0/1fr"
+
+        // The page's script - a click on a day, a list row or a legend colour, answered in the page itself.
+        Procedure OnDefineScriptIncludes String[] ByRef asScriptHtml
+            Forward Send OnDefineScriptIncludes (&asScriptHtml)
+            Move (ScriptLink("Js/yearoverview.js")) to asScriptHtml[SizeOfArray(asScriptHtml)]
+        End_Procedure
 
         Object oYear_page is a cFTHtmlPage
             Set piRowIndex to 0
@@ -345,7 +379,10 @@ Object oYearOverview is a cRDCView
                 End
                 If (sId = "today") ;
                     Set piYear of oYearOverview to (ThisYear(oYearOverview))
+                // The page is built for the whole year here - the wait cursor while it is (the page dims itself too).
+                Send Cursor_Wait of Cursor_Control
                 Send RefreshBody
+                Send Cursor_Ready of Cursor_Control
             End_Procedure
         End_Object
     End_Object

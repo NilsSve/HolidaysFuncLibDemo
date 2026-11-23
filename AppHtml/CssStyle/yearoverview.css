@@ -63,3 +63,33 @@ td.d { cursor: default; }
 .yo-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; color: var(--dfr-ink-muted); }
 .yo-legend span { display: inline-flex; align-items: center; gap: 5px; }
 .yo-legend i.d { display: inline-block; width: 14px; height: 14px; }
+
+/* ---- clicks (yearoverview.js): the chosen day, the day above the list, a legend colour's filter ---- */
+td.d[data-d], .yo-l tr[data-d], .yo-lg { cursor: pointer; }
+td.d[data-d]:hover { box-shadow: inset 0 0 0 1px var(--dfr-amber-line); }
+/* the chosen day: an outer ring in the brightest ink as well as the amber edge - a holiday's solid fill is amber
+   itself, and the amber edge alone did not show on it (Nils 2026-11-23) */
+td.d.yo-sel { box-shadow: inset 0 0 0 2px var(--dfr-amber); outline: 2px solid var(--dfr-ink-bright); outline-offset: 1px; font-weight: bold; position: relative; z-index: 1; }
+.yo-l tr.yo-sel td { background: var(--dfr-amber-bg); }
+.yo-l tr[data-d]:hover td { background: var(--dfr-bg-card-hi); }
+
+/* the list stays in view while the page scrolls - no taller than the window below the page title - and the day
+   box stays at its top while the list itself scrolls */
+.yo-list { position: sticky; top: 4px; max-height: calc(100vh - 90px); overflow-y: auto; }
+.yo-detail { position: sticky; top: -6px; z-index: 1; margin-bottom: 10px; padding: 6px 8px; border-radius: 6px; background: var(--dfr-bg-inset); border: 1px solid var(--dfr-line-soft); min-height: 38px; }
+.yo-hint { color: var(--dfr-ink-muted); }
+.yo-dd { font-weight: bold; color: var(--dfr-ink-bright); }
+.yo-dn { font-weight: bold; color: var(--dfr-amber); margin-top: 2px; }
+.yo-dk, .yo-dw { color: var(--dfr-ink-muted); font-size: 11px; margin-top: 2px; }
+
+.yo-lg { padding: 2px 6px; border-radius: 10px; border: 1px solid transparent; }
+.yo-lg:hover { border-color: var(--dfr-line-mid); }
+.yo-lg.on { border-color: var(--dfr-amber); color: var(--dfr-ink-bright); }
+.yo[data-only="hol"] td.d:not(.hol), .yo[data-only="wkd"] td.d:not(.wkd),
+.yo[data-only="spc"] td.d:not(.spc), .yo[data-only="cls"] td.d:not(.cls) { opacity: 0.25; }
+.yo[data-only="hol"] .yo-l tr:not(.hol), .yo[data-only="wkd"] .yo-l tr:not(.wkd),
+.yo[data-only="spc"] .yo-l tr:not(.spc), .yo[data-only="cls"] .yo-l tr:not(.cls) { display: none; }
+
+/* busy: the program is drawing another country or year (yearoverview.js) */
+.yo.yo-busy, .yo.yo-busy * { cursor: progress !important; }
+.yo.yo-busy .yo-main, .yo.yo-busy .yo-sum { opacity: 0.45; transition: opacity 0.15s; }

@@ -18,7 +18,7 @@
         {
             "source": "https://github.com/NilsSve/Library-HolidaysFuncLib.git",
             "sws": "RDC-Holidays-Functions-Library.sws",
-            "version": "1.0.4"
+            "version": "1.0.6"
         },
         "DataFlex-dev/Web UI FlexTron#1.0.56",
         "DataFlex-dev/Web UI Material Theme#1.0.4",
