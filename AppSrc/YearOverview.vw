@@ -206,7 +206,10 @@ Object oYearOverview is a cRDCView
             Set piColumnSpan to 109
             Set psLabel to "Year Overview"
             Set psTitleIcon to CS_GlyphCalendar
-            Set psHtml to '<div class="ftph-cards"><b>US GB NL NO ES SE</b><b>2026</b></div>'
+            // The Studio's Designer only - it runs no code, so it draws this literal: the bar's three parts. When the
+            // program runs, RefreshAll replaces it with the real bar (BarHtml): a button for each country package the
+            // library has registered, so a new country gets its button without a change here.
+            Set psHtml to '<div class="ftph-cards"><b>Countries</b><b>Go to Today</b><b>Year</b></div>'
 
             // A click on a country, a year, This year or Refresh - after the web click has returned.
             Procedure OnHtmlClick String sId String sParam
