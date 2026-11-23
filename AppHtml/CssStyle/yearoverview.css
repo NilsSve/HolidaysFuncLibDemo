@@ -14,6 +14,9 @@
 }
 .yo-chip:hover, .yo-btn:hover { border-color: var(--dfr-btn-line-hover); background: var(--dfr-btn-bg-hover); }
 .yo-chip.on { border-color: var(--dfr-amber); background: var(--dfr-amber-bg); color: var(--dfr-ink-bright); font-weight: bold; }
+/* Go to Today: between the countries and the years (the bar spreads its three parts), filled amber */
+.yo-btn.yo-today { background: var(--dfr-amber); border-color: var(--dfr-amber); color: var(--dfr-ink-on-amber, #1d1c1a); font-weight: bold; }
+.yo-btn.yo-today:hover { background: var(--dfr-amber-bright, var(--dfr-amber)); border-color: var(--dfr-amber-bright, var(--dfr-amber)); }
 .yo-year { font-size: 18px; font-weight: bold; padding: 0 6px; color: var(--dfr-ink-bright); }
 
 /* ---- the year's sums ---- */

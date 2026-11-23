@@ -90,8 +90,11 @@ Object oYearOverview is a cRDCView
 
     Function BarHtml String sISO_Short Integer iYear Integer iWorking Integer iHolidays Integer iSpecial Returns String
         String[] asCountries
-        String sHtml sCls sMask sWeekend
+        String sHtml sCls sMask sWeekend sToday
         Integer i iLast
+        Date dToday
+
+        Sysdate dToday
 
         Move (CS_PaletteCssLink + CssLink("yearoverview") + DivOpen("yo")) to sHtml
         Append sHtml (DivOpen("yo-bar")) (DivOpen("yo-countries"))
@@ -104,12 +107,19 @@ Object oYearOverview is a cRDCView
             Append sHtml (SpanOpenClick(sCls, "country", asCountries[i], FTHtmlEscape(CountryName(Self, asCountries[i])))) ;
                 asCountries[i] "</span>"
         Loop
-        Append sHtml "</div>" (DivOpen("yo-years"))
+        Append sHtml "</div>"
+        /* GO TO TODAY, between the countries and the years, in amber: chosen on the page - marked in its month,
+           described above the list and scrolled into view (yearoverview.js). Showing another year, the program
+           draws this year first ("today", OnHtmlClick) and the page chooses the day once the drawing has come. */
+        Move (FTIsoDate(dToday)) to sToday
+        If (iYear = ThisYear(Self)) ;
+            Append sHtml '<span class="yo-btn yo-today" data-today="' sToday '" title="Show today">Go to Today</span>'
+        Else ;
+            Append sHtml '<span class="yo-btn yo-today" data-today="' sToday '" data-ServerOnClick="today" title="Back to this year, and show today">Go to Today</span>'
+        Append sHtml (DivOpen("yo-years"))
         Append sHtml (SpanOpenClick("yo-btn", "year", "-1", "The year before")) "&lsaquo; " (String(iYear - 1)) "</span>"
         Append sHtml (TagText("span", "yo-year", String(iYear)))
         Append sHtml (SpanOpenClick("yo-btn", "year", "1", "The year after")) (String(iYear + 1)) " &rsaquo;</span>"
-        If (iYear <> ThisYear(Self)) ;
-            Append sHtml (SpanOpenClick("yo-btn", "today", "", "Back to this year")) "This year</span>"
         Append sHtml (SpanOpenClick("yo-btn", "refresh", "", "Draw the page again - after a change in the Working Days view")) "Refresh</span>"
         Append sHtml "</div></div>"
 
@@ -225,6 +235,7 @@ Object oYearOverview is a cRDCView
             Set piMonth to 1
             Set pbDayClick to False             // a day's click is the page's own (yearoverview.js)
         End_Object
+
         Object oFebruary is a cHolidayMonthCalendar
             Set piRowIndex to 1
             Set piColumnIndex to 27
@@ -232,6 +243,7 @@ Object oYearOverview is a cRDCView
             Set piMonth to 2
             Set pbDayClick to False
         End_Object
+
         Object oMarch is a cHolidayMonthCalendar
             Set piRowIndex to 1
             Set piColumnIndex to 54
@@ -239,6 +251,7 @@ Object oYearOverview is a cRDCView
             Set piMonth to 3
             Set pbDayClick to False
         End_Object
+
         Object oApril is a cHolidayMonthCalendar
             Set piRowIndex to 1
             Set piColumnIndex to 81
@@ -246,6 +259,7 @@ Object oYearOverview is a cRDCView
             Set piMonth to 4
             Set pbDayClick to False
         End_Object
+
         Object oMay is a cHolidayMonthCalendar
             Set piRowIndex to 2
             Set piColumnIndex to 0
@@ -253,6 +267,7 @@ Object oYearOverview is a cRDCView
             Set piMonth to 5
             Set pbDayClick to False
         End_Object
+
         Object oJune is a cHolidayMonthCalendar
             Set piRowIndex to 2
             Set piColumnIndex to 27
@@ -260,6 +275,7 @@ Object oYearOverview is a cRDCView
             Set piMonth to 6
             Set pbDayClick to False
         End_Object
+
         Object oJuly is a cHolidayMonthCalendar
             Set piRowIndex to 2
             Set piColumnIndex to 54
@@ -267,6 +283,7 @@ Object oYearOverview is a cRDCView
             Set piMonth to 7
             Set pbDayClick to False
         End_Object
+
         Object oAugust is a cHolidayMonthCalendar
             Set piRowIndex to 2
             Set piColumnIndex to 81
@@ -274,6 +291,7 @@ Object oYearOverview is a cRDCView
             Set piMonth to 8
             Set pbDayClick to False
         End_Object
+
         Object oSeptember is a cHolidayMonthCalendar
             Set piRowIndex to 3
             Set piColumnIndex to 0
@@ -281,6 +299,7 @@ Object oYearOverview is a cRDCView
             Set piMonth to 9
             Set pbDayClick to False
         End_Object
+
         Object oOctober is a cHolidayMonthCalendar
             Set piRowIndex to 3
             Set piColumnIndex to 27
@@ -288,6 +307,7 @@ Object oYearOverview is a cRDCView
             Set piMonth to 10
             Set pbDayClick to False
         End_Object
+
         Object oNovember is a cHolidayMonthCalendar
             Set piRowIndex to 3
             Set piColumnIndex to 54
@@ -295,6 +315,7 @@ Object oYearOverview is a cRDCView
             Set piMonth to 11
             Set pbDayClick to False
         End_Object
+
         Object oDecember is a cHolidayMonthCalendar
             Set piRowIndex to 3
             Set piColumnIndex to 81

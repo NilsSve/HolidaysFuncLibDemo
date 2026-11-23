@@ -6,12 +6,23 @@
    - a click on a row of the list chooses its day the same way (rdcft.ftcalSelect) and brings the day into view;
    - a click on a colour in the legend shows only the days of that kind - in the months and in the list - and a
      second click shows them all again;
+   - Today chooses today; showing another year, the program draws this year first and today is chosen once it
+     has come;
    - a click on a country, a year or Refresh dims the page until the program has drawn the year again (the list
      ends with an element yo-ready, which the new drawing brings). */
 (function () {
     if (window.yoReady) { return; }
     window.yoReady = true;
     var fromList = false;
+    var pendingToday = null;     // Today, from another year: chosen once the program has drawn this year
+
+    // Today: chosen as a click on it would, and brought into view.
+    function goToday(date) {
+        var cell = document.querySelector('td.ftcal-d[data-d="' + date + '"]');
+        if (!cell || !window.rdcft || !window.rdcft.ftcalSelect) { return; }
+        window.rdcft.ftcalSelect(date, cell);
+        cell.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
 
     function esc(s) {
         return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -66,6 +77,16 @@
         if (!t || !t.closest) { return; }
         var lg = t.closest('.yo-lg');
         if (lg) { filter(lg.getAttribute('data-kind')); return; }
+        var today = t.closest('.yo-today');
+        if (today) {
+            if (today.hasAttribute('data-ServerOnClick')) {
+                pendingToday = today.getAttribute('data-today');
+                document.body.classList.add('yo-busy');
+            } else {
+                goToday(today.getAttribute('data-today'));
+            }
+            return;
+        }
         if (t.closest('.yo [data-ServerOnClick]')) { document.body.classList.add('yo-busy'); return; }
         var row = t.closest('.yo-l tr[data-d]');
         if (row && window.rdcft && window.rdcft.ftcalSelect) {
@@ -86,6 +107,11 @@
                 var n = records[i].addedNodes[j];
                 if (n.nodeType === 1 && (n.classList.contains('yo-ready') || (n.querySelector && n.querySelector('.yo-ready')))) {
                     document.body.classList.remove('yo-busy');
+                    if (pendingToday) {
+                        var date = pendingToday;
+                        pendingToday = null;
+                        setTimeout(function () { goToday(date); }, 0);
+                    }
                     return;
                 }
             }
