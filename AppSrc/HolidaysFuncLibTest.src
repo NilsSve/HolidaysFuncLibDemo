@@ -372,49 +372,11 @@ Object oMain is a Panel
 
         Object oExit_Toolbar is a cCJToolbar
 
-            Object oAboutMenuItem is a cCJAboutMenuItem
-                Set peControlStyle to xtpButtonIcon
-            End_Object
-
-            Object oKoFi_MenuItem is a cCJMenuItem
-                Set psToolTip to "Coffee time!"
-                Set psDescription to "Bye me a coffee, to support me"
-                Set psImage to "Ko-fi.ico"
-                Set pbControlBeginGroup to True
-                Procedure OnExecute Variant vCommandBarControl
-                    Runprogram Shell Background "https://ko-fi.com/nilss"
-                End_Procedure
-            End_Object
-
-            Object oSuggestion_MenuItem is a cCJMenuItem
-                Set psTooltip to "Suggest"
-                Set psDescription to "Suggest a feature, or report a bug..."
-                Set psImage to "Suggestion.ico"
-                Set pbControlBeginGroup to True
-
-                Procedure OnExecute Variant vCommandBarControl
-                    Runprogram Shell Background "https://github.com/NilsSve/Library-HolidaysFuncLib/issues/1"
-                End_Procedure
-
-            End_Object
-
-            Object oISOCodesMenuItem is a cCJMenuItem
-                Set psToolTip to "ISO Codes"
-                Set psDescription to "Official ISO Country Codes"
-                Set psImage to "Nations.ico"
-
-                Procedure OnExecute Variant vCommandBarControl
-                    Runprogram Shell Background "https://www.iso.org/obp/ui/#search/code/"    
-                End_Procedure
-            End_Object 
-                
-            // THE THEME: a drop-down of the three choices, the one in use ticked. A new choice is saved and the demo
-            // restarts in it (DemoSwitchTheme).
             Object oThemeToolItem is a cCJMenuItem
                 Set psCaption to "Theme"
                 Set psToolTip to "Theme"
                 Set psDescription to "Light, Dark or Follow Windows - the demo restarts in the new theme"
-                Set psImage to "Colors.ico"
+                Set psImage to "Themes.ico"
                 Set peControlType to xtpControlPopup
                 Set pbControlBeginGroup to True
 
@@ -451,6 +413,46 @@ Object oMain is a Panel
                     End_Procedure
                 End_Object
             End_Object
+
+            Object oAboutMenuItem is a cCJAboutMenuItem
+                Set peControlStyle to xtpButtonIcon
+                Set pbControlBeginGroup to True
+            End_Object
+
+            Object oKoFi_MenuItem is a cCJMenuItem
+                Set psToolTip to "Coffee time!"
+                Set psDescription to "Bye me a coffee, to support me"
+                Set psImage to "Ko-fi.ico"
+                Set pbControlBeginGroup to True
+                Procedure OnExecute Variant vCommandBarControl
+                    Runprogram Shell Background "https://ko-fi.com/nilss"
+                End_Procedure
+            End_Object
+
+            Object oSuggestion_MenuItem is a cCJMenuItem
+                Set psTooltip to "Suggest"
+                Set psDescription to "Suggest a feature, or report a bug..."
+                Set psImage to "Suggestion.ico"
+                Set pbControlBeginGroup to True
+
+                Procedure OnExecute Variant vCommandBarControl
+                    Runprogram Shell Background "https://github.com/NilsSve/Library-HolidaysFuncLib/issues/1"
+                End_Procedure
+
+            End_Object
+
+            Object oISOCodesMenuItem is a cCJMenuItem
+                Set psToolTip to "ISO Codes"
+                Set psDescription to "Official ISO Country Codes"
+                Set psImage to "Nations.ico"
+
+                Procedure OnExecute Variant vCommandBarControl
+                    Runprogram Shell Background "https://www.iso.org/obp/ui/#search/code/"    
+                End_Procedure
+            End_Object 
+                
+            // THE THEME: a drop-down of the three choices, the one in use ticked. A new choice is saved and the demo
+            // restarts in it (DemoSwitchTheme).
 
             // The button opens the online help; its arrow offers the online help or the local CHM file.
             Object oHelpToolItem is a cCJMenuItem
