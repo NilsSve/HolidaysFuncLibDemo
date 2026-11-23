@@ -32,6 +32,15 @@
         box.innerHTML = html;
     }
 
+    // The row to the middle of the list - the list alone: scrollIntoView would scroll the page too, and the bar with
+    // the countries and years would leave the window.
+    function scrollInList(row) {
+        var list = row.closest('.yo-list');
+        if (!list) { return; }
+        var r = row.getBoundingClientRect(), l = list.getBoundingClientRect();
+        list.scrollTo({ top: list.scrollTop + (r.top - l.top) - (list.clientHeight - r.height) / 2, behavior: 'smooth' });
+    }
+
     function select(yo, date, scrollTo) {
         yo.querySelectorAll('.yo-sel').forEach(function (e) { e.classList.remove('yo-sel'); });
         var cell = yo.querySelector('td.d[data-d="' + date + '"]');
@@ -39,8 +48,8 @@
         if (cell) { cell.classList.add('yo-sel'); }
         if (row) { row.classList.add('yo-sel'); }
         showDay(yo, cell);
-        var target = scrollTo === 'row' ? row : cell;
-        if (target) { target.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+        if (scrollTo === 'row' && row) { scrollInList(row); }
+        if (scrollTo === 'cell' && cell) { cell.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
     }
 
     // A legend colour: only those days; the same colour again: all of them.

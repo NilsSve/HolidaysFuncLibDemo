@@ -20,7 +20,7 @@ You can find a collection of country-specific libraries in `CountryPackages.pkg`
 
 The workspace also includes a database and a view displaying facts about nations around the world, which is independent of the calendar holiday packages mentioned above.
 
-![Sample of how the HolidaysFuncLib.src program looks like:](Bitmaps/HolidaysFuncLibTest.png)
+![The Year Overview of the United States in 2026, in the dark theme, with Independence Day clicked](Bitmaps/HolidaysFuncLibTest.png)
 
 ## Setup after cloning
 
