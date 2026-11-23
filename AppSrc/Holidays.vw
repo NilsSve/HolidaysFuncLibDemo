@@ -25,6 +25,7 @@ Use cRDCButton.pkg
 // The nation's flag as HTML (RDCFlexTron) - until 2026-11-23 a Graphics Library image, under Is$GraphicsLibrary.
 Use cFTGridHost.pkg                 // the host - Used before the web controls
 Use cFlagHtmlBox.pkg                // cFlagHtmlBox: the flag
+Use cViewHtmlBox.pkg                // the note under the flag
 
 // The flag is drawn again whenever the record changes (the ISO code form's Refresh), below the objects it reaches.
 Register_Procedure ShowNationFlag
@@ -382,6 +383,23 @@ Object oHolidays is a cRDCDbView
                 Set pbFillHeight to True
             End_Object
         End_Object
+        // THE NOTE: the date records are not needed to use the library - this view is one more example of it.
+        Object oNote_host is a cFTGridHost
+            Set Size to 82 92
+            Set Location to 106 414
+            Set peAnchors to anTopRight
+            Set piColumnCount to 1
+            Set psColumnWidths to "0/1fr"
+            Set psRowHeights to "0/1fr"
+
+            Object oNote_box is a cViewHtmlBox
+                Set piRowIndex to 0
+                Set piColumnSpan to 1
+                Set pbFillHeight to True
+                Set psHtml to '<div style="font-size:11px;line-height:1.35;color:var(--dfr-ink,#d6d3cc);padding:2px 2px 0 4px"><b style="color:var(--dfr-amber,#e0a84a)">Note:</b> the library does not need these date records - it works out the holidays of any date on the fly. This table is just one more example of using it.</div>'
+            End_Object
+        End_Object
+
         Object oOnlyHolsCB is a CheckBox
             Set Size to 10 10
             Set Location to 194 75
@@ -663,11 +681,14 @@ Object oHolidays is a cRDCDbView
     Procedure End_Construct_Object
         Forward Send End_Construct_Object
         Send DemoDarkView Self
+        // the note on the view's colour - which DemoDarkView has just set
+        Send ShowHtml of (oNote_box(oNote_host(oDateMaintenance_grp(Self)))) (psHtml(oNote_box(oNote_host(oDateMaintenance_grp(Self)))))
     End_Procedure
 
     // The nation's flag, from the Nations buffer the data dictionaries keep current.
     Procedure ShowNationFlag
-        Send ShowFlag of (oFlag_box(oFlag_host(oDateMaintenance_grp(Self)))) (Trim(Nations.Flag)) (Trim(Nations.Official_Short))
+        Send ShowFlag of oFlag_box (Trim(Nations.Flag)) (Trim(Nations.Official_Short))
+//        Send ShowFlag of (oFlag_box(oFlag_host(oDateMaintenance_grp(Self)))) (Trim(Nations.Flag)) (Trim(Nations.Official_Short))
     End_Procedure
 
 End_Object

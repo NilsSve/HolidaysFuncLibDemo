@@ -246,7 +246,7 @@ Object oNations is a cRDCDbView
     End_Procedure
     // The nation's flag, from the Nations buffer the data dictionaries keep current.
     Procedure ShowNationFlag
-        Send ShowFlag of (oFlag_box(oFlag_host(oNation_grp(Self)))) (Trim(Nations.Flag)) (Trim(Nations.Official_Short))
+        Send ShowFlag of oFlag_box (Trim(Nations.Flag)) (Trim(Nations.Official_Short))
     End_Procedure
 
 End_Object

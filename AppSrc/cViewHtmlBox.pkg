@@ -1,0 +1,61 @@
+﻿//****************************************************************************
+// $Module type: Class Package
+// $Module name: cViewHtmlBox.pkg
+// $Author     : Nils Svedmyr, RDC Tools International
+// Created     : 2026-11-23
+//
+// Description : A FlexTron HTML box that sits on a native view - painted in the view's own colour, so that its
+//               host does not show as a patch of the FlexTron page colour.
+//
+// This code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+//****************************************************************************
+Use cFTWebHtmlBox.pkg
+Use RgbColor.pkg               // GetSysColor - a system colour's real value
+Use FTThemeColors.pkg          // FTColorHex
+
+/* An HTML box on a native view - the flag (cFlagHtmlBox), a note. ShowHtml shows a piece of HTML on the colour of
+   the native window the host sits in (Nils 2026-11-23). A view sends it once the view has its colours - from its
+   End_Construct_Object after DemoDarkView, or later. */
+Class cViewHtmlBox is a cFTWebHtmlBox
+
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set pbServerOnClick to False
+    End_Procedure
+
+    // The first window up from the host with a colour of its own; a system colour (clBtnFace ...) is turned into
+    // its value. "RRGGBB".
+    Function NativeBackHex Returns String
+        Handle ho
+        Integer iColor
+        Get Parent to ho                    // the host
+        Move clDefault to iColor
+        While (ho <> 0)
+            Get Parent of ho to ho
+            If (ho = 0) ;
+                Break
+            Get Color of ho to iColor
+            If ((iColor <> clDefault) and (iColor <> clNone)) ;
+                Break
+        Loop
+        If ((iColor = clDefault) or (iColor = clNone)) ;
+            Move clBtnFace to iColor
+        If (iColor < 0) ;
+            Move (GetSysColor(iColor iand $000000FF)) to iColor
+        Function_Return (FTColorHex(iColor))
+    End_Function
+
+    // The host's whole page in the view's colour - its body and the framework's containers ("!" is Character(33):
+    // a "!" in a literal can be read as a compiler directive).
+    Function ViewBackStyle Returns String
+        Function_Return ("<style>html,body,#viewport,.WebApp.WebContainer,.WebCon_ContentWrp,.WebControl.WebHtmlBox{background:" + ;
+            Character(35) + NativeBackHex(Self) + " " + Character(33) + "important}</style>")
+    End_Function
+
+    // sHtml on the view's colour.
+    Procedure ShowHtml String sHtml
+        Send UpdateHtml (ViewBackStyle(Self) + sHtml)
+    End_Procedure
+
+End_Class
