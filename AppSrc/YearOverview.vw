@@ -50,13 +50,19 @@ Object oYearOverview is a cRDCView
 
     // In English, as the rest of the program: the library's month names follow the computer's language.
     Function MonthName Integer iMonth Returns String
-        String sNames
-        Move "January  February March    April    May      June     July     August   SeptemberOctober  November December " to sNames
-        Function_Return (Trim(Mid(sNames, 9, ((iMonth - 1) * 9 + 1))))
+//        String sNames
+        String sMonthName   
+        Get MonthNameFromInteger of ghoCalendarHolidays iMonth True True to sMonthName
+//        Move "January  February March    April    May      June     July     August   SeptemberOctober  November December " to sNames
+//        Function_Return (Trim(Mid(sNames, 9, ((iMonth - 1) * 9 + 1))))
+        Function_Return sMonthName
     End_Function
 
-    Function DayName Integer iIsoDay Returns String
-        Function_Return (Mid("MonTueWedThuFriSatSun", 3, ((iIsoDay - 1) * 3 + 1)))
+    Function DayName Integer iIsoDay Returns String    
+        String sDayName
+        Get GetDayNameShort of ghoCalendarHolidays iIsoDay to sDayName
+        Function_Return sDayName
+//        Function_Return (Mid("MonTueWedThuFriSatSun", 3, ((iIsoDay - 1) * 3 + 1)))
     End_Function
 
     Function CountryName String sISO_Short Returns String
