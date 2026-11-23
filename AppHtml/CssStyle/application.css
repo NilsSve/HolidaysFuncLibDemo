@@ -1,0 +1,11 @@
+﻿/* HolidaysFuncLibDemo - the program's application.css.
+
+   The DataFlex web framework loads this sheet on every FlexTron host page, and the Studio's Designer loads no other
+   sheet of ours. The hosts link the RDCFlexTron sheets themselves when the program runs, but the Designer runs no
+   code, so these imports give it the FT look: palette.css for the --dfr-* colours, ftcontrols.css for the web
+   controls, the month calendars (cFTMonthCalendar) and the mockups (ftph-*), ftglyphs.css for the glyphs, and the
+   Year Overview's own sheet. Without it the Designer drew Year Overview as two lines of plain text (2026-11-23). */
+@import url("../RDCFlexTron/palette.css");
+@import url("../RDCFlexTron/ftcontrols.css");
+@import url("../RDCFlexTron/ftglyphs.css");
+@import url("yearoverview.css");

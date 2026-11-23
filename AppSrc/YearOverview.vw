@@ -356,7 +356,10 @@ Object oYearOverview is a cRDCView
             Loop
         Loop
         Send RefreshTop iYear iWorking iHolidays iSpecial
-        Send UpdateHtml of (oList_box(oYear_host(Self))) (ListHtml(Self, aNamed, sISO_Short, iWorking))
+        /* PushHtml, the LAST box: UpdateHtml only queues a box's new HTML, and the host's idle tick sent the 14
+           queued boxes a little at a time - a year took about 30 s to show (2026-11-23), its work 0.3 s. PushHtml
+           sends the whole queue at once. */
+        Send PushHtml of (oList_box(oYear_host(Self))) (ListHtml(Self, aNamed, sISO_Short, iWorking))
     End_Procedure
 
     // The months in order, and the first drawing of the year.
