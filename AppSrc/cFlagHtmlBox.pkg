@@ -35,7 +35,8 @@ Class cFlagHtmlBox is a cViewHtmlBox
         // the folders themselves. Not on the bitmap path itself (Nils 2026-11-25): the workspace's .sws holds ONE
         // bitmap folder - df-cli installs the libraries' icons into it, and with several it installs them into a
         // folder named after the whole list - and every other image the program looks up would search the flags too.
-        Property String psFlagFolders "FlagsPNG;FlagsGIF"
+        // FlagsSVG holds the flag-icons set (MIT, LICENSE-flag-icons.txt), named by the ISO code: se.svg.
+        Property String psFlagFolders "FlagsSVG;FlagsPNG;FlagsGIF"
 
         // The file shown, so that the same flag is not read and sent again on every refresh.
         { Visibility=Private }
@@ -87,6 +88,9 @@ Class cFlagHtmlBox is a cViewHtmlBox
             Move "image/png" to sMime
         If ((Right(sLow, 4) = ".jpg") or (Right(sLow, 5) = ".jpeg")) ;
             Move "image/jpeg" to sMime
+        // a drawing, not pixels: sharp at any size
+        If (Right(sLow, 4) = ".svg") ;
+            Move "image/svg+xml" to sMime
         Move (Seq_New_Channel()) to iCh
         If (iCh < 0) ;
             Function_Return ""

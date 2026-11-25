@@ -33,7 +33,7 @@ Object oNations is a cRDCDbView
     Set Verify_Save_Msg to none
     Set View_Latch_State to True
 
-    Property String psFileType ".png"
+    Property String psFileType ".svg"
     
     Object oContinen_DD is a cContinenDataDictionary
     End_Object
@@ -133,6 +133,7 @@ Object oNations is a cRDCDbView
             Set peAnchors to anTopRight
 
             Procedure Combo_Fill_List
+                Send Combo_Add_Item ".svg"
                 Send Combo_Add_Item ".png"
                 Send Combo_Add_Item ".gif"
             End_Procedure
@@ -279,12 +280,19 @@ Object oNations is a cRDCDbView
         Send DemoDarkView Self
     End_Procedure
     // The nation's flag, from the Nations buffer the data dictionaries keep current.
+    // .svg: the flag-icons drawing named by the ISO code (se.svg), sharp at any size - the PNG when there is none.
+    // .png and .gif: the picture Nations.Flag names ("Sweden.gif").
     Procedure ShowNationFlag
-        String sFlag sFileType
+        String sFlag sFileType sSvg
         Get psFileType to sFileType
         Move (Trim(Nations.Flag)) to sFlag
-        If (sFlag <> "" and sFileType <> ".gif") Begin
+        If ((sFlag <> "") and (sFileType <> ".gif")) Begin
             Move (Replace(".gif", sFlag, ".png")) to sFlag
+        End
+        If ((sFileType = ".svg") and (Trim(Nations.ISO_Short) <> "")) Begin
+            Move (Lowercase(Trim(Nations.ISO_Short)) + ".svg") to sSvg
+            If (BitmapFile(oFlag_box, sSvg) <> "") ;
+                Move sSvg to sFlag
         End
         Send ShowFlag of oFlag_box sFlag (Trim(Nations.Official_Short))
     End_Procedure
