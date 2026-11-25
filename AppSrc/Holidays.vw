@@ -686,8 +686,9 @@ Object oHolidays is a cRDCDbView
     End_Procedure
 
     // The nation's flag, from the Nations buffer the data dictionaries keep current.
+    // The SVG flag by the ISO code - the picture Nations.Flag names when there is none.
     Procedure ShowNationFlag
-        Send ShowFlag of oFlag_box (Trim(Nations.Flag)) (Trim(Nations.Official_Short))
+        Send ShowCountryFlag of oFlag_box (Trim(Nations.ISO_Short)) (Trim(Nations.Flag)) (Trim(Nations.Official_Short))
 //        Send ShowFlag of (oFlag_box(oFlag_host(oDateMaintenance_grp(Self)))) (Trim(Nations.Flag)) (Trim(Nations.Official_Short))
     End_Procedure
 

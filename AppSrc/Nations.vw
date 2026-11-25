@@ -283,18 +283,16 @@ Object oNations is a cRDCDbView
     // .svg: the flag-icons drawing named by the ISO code (se.svg), sharp at any size - the PNG when there is none.
     // .png and .gif: the picture Nations.Flag names ("Sweden.gif").
     Procedure ShowNationFlag
-        String sFlag sFileType sSvg
+        String sFlag sFileType
         Get psFileType to sFileType
         Move (Trim(Nations.Flag)) to sFlag
         If ((sFlag <> "") and (sFileType <> ".gif")) Begin
             Move (Replace(".gif", sFlag, ".png")) to sFlag
         End
-        If ((sFileType = ".svg") and (Trim(Nations.ISO_Short) <> "")) Begin
-            Move (Lowercase(Trim(Nations.ISO_Short)) + ".svg") to sSvg
-            If (BitmapFile(oFlag_box, sSvg) <> "") ;
-                Move sSvg to sFlag
-        End
-        Send ShowFlag of oFlag_box sFlag (Trim(Nations.Official_Short))
+        If (sFileType = ".svg") ;
+            Send ShowCountryFlag of oFlag_box (Trim(Nations.ISO_Short)) sFlag (Trim(Nations.Official_Short))
+        Else ;
+            Send ShowFlag of oFlag_box sFlag (Trim(Nations.Official_Short))
     End_Procedure
 
 End_Object

@@ -134,4 +134,17 @@ Class cFlagHtmlBox is a cViewHtmlBox
         Send ShowHtml (sHtml + "</div>")
     End_Procedure
 
+    // A country's flag: its SVG drawing by the ISO code (sIsoCode "SE" -> se.svg in FlagsSVG), sharp at any size,
+    // when there is one - else sFile, the picture Nations.Flag names ("Sweden.gif").
+    Procedure ShowCountryFlag String sIsoCode String sFile String sName
+        String sSvg
+        Move (Trim(sIsoCode)) to sIsoCode
+        If (sIsoCode <> "") Begin
+            Move (Lowercase(sIsoCode) + ".svg") to sSvg
+            If (BitmapFile(Self, sSvg) <> "") ;
+                Move sSvg to sFile
+        End
+        Send ShowFlag sFile sName
+    End_Procedure
+
 End_Class
