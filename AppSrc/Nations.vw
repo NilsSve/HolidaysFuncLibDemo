@@ -176,7 +176,7 @@ Object oNations is a cRDCDbView
 
         Object oNations_CurrNum is a cRDCDbForm
             Entry_Item Nations.ISO_CurrNum
-            Set Location to 131 194
+            Set Location to 150 194
             Set Size to 13 25
             Set Label to "ISO Currency Number"
         End_Object

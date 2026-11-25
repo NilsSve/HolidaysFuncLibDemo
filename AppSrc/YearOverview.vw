@@ -136,14 +136,10 @@ Object oYearOverview is a cRDCView
         If (sWeekend = "") ;
             Move "none" to sWeekend
 
-
         Append sHtml (DivOpen("yo-sum"))
         Append sHtml '<span class="yo-sum-label">Year at a glance</span>'
         Append sHtml '<span class="yo-pill"><b>' (String(iWorking)) "</b> working days in " (String(iYear)) " in " (FTHtmlEscape(CountryName(Self, sISO_Short))) "</span>"
-//        Append sHtml (DivOpen("yo-sum"))
-//        Append sHtml '<span class="yo-pill"><b>' (String(iWorking)) "</b> working days in " (String(iYear)) " in " (FTHtmlEscape(CountryName(Self, sISO_Short))) "</span>"
-//        Append sHtml '<span class="yo-pill hol"><b>' (String(iHolidays)) "</b> days off for official holidays on weekdays</span>"
-
+        Append sHtml '<span class="yo-pill hol"><b>' (String(iHolidays)) "</b> days off for official holidays on weekdays</span>"
         Append sHtml '<span class="yo-pill spc"><b>' (String(iSpecial)) "</b> special days that are worked</span>"
         Append sHtml '<span class="yo-pill wkd">Off every week: ' (FTHtmlEscape(sWeekend)) "</span>"
         Append sHtml "</div>"

@@ -39,13 +39,13 @@
 .yo-pill.hol { border-color: var(--dfr-coral); }
 .yo-pill.spc { border-color: var(--dfr-violet-line); }
 .yo-pill.wkd { border-color: var(--dfr-line-mid); }
+.yo-note { color: var(--dfr-ink-muted); margin: 4px 0 2px 0; }
 /*
 .yo-pill { padding: 3px 10px; border-radius: 12px; background: var(--dfr-bg-pill); border: 1px solid var(--dfr-line-soft); }
 .yo-pill b { color: var(--dfr-ink-bright); }
 .yo-pill.hol { border-color: var(--dfr-coral); }
 .yo-pill.spc { border-color: var(--dfr-violet-line); }
 .yo-pill.wkd { border-color: var(--dfr-line-mid); }
-.yo-note { color: var(--dfr-ink-muted); margin: 4px 0 2px 0; }
 */
 /* ---- the list of named days: it fills its box - the three rows of months - and scrolls; the day box stays at
    its top while it does ---- */

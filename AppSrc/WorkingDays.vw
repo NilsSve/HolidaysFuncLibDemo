@@ -630,13 +630,7 @@ Object oWorkingDays is a cRDCView
             Set Maximum_Position to 999
             Set psToolTip to "How many working days to add - a negative number goes back."
             Procedure OnChange
-                String sDate 
-                Boolean bValid
-                Get Value to sDate
-                Get IsValidDateString of ghoCalendarHolidays sDate to bValid
-                If (bValid = True) Begin
-                    Send ShowAll
-                End
+                Send ShowAll
             End_Procedure
         End_Object
 
