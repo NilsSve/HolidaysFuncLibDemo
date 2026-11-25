@@ -4,6 +4,7 @@
 Use cRDCDbView.pkg
 Use cRDCDbCJGrid.pkg
 Use cRDCDbForm.pkg
+Use cRDCComboForm.pkg
 Use cRDCDbGroup.pkg
 Use DemoTheme.pkg                   // the theme: DemoDarkView
 Use cFTRadioGroup.pkg               // cFTGroupCaption: a group box's caption as a TextBox (RDCFlexTron)
@@ -23,7 +24,7 @@ Use Currency.sl
 
 Activate_View Activate_oNations For oNations
 Object oNations is a cRDCDbView
-    Set Size to 227 520
+    Set Size to 239 520
     Set Label to "Nations Data"
     Set Border_Style to Border_Thick
     Set Auto_Clear_DEO_State to False
@@ -32,6 +33,8 @@ Object oNations is a cRDCDbView
     Set Verify_Save_Msg to none
     Set View_Latch_State to True
 
+    Property String psFileType ".png"
+    
     Object oContinen_DD is a cContinenDataDictionary
     End_Object
 
@@ -48,7 +51,7 @@ Object oNations is a cRDCDbView
     Set Server  to oNations_DD
 
     Object oNation_grp is a cRDCDbGroup
-        Set Size to 219 507
+        Set Size to 231 507
         Set Location to 3 7
         Set peAnchors to anAll
 
@@ -115,44 +118,72 @@ Object oNations is a cRDCDbView
             Set peAnchors to anTopLeftRight
         End_Object
 
+        Object oNations_Flag is a cRDCDbForm
+            Entry_Item Nations.Flag
+            Set Location to 89 75
+            Set Size to 13 331
+            Set Label to "Flag"
+            Set peAnchors to anTopLeftRight
+        End_Object
+
+        Object oFiletype_cf is a cRDCComboForm
+            Set Location to 112 416
+            Set Size to 13 79  
+            Set Label to "Select File Type"
+            Set peAnchors to anTopRight
+
+            Procedure Combo_Fill_List
+                Send Combo_Add_Item ".png"
+                Send Combo_Add_Item ".gif"
+            End_Procedure
+            
+            Procedure OnChange
+                String sVal
+                Get Value to sVal
+                Set psFileType to sVal
+                Send ShowNationFlag
+            End_Procedure
+            
+        End_Object
+        
         Object oNations_Capital_City is a cRDCDbForm
             Entry_Item Nations.Capital_City
-            Set Location to 88 75
+            Set Location to 105 75
             Set Size to 13 144
             Set Label to "Capital City"
         End_Object
 
         Object oNations_IntCallCode is a cRDCDbForm
             Entry_Item Nations.IntCallCode
-            Set Location to 103 75
+            Set Location to 120 75
             Set Size to 13 39
             Set Label to "Int Calling Code"
         End_Object
 
         Object oNations_Internet_TLD is a cRDCDbForm
             Entry_Item Nations.Internet_TLD
-            Set Location to 118 75
+            Set Location to 135 75
             Set Size to 13 37
             Set Label to "Internet TLD"
         End_Object
 
         Object oNations_ISO_Currency is a cRDCDbForm
             Entry_Item Nations.ISO_Currency
-            Set Location to 133 75
+            Set Location to 150 75
             Set Size to 13 37
             Set Label to "ISO Currency Code"
         End_Object
 
         Object oNations_CurrNum is a cRDCDbForm
             Entry_Item Nations.ISO_CurrNum
-            Set Location to 133 194
+            Set Location to 131 194
             Set Size to 13 25
             Set Label to "ISO Currency Number"
         End_Object
 
         Object oNations_ISO_CurrTxt is a cRDCDbForm
             Entry_Item Nations.ISO_CurrTxt
-            Set Location to 148 75
+            Set Location to 165 75
             Set Size to 13 144
             Set Label to "Currency Text"
             Set peAnchors to anTopLeftRight
@@ -165,10 +196,31 @@ Object oNations is a cRDCDbView
             End_Procedure
         End_Object
 
+        Object oContinen_Name is a cRDCDbForm
+            Entry_Item Continen.Name
+            Set Location to 181 75
+            Set Size to 13 145
+            Set Label to "Continent Name"
+        End_Object
+
+        Object oNations_Area is a cRDCDbForm
+            Entry_Item Nations.Area
+            Set Label to "Area"
+            Set Location to 197 75
+            Set Size to 13 59
+        End_Object
+
+        Object oNations_Population is a cRDCDbForm
+            Entry_Item Nations.Population
+            Set Label to "Population"
+            Set Location to 212 75
+            Set Size to 13 59
+        End_Object
+
         // THE FLAG, as HTML in a small FlexTron host - drawn again on every find, clear and relate (ShowNationFlag).
         Object oFlag_host is a cFTGridHost
-            Set Size to 62 70
-            Set Location to 40 430
+            Set Size to 65 90
+            Set Location to 48 410
             Set peAnchors to anTopRight
             Set piColumnCount to 1
             Set psColumnWidths to "0/1fr"
@@ -177,29 +229,11 @@ Object oNations is a cRDCDbView
             Object oFlag_box is a cFlagHtmlBox
                 Set piRowIndex to 0
                 Set piColumnSpan to 1
-                Set pbFillHeight to True
+                Set pbFillHeight to True 
+                Set piHeight to 100
+                Set piWidth  to 130
             End_Object
-        End_Object
-        
-        Object oContinen_Name is a cRDCDbForm
-            Entry_Item Continen.Name
-            Set Location to 164 75
-            Set Size to 13 145
-            Set Label to "Continent Name"
-        End_Object
 
-        Object oNations_Area is a cRDCDbForm
-            Entry_Item Nations.Area
-            Set Label to "Area"
-            Set Location to 180 75
-            Set Size to 13 59
-        End_Object
-
-        Object oNations_Population is a cRDCDbForm
-            Entry_Item Nations.Population
-            Set Label to "Population"
-            Set Location to 195 75
-            Set Size to 13 59
         End_Object
 
     End_Object
@@ -246,7 +280,13 @@ Object oNations is a cRDCDbView
     End_Procedure
     // The nation's flag, from the Nations buffer the data dictionaries keep current.
     Procedure ShowNationFlag
-        Send ShowFlag of oFlag_box (Trim(Nations.Flag)) (Trim(Nations.Official_Short))
+        String sFlag sFileType
+        Get psFileType to sFileType
+        Move (Trim(Nations.Flag)) to sFlag
+        If (sFlag <> "" and sFileType <> ".gif") Begin
+            Move (Replace(".gif", sFlag, ".png")) to sFlag
+        End
+        Send ShowFlag of oFlag_box sFlag (Trim(Nations.Official_Short))
     End_Procedure
 
 End_Object

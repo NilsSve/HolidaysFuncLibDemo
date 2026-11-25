@@ -15,10 +15,11 @@ Use FTMarkupBuilders.pkg       // FTHtmlEscape
 Use cCharTranslate.pkg         // Base64EncodeToStr
 Use seq_chnl.pkg
 
-/* THE FLAG. The Nations table names each nation's flag file in Nations.Flag ("Sweden.gif"), and the files are in the
-   workspace's Bitmaps folder. The box shows the file as an <img> whose address is the file itself, base64 encoded (a
-   data: address), so the files stay where they are - nothing is copied under AppHtml, which is all a FlexTron page
-   can reach by a path. The way RDCFlexTron's About dialog shows its picture. A view sends ShowFlag whenever its record
+/* THE FLAG. The Nations table names each nation's flag file in Nations.Flag ("Sweden.gif"), and the files are in
+   folders of their own under the workspace's Bitmaps folder - FlagsPNG and FlagsGIF (psFlagFolders). The
+   box shows the file as an <img> whose address is the file itself, base64 encoded (a data: address),
+   so the files stay where they are - nothing is copied under AppHtml, which is all a FlexTron page can reach by a
+   path. The way RDCFlexTron's About dialog shows its picture. A view sends ShowFlag whenever its record
    changes: from the Refresh of a data entry object on the Nations table, which runs on every find, clear and relate. */
 { OverrideProperty=psHtml InitialValue="<div class='ftph-cards'><b>Flag</b></div>" }
 Class cFlagHtmlBox is a cViewHtmlBox
@@ -26,37 +27,49 @@ Class cFlagHtmlBox is a cViewHtmlBox
     Procedure Construct_Object
         Forward Send Construct_Object
         Set psHtml to "<div class='ftph-cards'><b>Flag</b></div>"
+
+        Property Integer piHeight 72
+        Property Integer piWidth 90
+
+        // THE FLAG FOLDERS: sub folders of the bitmap path's folders, separated by ";", searched in this order after
+        // the folders themselves. Not on the bitmap path itself (Nils 2026-11-25): the workspace's .sws holds ONE
+        // bitmap folder - df-cli installs the libraries' icons into it, and with several it installs them into a
+        // folder named after the whole list - and every other image the program looks up would search the flags too.
+        Property String psFlagFolders "FlagsPNG;FlagsGIF"
+
         // The file shown, so that the same flag is not read and sent again on every refresh.
         { Visibility=Private }
         Property String private.psFlagFile "-"
     End_Procedure
 
-    // The full path of a file on the workspace's bitmap path, or "".
+    // The full path of a flag file, or "": in each folder of the workspace's bitmap path, then in its flag folders
+    // (psFlagFolders) - Bitmaps\Sweden.png, then Bitmaps\FlagsPNG\Sweden.png, then Bitmaps\FlagsGIF\Sweden.png.
     Function BitmapFile String sFile Returns String
-        String sPaths sFolder sPath
-        Integer iPos
+        String[] asFolders asSubs
+        String sFolder sPath
+        Integer iFolder iSub
         Boolean bExists
-        If (Trim(sFile) = "") ;
+        Move (Trim(sFile)) to sFile
+        If (sFile = "") ;
             Function_Return ""
-        Get psBitmapPath of (phoWorkspace(ghoApplication)) to sPaths
-        While (sPaths <> "")
-            Move (Pos(";", sPaths)) to iPos
-            If (iPos > 0) Begin
-                Move (Left(sPaths, iPos - 1)) to sFolder
-                Move (Mid(sPaths, Length(sPaths), iPos + 1)) to sPaths
-            End
-            Else Begin
-                Move sPaths to sFolder
-                Move "" to sPaths
-            End
-            Move (Trim(sFolder)) to sFolder
+        Move (StrSplitToArray(psBitmapPath(phoWorkspace(ghoApplication)), ";")) to asFolders
+        // "" first: the folder itself
+        Move "" to asSubs[0]
+        Move (AppendArray(asSubs, StrSplitToArray(psFlagFolders(Self), ";"))) to asSubs
+        For iFolder from 0 to (SizeOfArray(asFolders) - 1)
+            Move (Trim(asFolders[iFolder])) to sFolder
             If (sFolder <> "") Begin
                 If (Right(sFolder, 1) <> "\") ;
                     Move (sFolder + "\") to sFolder
-                Move (sFolder + sFile) to sPath
-                File_Exist sPath bExists
-                If (bExists) ;
-                    Function_Return sPath
+                For iSub from 0 to (SizeOfArray(asSubs) - 1)
+                    Move (Trim(asSubs[iSub])) to sPath
+                    If (sPath <> "") ;
+                        Move (sPath + "\") to sPath
+                    Move (sFolder + sPath + sFile) to sPath
+                    File_Exist sPath bExists
+                    If (bExists) ;
+                        Function_Return sPath
+                Loop
             End
         Loop
         Function_Return ""
@@ -91,19 +104,27 @@ Class cFlagHtmlBox is a cViewHtmlBox
 
     // Show a nation's flag: sFile as Nations.Flag names it, sName for its tooltip. No file, or none found: an empty
     // frame.
+    // ToDo: There needs to be a way to set the size of the flag!
     Procedure ShowFlag String sFile String sName
         String sPath sUrl sHtml
+        Integer iWidth iHeight
+
         Move (Trim(sFile)) to sFile
         If (sFile = private.psFlagFile(Self)) ;
             Procedure_Return
         Set private.psFlagFile to sFile
+
+        Get piWidth to iWidth
+        Get piHeight to iHeight
+
         Get BitmapFile sFile to sPath
         If (sPath <> "") ;
             Get ImageDataUrl sPath to sUrl
         Move '<div style="display:flex;align-items:center;justify-content:center;height:100%;min-height:60px">' to sHtml
         If (sUrl <> "") ;
             Append sHtml '<img src="' sUrl '" alt="' (FTHtmlEscape(sName)) '" title="' (FTHtmlEscape(sName)) ;
-                '" style="max-width:100%;max-height:72px;border:1px solid var(--dfr-line-card,#3a3936);border-radius:3px">'
+                '" style="width:min(100%,' (String(iWidth)) 'px);height:' (String(iHeight)) ;
+                'px;object-fit:contain;border:1px solid var(--dfr-line-card,#3a3936);border-radius:3px">'
         Else ;
             Append sHtml '<div style="width:72px;height:48px;border:1px dashed var(--dfr-line-card,#3a3936);border-radius:3px" title="No flag"></div>'
         Send ShowHtml (sHtml + "</div>")

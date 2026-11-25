@@ -136,9 +136,14 @@ Object oYearOverview is a cRDCView
         If (sWeekend = "") ;
             Move "none" to sWeekend
 
+
         Append sHtml (DivOpen("yo-sum"))
+        Append sHtml '<span class="yo-sum-label">Year at a glance</span>'
         Append sHtml '<span class="yo-pill"><b>' (String(iWorking)) "</b> working days in " (String(iYear)) " in " (FTHtmlEscape(CountryName(Self, sISO_Short))) "</span>"
-        Append sHtml '<span class="yo-pill hol"><b>' (String(iHolidays)) "</b> days off for official holidays on weekdays</span>"
+//        Append sHtml (DivOpen("yo-sum"))
+//        Append sHtml '<span class="yo-pill"><b>' (String(iWorking)) "</b> working days in " (String(iYear)) " in " (FTHtmlEscape(CountryName(Self, sISO_Short))) "</span>"
+//        Append sHtml '<span class="yo-pill hol"><b>' (String(iHolidays)) "</b> days off for official holidays on weekdays</span>"
+
         Append sHtml '<span class="yo-pill spc"><b>' (String(iSpecial)) "</b> special days that are worked</span>"
         Append sHtml '<span class="yo-pill wkd">Off every week: ' (FTHtmlEscape(sWeekend)) "</span>"
         Append sHtml "</div>"
@@ -173,14 +178,25 @@ Object oYearOverview is a cRDCView
 
     // The legend: a click on a colour shows only those days (yearoverview.js); Today is no filter.
     Function LegendHtml Returns String
-        String sHtml sTip
+        String sHtml sTip sToday
+        Date dToday
+        
+        Sysdate dToday
+        Move (FTIsoDate(dToday)) to sToday
+
         Move "Show only these days - click again for all" to sTip
         Move (CssLink("yearoverview") + DivOpen("yo-legend")) to sHtml
         Append sHtml '<span class="yo-lg" data-kind="ftcal-off" title="' sTip '"><i class="ftcal-d ftcal-off"></i>Day off: official holiday</span>'
         Append sHtml '<span class="yo-lg" data-kind="ftcal-wkd" title="' sTip '"><i class="ftcal-d ftcal-wkd"></i>Off every week</span>'
         Append sHtml '<span class="yo-lg" data-kind="ftcal-spc" title="' sTip '"><i class="ftcal-d ftcal-spc"></i>Special day</span>'
         Append sHtml '<span class="yo-lg" data-kind="ftcal-cls" title="' sTip '"><i class="ftcal-d ftcal-cls"></i>The company is closed</span>'
-        Append sHtml '<span><i class="ftcal-d ftcal-today"></i>Today</span>'
+
+        If (piYear(Self) = ThisYear(Self)) ;
+            Append sHtml '<span class="yo-btn yo-today" data-today="' sToday '" title="Show today">'
+        Else ;
+            Append sHtml '<span class="yo-btn yo-today" data-today="' sToday '" data-ServerOnClick="today" title="Back to this year, and show today">'
+        Append sHtml '<i class="ftcal-d ftcal-today"></i>Today</span>'
+//        Append sHtml '<span><i class="ftcal-d ftcal-today"></i>Today</span>'
         Function_Return (sHtml + "</div>")
     End_Function
 
@@ -226,6 +242,7 @@ Object oYearOverview is a cRDCView
                 // The whole year is built here - the wait cursor while it is (the page dims itself too).
                 Send Cursor_Wait of Cursor_Control
                 Send RefreshAll of oYearOverview
+                Send UpdateHtml of (oLegend_box(oYear_host(Self))) (LegendHtml(Self))
                 Send Cursor_Ready of Cursor_Control
             End_Procedure
         End_Object
@@ -343,7 +360,12 @@ Object oYearOverview is a cRDCView
             Set piColumnIndex to 0
             Set piColumnSpan to 109
             Set psHtml to '<div class="ftph-cards"><b>Legend</b></div>'
+
+            Procedure OnHtmlClick String sId String sParam
+                Send OnHtmlClick of (oTop_page(oYear_host(oYearOverview))) sId sParam
+            End_Procedure
         End_Object
+        
     End_Object
 
     // The bar with the year's sums (row 0).

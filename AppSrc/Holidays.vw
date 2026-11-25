@@ -370,7 +370,7 @@ Object oHolidays is a cRDCDbView
 
         // THE FLAG, as HTML in a small FlexTron host - drawn again on every find, clear and relate (ShowNationFlag).
         Object oFlag_host is a cFTGridHost
-            Set Size to 62 70
+            Set Size to 62 55
             Set Location to 40 430
             Set peAnchors to anTopRight
             Set piColumnCount to 1

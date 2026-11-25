@@ -12,6 +12,12 @@
     cursor: pointer; padding: 3px 10px; border-radius: 12px; user-select: none;
     border: 1px solid var(--dfr-btn-line); background: var(--dfr-btn-bg); color: var(--dfr-btn-ink);
 }
+.yo-sum-label {
+    flex-basis: 100%;
+    color: var(--dfr-ink-muted);
+    font-size: 11px;
+    font-weight: bold;
+}
 .yo-chip:hover, .yo-btn:hover { border-color: var(--dfr-btn-line-hover); background: var(--dfr-btn-bg-hover); }
 .yo-chip.on { border-color: var(--dfr-amber); background: var(--dfr-amber-bg); color: var(--dfr-ink-bright); font-weight: bold; }
 /* Go to Today: between the countries and the years (the bar spreads its three parts), filled amber */
@@ -19,15 +25,28 @@
 .yo-btn.yo-today:hover { background: var(--dfr-amber-bright, var(--dfr-amber)); border-color: var(--dfr-amber-bright, var(--dfr-amber)); }
 .yo-year { font-size: 18px; font-weight: bold; padding: 0 6px; color: var(--dfr-ink-bright); }
 
-/* ---- the year's sums ---- */
-.yo-sum { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0; }
+/* ---- the year's sums ---- */                                         
+.yo-sum { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 12px; }
+/*.yo-sum { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0; }*/
+.yo-pill {
+    padding: 3px 10px;
+    border-radius: 4px;
+    background: var(--dfr-bg-inset);
+    border: 1px solid var(--dfr-line-soft);
+    cursor: default;
+}
+.yo-pill b { color: var(--dfr-ink-bright); }
+.yo-pill.hol { border-color: var(--dfr-coral); }
+.yo-pill.spc { border-color: var(--dfr-violet-line); }
+.yo-pill.wkd { border-color: var(--dfr-line-mid); }
+/*
 .yo-pill { padding: 3px 10px; border-radius: 12px; background: var(--dfr-bg-pill); border: 1px solid var(--dfr-line-soft); }
 .yo-pill b { color: var(--dfr-ink-bright); }
 .yo-pill.hol { border-color: var(--dfr-coral); }
 .yo-pill.spc { border-color: var(--dfr-violet-line); }
 .yo-pill.wkd { border-color: var(--dfr-line-mid); }
 .yo-note { color: var(--dfr-ink-muted); margin: 4px 0 2px 0; }
-
+*/
 /* ---- the list of named days: it fills its box - the three rows of months - and scrolls; the day box stays at
    its top while it does ---- */
 .yo-list { height: 100%; box-sizing: border-box; overflow-y: auto; overflow-x: hidden;
@@ -58,9 +77,28 @@
 .yo-legend { display: flex; flex-wrap: wrap; gap: 14px; color: var(--dfr-ink-muted); font-size: 12px; }
 .yo-legend span { display: inline-flex; align-items: center; gap: 5px; }
 .yo-legend i.ftcal-d { display: inline-block; width: 14px; height: 14px; border-radius: 4px; }
+.yo-lg {
+    padding: 2px 6px;
+    border-radius: 10px;
+    border: 1px solid var(--dfr-btn-line);
+    background: var(--dfr-btn-bg);
+    color: var(--dfr-btn-ink);
+    cursor: pointer;
+}
+.yo-lg:hover {
+    border-color: var(--dfr-btn-line-hover);
+    background: var(--dfr-btn-bg-hover);
+}
+.yo-lg.on {
+    border-color: var(--dfr-amber);
+    background: var(--dfr-amber-bg);
+    color: var(--dfr-ink-bright);
+}
+/*
 .yo-lg { padding: 2px 6px; border-radius: 10px; border: 1px solid transparent; cursor: pointer; }
 .yo-lg:hover { border-color: var(--dfr-line-mid); }
 .yo-lg.on { border-color: var(--dfr-amber); color: var(--dfr-ink-bright); }
+*/
 body[data-only="ftcal-off"] td.ftcal-d:not(.ftcal-off), body[data-only="ftcal-wkd"] td.ftcal-d:not(.ftcal-wkd),
 body[data-only="ftcal-spc"] td.ftcal-d:not(.ftcal-spc), body[data-only="ftcal-cls"] td.ftcal-d:not(.ftcal-cls) { opacity: 0.25; }
 body[data-only="ftcal-off"] .yo-l tr:not(.ftcal-off), body[data-only="ftcal-wkd"] .yo-l tr:not(.ftcal-wkd),

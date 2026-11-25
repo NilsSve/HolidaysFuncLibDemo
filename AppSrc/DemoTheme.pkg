@@ -44,7 +44,7 @@ End_Function
 // CI_FTThemeSystem (Follow Windows).
 Function DemoThemeChoice Global Returns Integer
     Integer iMode
-    Get ReadInteger of ghoApplication CS_FTThemeSection CS_FTTheme CI_FTThemeLight to iMode
+    Get ReadInteger of ghoApplication CS_FTThemeSection CS_FTTheme CI_FTThemeDark to iMode
     If ((iMode < CI_FTThemeDark) or (iMode > CI_FTThemeSystem)) ;
         Move CI_FTThemeLight to iMode
     Function_Return iMode
