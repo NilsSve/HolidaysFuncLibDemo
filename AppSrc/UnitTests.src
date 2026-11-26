@@ -1,0 +1,32 @@
+// UnitTests.src - the unit-test program of the HolidaysFuncLibDemo workspace: the demo's own classes.
+// The holiday library's tests are in the library's repository (Library-HolidaysFuncLib, UnitTests.src there).
+//
+// It lives in the workspace's own AppSrc: DataFlex resolves a project name against the workspace's own
+// AppSrc path only, never a library's. New tests are added in oUnit_Tests.pkg - nothing here changes.
+//
+// Running it (64-bit, as the demo is - see UnitTests.cfg):
+//     UnitTests64.exe                    the test-runner window
+//     UnitTests64.exe -c                 unattended: results on the console, then exit 0 (all passed)
+//                                        or -1 (a test failed)
+//     UnitTests64.exe -c -o result.xml   the same, plus JUnit XML for a build server
+//     UnitTests64.exe -n                 open the window but do not run on startup
+
+Use DFAllEnt.pkg
+Use DFUnit.pkg
+Use cRDCApplication.pkg
+
+Object oApplication is a cRDCApplication
+    Set psCompany to "RDC Tools International"
+    Set psProduct to "Holidays Demo Unit Tests"
+End_Object
+
+Object oTestApplication is a cDFUnitTestApplication
+
+    // Every test fixture in this workspace hangs off this one file.
+    Use oUnit_Tests.pkg
+
+End_Object
+
+// Parses the command line, then either shows the test-runner window or runs the tests on the console and
+// exits with the appropriate code.
+Send AutoRun of ghoTestApplication

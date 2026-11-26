@@ -60,30 +60,20 @@ Class cCurrencyRates is a cJsonHttpTransfer
         Move (WinAPI_InternetSetOption(hRoot, 2, AddressOf(dwMs), SizeOfType(DWord))) to iVoid
     End_Procedure
 
-    // Fetch the rates now: True when the service returned them successfully.
-    Function FetchRates Returns Boolean
-        Handle hoJson hoRates
-        Boolean bOk
+    // The rates from the service's answer (open.er-api.com's JSON): True when it has them. Sets psRatesDate, and psError
+    // when there are none.
+    { Visibility=Private }
+    Function RatesFromJson Handle hoJson Returns Boolean
+        Handle hoRates
         String sResult sCode
         String[] asCodes
         Number[] anRates
         Number nRate
         Integer i iCount
 
-        Set private.pbFetched to True
-        Set psError to ""
-        Send LimitConnectWait
-        Get HttpGetJson (psHost(Self)) ("/v6/latest/" + psBase(Self)) (&bOk) to hoJson
-        If ((bOk = False) or (hoJson = 0)) Begin
-            Set psError to ("No answer from" * psHost(Self) + ".")
-            If (hoJson <> 0) ;
-                Send Destroy of hoJson
-            Function_Return False
-        End
         Get MemberValue of hoJson "result" to sResult
         If ((sResult <> "success") or (HasMember(hoJson, "rates") = False)) Begin
             Set psError to (psHost(Self) * "gave no rates (" + sResult + ").")
-            Send Destroy of hoJson
             Function_Return False
         End
         Set psRatesDate to (MemberValue(hoJson, "time_last_update_utc"))
@@ -96,10 +86,47 @@ Class cCurrencyRates is a cJsonHttpTransfer
             Move nRate to anRates[i]
         Loop
         Send Destroy of hoRates
-        Send Destroy of hoJson
         Set private.pasCodes to asCodes
         Set private.panRates to anRates
         Function_Return (iCount > 0)
+    End_Function
+
+    // Fetch the rates now: True when the service returned them successfully.
+    Function FetchRates Returns Boolean
+        Handle hoJson
+        Boolean bOk
+
+        Set private.pbFetched to True
+        Set psError to ""
+        Send LimitConnectWait
+        Get HttpGetJson (psHost(Self)) ("/v6/latest/" + psBase(Self)) (&bOk) to hoJson
+        If ((bOk = False) or (hoJson = 0)) Begin
+            Set psError to ("No answer from" * psHost(Self) + ".")
+            If (hoJson <> 0) ;
+                Send Destroy of hoJson
+            Function_Return False
+        End
+        Get RatesFromJson hoJson to bOk
+        Send Destroy of hoJson
+        Function_Return bOk
+    End_Function
+
+    // The rates from a JSON text in the service's form, in place of a call - a stored answer, or a test's. True when it
+    // has rates; the service is not asked until ForgetRates.
+    Function LoadRatesJson String sJson Returns Boolean
+        Handle hoJson
+        Boolean bOk
+
+        Set private.pbFetched to True
+        Set psError to ""
+        Get Create (RefClass(cJsonObject)) to hoJson
+        Get ParseString of hoJson sJson to bOk
+        If (bOk) ;
+            Get RatesFromJson hoJson to bOk
+        Else ;
+            Set psError to "The rates are not valid JSON."
+        Send Destroy of hoJson
+        Function_Return bOk
     End_Function
 
     // Forget the rates and the error: the next question fetches them again.

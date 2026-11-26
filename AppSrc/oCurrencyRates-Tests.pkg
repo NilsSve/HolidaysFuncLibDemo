@@ -1,0 +1,84 @@
+// oCurrencyRates-Tests.pkg - cCurrencyRates.pkg: today's rates, worked out for any pair. The tests give the class a
+// stored answer of the service (LoadRatesJson), so they never call open.er-api.com and need no internet.
+
+Use DFUnit\Fixturing\Fixture.pkg
+Use cCurrencyRates.pkg
+
+Object oCurrencyRates_Tests is a cTestFixture
+    Set psTestFixtureName to "cCurrencyRates - exchange rates from a stored answer"
+
+    Object oRates is a cCurrencyRates
+    End_Object
+
+    // An answer as open.er-api.com gives it, against the US dollar.
+    Function StoredAnswer Returns String
+        Function_Return '{"result":"success","time_last_update_utc":"Wed, 25 Nov 2026 00:02:31 +0000","base_code":"USD","rates":{"USD":1,"SEK":10.5,"EUR":0.84,"NOK":10.8}}'
+    End_Function
+
+    // A number as text with four decimals, whatever the machine's decimal sign.
+    Function Text4 Number nValue Returns String
+        Function_Return (String(Round(nValue * 10000)))
+    End_Function
+
+    Procedure Setup
+        Send ForgetRates of oRates
+    End_Procedure
+
+    { Published=True }
+    Procedure Test_A_Pair_Is_Worked_Out_Through_The_Dollar
+        Boolean bOk
+        Get LoadRatesJson of oRates (StoredAnswer(Self)) to bOk
+        Send AssertIAreEqual 1 (If(bOk, 1, 0)) "The stored answer has rates."
+        // 1 SEK in EUR = 0.84 / 10.5 = 0.08
+        Send AssertSAreEqual "800" (Text4(Self, Rate(oRates, "SEK", "EUR"))) "SEK to EUR."
+        // 1 EUR in SEK = 10.5 / 0.84 = 12.5
+        Send AssertSAreEqual "125000" (Text4(Self, Rate(oRates, "EUR", "SEK"))) "EUR to SEK, the other way."
+        Send AssertSAreEqual "10000" (Text4(Self, Rate(oRates, "usd", "USD"))) "A currency in itself is 1, and the case of the code does not matter."
+    End_Procedure
+
+    { Published=True }
+    Procedure Test_An_Unknown_Currency_Has_No_Rate
+        Boolean bOk
+        Get LoadRatesJson of oRates (StoredAnswer(Self)) to bOk
+        Send AssertSAreEqual "0" (Text4(Self, Rate(oRates, "SEK", "XYZ"))) "No rate for a code the answer does not have."
+        Send AssertSAreEqual "" (psError(oRates)) "Not an error of the service: there were rates."
+    End_Procedure
+
+    { Published=True }
+    Procedure Test_The_Day_Of_The_Rates
+        Boolean bOk
+        Get LoadRatesJson of oRates (StoredAnswer(Self)) to bOk
+        Send AssertSAreEqual "25 Nov 2026" (RatesDay(oRates)) "The day, without the weekday and the time."
+    End_Procedure
+
+    { Published=True }
+    Procedure Test_The_Currency_Codes_Are_Sorted
+        String[] asCodes asExpected
+        Boolean bOk
+        Get LoadRatesJson of oRates (StoredAnswer(Self)) to bOk
+        Get CurrencyCodes of oRates to asCodes
+        Move "EUR" to asExpected[0]
+        Move "NOK" to asExpected[1]
+        Move "SEK" to asExpected[2]
+        Move "USD" to asExpected[3]
+        Send AssertStrArrAreEqual asExpected asCodes "The answer's codes, sorted - for the currency list."
+    End_Procedure
+
+    { Published=True }
+    Procedure Test_An_Answer_Without_Rates
+        Boolean bOk
+        Get LoadRatesJson of oRates '{"result":"error","error-type":"unsupported-code"}' to bOk
+        Send AssertFalse bOk "The service said error."
+        Send AssertSAreEqual "0" (Text4(Self, Rate(oRates, "SEK", "EUR"))) "So no rates."
+        Send AssertIAreEqual 1 (If(psError(oRates) <> "", 1, 0)) "And psError says why."
+    End_Procedure
+
+    { Published=True }
+    Procedure Test_Text_That_Is_Not_JSON
+        Boolean bOk
+        Get LoadRatesJson of oRates "<html>Bad gateway</html>" to bOk
+        Send AssertFalse bOk "Not JSON."
+        Send AssertSAreEqual "The rates are not valid JSON." (psError(oRates)) "psError says so."
+    End_Procedure
+
+End_Object

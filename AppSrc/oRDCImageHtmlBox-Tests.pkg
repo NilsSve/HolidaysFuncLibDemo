@@ -1,0 +1,65 @@
+// oRDCImageHtmlBox-Tests.pkg - cRDCImageHtmlBox.pkg: finding a picture on the bitmap path and in its picture folders,
+// and the data: address it is shown by. The pictures are the demo's flags (Bitmaps\FlagsSVG, FlagsPNG, FlagsGIF).
+
+Use DFUnit\Fixturing\Fixture.pkg
+Use cFTGridHost.pkg                 // the host - Used before the web controls, as the views do
+Use cRDCImageHtmlBox.pkg
+
+Object oRDCImageHtmlBox_Tests is a cTestFixture
+    Set psTestFixtureName to "cRDCImageHtmlBox - the picture files"
+
+    // In a host, as in the views. The host is never shown, so no browser window is made; the tests ask the box only
+    // for its files.
+    Object oImage_host is a cFTGridHost
+        Object oImage is a cRDCImageHtmlBox
+        End_Object
+    End_Object
+
+    Function ImageBox Returns Handle
+        Function_Return (oImage(oImage_host(Self)))
+    End_Function
+
+    // The end of a path - its last folder and the file - so the test does not depend on where the workspace is.
+    Function PathEnd String sPath Returns String
+        String[] asParts
+        Integer iLast
+        Move (StrSplitToArray(sPath, "\")) to asParts
+        Move (SizeOfArray(asParts) - 1) to iLast
+        If (iLast < 1) ;
+            Function_Return sPath
+        Function_Return (asParts[iLast - 1] + "\" + asParts[iLast])
+    End_Function
+
+    { Published=True }
+    Procedure Test_A_Picture_Is_Found_In_Its_Folder
+        Send AssertSAreEqual "FlagsSVG\se.svg"     (PathEnd(Self, BitmapFile(ImageBox(Self), "se.svg")))     "An SVG flag, by the ISO code."
+        Send AssertSAreEqual "FlagsPNG\Sweden.png" (PathEnd(Self, BitmapFile(ImageBox(Self), "Sweden.png"))) "A PNG flag."
+        Send AssertSAreEqual "FlagsGIF\Sweden.gif" (PathEnd(Self, BitmapFile(ImageBox(Self), "Sweden.gif"))) "A GIF flag."
+    End_Procedure
+
+    { Published=True }
+    Procedure Test_A_Missing_Picture_Is_Not_Found
+        Send AssertSAreEqual "" (BitmapFile(ImageBox(Self), "no-such-flag.svg")) "No such file in any folder."
+        Send AssertSAreEqual "" (BitmapFile(ImageBox(Self), "  ")) "No file name."
+    End_Procedure
+
+    { Published=True }
+    Procedure Test_The_Picture_Folders_Are_A_Property
+        String sFolders
+        Get psImageFolders of (ImageBox(Self)) to sFolders
+        Set psImageFolders of (ImageBox(Self)) to "FlagsGIF"
+        Send AssertSAreEqual "" (BitmapFile(ImageBox(Self), "se.svg")) "Only the GIF folder is searched now."
+        Send AssertSAreEqual "FlagsGIF\Sweden.gif" (PathEnd(Self, BitmapFile(ImageBox(Self), "Sweden.gif"))) "And the GIF is still found."
+        Set psImageFolders of (ImageBox(Self)) to sFolders
+    End_Procedure
+
+    { Published=True }
+    Procedure Test_An_SVG_Is_Shown_As_A_Drawing
+        String sUrl
+        Get ImageDataUrl of (ImageBox(Self)) (BitmapFile(ImageBox(Self), "se.svg")) to sUrl
+        Send AssertSAreEqual "data:image/svg+xml;base64," (Left(sUrl, 26)) "An SVG's data: address names it a drawing."
+        Get ImageDataUrl of (ImageBox(Self)) (BitmapFile(ImageBox(Self), "Sweden.png")) to sUrl
+        Send AssertSAreEqual "data:image/png;base64," (Left(sUrl, 22)) "A PNG's names it a PNG."
+    End_Procedure
+
+End_Object
