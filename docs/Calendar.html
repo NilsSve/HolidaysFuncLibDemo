@@ -186,12 +186,13 @@
             <div class="main-content">
                 
 <p class="rvps2"><span class="rvts11">View &gt; Calendar</span><span class="rvts6"> is an example of a calendar of your own: a table of dates, where each date that is a holiday or special day has its name.</span></p>
+<p class="rvps2"><span class="rvts6">The library itself does not need these date records - it works out the holidays of any date when it is asked. The table is just one more example of using it.</span></p>
 <p class="rvps2"><img alt="Calendar Test" style="padding : 1px;" src="lib/HFL%20Calendar.png"></p>
 <p class="rvps2"><span class="rvts11">Generate Calendar Dates</span></p>
 <p class="rvps2"><span class="rvts6">In the lower part of the view, enter a </span><span class="rvts11">Start Date</span><span class="rvts6"> and an </span><span class="rvts11">End Date</span><span class="rvts6">, choose the country in </span><span class="rvts11">For Country</span><span class="rvts6">, and click </span><span class="rvts11">Generate Date Records</span><span class="rvts6">. The demo creates one record for each date in the </span><span class="rvts11">Holidays</span><span class="rvts6"> table, with the holiday name the library gives for that date and country, and whether it is an official holiday.</span></p>
 <p class="rvps2"><span class="rvts11">Delete All Date Records</span><span class="rvts6"> removes all of them again.</span></p>
 <p class="rvps2"><span class="rvts11">The calendar</span></p>
-<p class="rvps2"><span class="rvts6">The upper part shows the date records of the country in </span><span class="rvts11">ISO Short</span><span class="rvts6">:</span></p>
+<p class="rvps2"><span class="rvts6">The upper part shows the date records of the country in </span><span class="rvts11">ISO Short</span><span class="rvts6">, with the country's flag to the right:</span></p>
 <ul style="text-indent: 0px; padding: 0; margin: 0 0 0 48px; list-style-position: outside; list-style-type: disc;">
  <li class="rvps4 noindent"><span class="rvts11">Date</span><span class="rvts6">, </span><span class="rvts11">Holiday Name</span><span class="rvts6">, </span><span class="rvts11">Holiday</span><span class="rvts6"> (ticked for an official holiday), </span><span class="rvts11">Day of Week</span><span class="rvts6"> in your language, and </span><span class="rvts11">Week No</span><span class="rvts6">.</span></li>
  <li class="rvps4 noindent"><span class="rvts11">Only Show Holiday Dates</span><span class="rvts6"> hides the ordinary days.</span></li>
@@ -199,7 +200,7 @@
 </ul>
 <p class="rvps2"><span class="rvts11">Test Holiday Lookup List</span></p>
 <p class="rvps2"><span class="rvts6">This button opens a lookup list of the holidays of the country in a year, where you can select one or more holidays. It is an example of a general-purpose holiday lookup; in your own program, call:</span></p>
-<p class="rvps6"><span class="rvts16">Get PopupHolidayLookup sISO_Short to SelectedHolidays</span></p>
+<p class="rvps2"><span class="rvts6">Get PopupHolidayLookup sISO_Short to SelectedHolidays</span></p>
 <p class="rvps2"><span class="rvts6">where SelectedHolidays is a </span><span class="rvts11">tHoliday[]</span><span class="rvts6"> array. The lookup list is in </span><span class="rvts11">HolidaysLookup.dg</span><span class="rvts6"> in the library.</span></p>
 <p class="rvps2"><img alt="The holiday lookup list" style="padding : 1px;" src="lib/HFL%20Holiday%20lookup%20list.png"></p>
 

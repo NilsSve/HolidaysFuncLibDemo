@@ -186,12 +186,13 @@
             <div class="main-content">
                 
 <p class="rvps2"><span class="rvts6">Holiday names come from a country package: one object per country, based on the </span><span class="rvts11">cNationalHolidays</span><span class="rvts6"> class. The library has packages for the US, GB, NL, NO, ES and SE.</span></p>
+<p class="rvps2"><span class="rvts6">A package is a list of the country's holidays and special days. The days are looked up in the order they are listed, and the first one that falls on a date names it - so when two can fall on the same date, list the one that should win first (Christmas Eve before the 4th Advent Sunday, for example).</span></p>
 <p class="rvps2"><span class="rvts6">To add a country to your program:</span></p>
 <ol style="text-indent: 0px; padding: 0; margin: 0 0 0 48px; list-style-position: outside;">
  <li class="rvps4 noindent"><span class="rvts6">Copy a country package that is close to yours, such as </span><span class="rvts11">NorwegianHolidays.pkg</span><span class="rvts6"> from the library, into your own workspace's AppSrc folder, and give the copy your country's name.</span></li>
  <li class="rvps4 noindent"><span class="rvts6">Set </span><span class="rvts11">psISO_Short</span><span class="rvts6"> to your country's two-letter code, and </span><span class="rvts11">psLocaleName</span><span class="rvts6"> to the Windows name of its language, such as "de-DE": the month and day names in that language come from it.</span></li>
- <li class="rvps4 noindent"><span class="rvts6">Change the </span><span class="rvts11">HolidayName</span><span class="rvts6"> function: for each holiday or special day in your country, call the library's date function, compare the date, and return the name in your language. Set bOfficialHoliday to True for the days that are off by law.</span></li>
- <li class="rvps4 noindent"><span class="rvts6">Use your package in your program, after the library: </span><span class="rvts15">Use GermanHolidays.pkg</span><span class="rvts6"> after </span><span class="rvts15">Use oCalendarHolidays.pkg</span><span class="rvts6">. The object registers itself with the library as it is created.</span></li>
+ <li class="rvps4 noindent"><span class="rvts6">Change the list of days. </span><span class="rvts11">AddDay</span><span class="rvts6"> adds a day that one of the library's date functions gives; </span><span class="rvts11">AddFixedDay</span><span class="rvts6"> a day on the same month and day every year. The last argument is True for an official holiday - a day off by law - and False for a special day that is not.</span></li>
+ <li class="rvps4 noindent"><span class="rvts6">Use your package in your program, after the library: Use GermanHolidays.pkg after Use oCalendarHolidays.pkg. The object registers itself with the library as it is created.</span></li>
 </ol>
 <p class="rvps6"><span class="rvts16">Use cNationalHolidays.pkg</span></p>
 <p class="rvps6"><span class="rvts16"><br/></span></p>
@@ -199,14 +200,25 @@
 <p class="rvps6"><span class="rvts16">&nbsp; &nbsp; Set psISO_Short to "DE"</span></p>
 <p class="rvps6"><span class="rvts16">&nbsp; &nbsp; Set psLocaleName to "de-DE"</span></p>
 <p class="rvps6"><span class="rvts16"><br/></span></p>
-<p class="rvps6"><span class="rvts16">&nbsp; &nbsp; Function HolidayName Date dInDate Boolean ByRef bOfficialHoliday Returns String</span></p>
-<p class="rvps6"><span class="rvts16">&nbsp; &nbsp; &nbsp; &nbsp; ...</span></p>
-<p class="rvps6"><span class="rvts16">&nbsp; &nbsp; End_Function</span></p>
+<p class="rvps6"><span class="rvts16">&nbsp; &nbsp; Send AddDay "NewYearsDay" "Neujahr" True</span></p>
+<p class="rvps6"><span class="rvts16">&nbsp; &nbsp; Send AddDay "GoodFriday" "Karfreitag" True</span></p>
+<p class="rvps6"><span class="rvts16">&nbsp; &nbsp; Send AddDay "EasterMonday" "Ostermontag" True</span></p>
+<p class="rvps6"><span class="rvts16">&nbsp; &nbsp; Send AddFixedDay 10 3 "Tag der Deutschen Einheit" True</span></p>
+<p class="rvps6"><span class="rvts16">&nbsp; &nbsp; Send AddDay "ChristmasEve" "Heiligabend" False</span></p>
+<p class="rvps6"><span class="rvts16">&nbsp; &nbsp; Send AddDay "ChristmasDay" "1. Weihnachtstag" True</span></p>
 <p class="rvps6"><span class="rvts16">End_Object</span></p>
-<p class="rvps2"><span class="rvts6">That is all: every function of the library knows the country from then on, and so does the demo - Year Overview gets a button for it, and Working Days and Dates Functions Test list it.</span></p>
+<p class="rvps2"><span class="rvts6">That is all: every function of the library knows the country from then on - HolidayName, HolidayDetails, IsDateAHoliday and the working-day functions - and so does the demo: Year Overview gets a button for it, and Working Days and Dates Functions Test list it.</span></p>
+<p class="rvps2"><span class="rvts11">Days that need more</span></p>
+<p class="rvps2"><span class="rvts6">Right after a day is added, these change it:</span></p>
+<ul style="text-indent: 0px; padding: 0; margin: 0 0 0 48px; list-style-position: outside; list-style-type: disc;">
+ <li class="rvps4 noindent"><span class="rvts11">SetDayYears</span><span class="rvts6"> iFromYear iToYear - the day applies only in those years (0: no limit). A day that became an official holiday in 2005 is two lines: official from 2005, not official up to 2004.</span></li>
+ <li class="rvps4 noindent"><span class="rvts11">SetDayOffset</span><span class="rvts6"> iDays iWeekday - the day is some days before (-) or after (+) the function's or fixed date, such as Shrove Tuesday, the day before Ash Wednesday. When iWeekday is not 0, only when that date is that ISO weekday (6 Saturday, 7 Sunday) - for a holiday observed on the Friday before when it falls on a Saturday.</span></li>
+ <li class="rvps4 noindent"><span class="rvts11">SetDayAlsoOn</span><span class="rvts6"> sFunction - the day counts only when the date is also that function's date: the UK's "Christmas Day (UK)" is Christmas Day when the Christmas Day bank holiday falls on it.</span></li>
+</ul>
+<p class="rvps2"><span class="rvts6">See </span><span class="rvts11">SwedishHolidays.pkg</span><span class="rvts6">, </span><span class="rvts11">AmericanHolidays.pkg</span><span class="rvts6"> and </span><span class="rvts11">BrittishHolidays.pkg</span><span class="rvts6"> in the library for each of them in use. A misspelt function name is reported when the program starts.</span></p>
 <p class="rvps2"><span class="rvts6">The library's own country packages are Used in </span><span class="rvts11">CountryPackages.pkg</span><span class="rvts6">. Do not add yours there: in DataFlex 26 the library is an installed package, which is read-only. Edit CountryPackages.pkg only when you add the country to the library itself - see </span><span class="rvts11">Share it</span><span class="rvts6"> below.</span></p>
 <p class="rvps2"><span class="rvts11">Working days</span></p>
-<p class="rvps2"><span class="rvts6">The working-day functions ask the country package which days are official days off. By default these are the days HolidayName marks as official. When a country's days off differ by region, as in the UK, the package can override the </span><span class="rvts11">IsOfficialDayOff</span><span class="rvts6"> function; see </span><span class="rvts11">BrittishHolidays.pkg</span><span class="rvts6"> for an example.</span></p>
+<p class="rvps2"><span class="rvts6">The working-day functions ask the country package which days are official days off: by default, the days listed as official. When a country's days off differ by region, as in the UK, the package can give region bits instead of True or False (</span><span class="rvts11">Set pbRegionBits to True</span><span class="rvts6">) and override the </span><span class="rvts11">IsOfficialDayOff</span><span class="rvts6"> function; see </span><span class="rvts11">BrittishHolidays.pkg</span><span class="rvts6"> for an example.</span></p>
 <p class="rvps2"><span class="rvts11">Share it</span></p>
 <p class="rvps2"><span class="rvts6">When your package works, please send it in, so others can use it too: open an issue or a pull request at https://github.com/NilsSve/Library-HolidaysFuncLib. See </span><a class="rvts12" href="Feedback.html">Feedback</a><span class="rvts6">.</span></p>
 

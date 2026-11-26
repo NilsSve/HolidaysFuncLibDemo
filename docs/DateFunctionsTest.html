@@ -185,12 +185,17 @@
 
             <div class="main-content">
                 
-<p class="rvps2"><span class="rvts11">View &gt; Date Functions Test</span><span class="rvts6"> tries out every holiday date function of the library. The view works in three steps, top to bottom.</span></p>
+<p class="rvps2"><span class="rvts11">View &gt; Date Functions Test</span><span class="rvts6"> tries out every holiday date function of the library. The view works in three steps, top to bottom, and there is no button to press: the answer changes as soon as you change the function, the year or the country.</span></p>
 <p class="rvps2"><img alt="Dates Functions Test" style="padding : 1px;" src="lib/HFL%20Date%20Functions%20Test.png"></p>
 <p class="rvps2"><span class="rvts11">1. Pick a function</span></p>
-<p class="rvps2"><span class="rvts6">The grid lists the holiday functions, such as EasterDay, Thanksgiving or ChristmasDayBH, and what each one asks for: a year, or a year and a country. Type in the search field above the grid to find a function by part of its name or description, such as midsummer or bank holiday.</span></p>
+<p class="rvps2"><span class="rvts6">The list shows the holiday functions, such as EasterDay, Thanksgiving or ChristmasDayBH, and what each one asks for: a year, or a year and a country.</span></p>
+<ul style="text-indent: 0px; padding: 0; margin: 0 0 0 48px; list-style-position: outside; list-style-type: disc;">
+ <li class="rvps4 noindent"><span class="rvts6">Type in the search field above the list to find a function by part of its name or description, such as midsummer or bank holiday. The footer shows how many functions match.</span></li>
+ <li class="rvps4 noindent"><span class="rvts6">Rest the mouse on a row to read the function's description in a tooltip.</span></li>
+ <li class="rvps4 noindent"><span class="rvts6">Click a column header to sort the list by that column. Then type in the list: a search box opens for that column, and Enter goes to the first match.</span></li>
+</ul>
 <p class="rvps2"><span class="rvts11">2. Year and country</span></p>
-<p class="rvps2"><span class="rvts6">The function you picked is shown with a short description. Enter the </span><span class="rvts11">Year</span><span class="rvts6"> (1753 to 2500) and, for functions that need one, the </span><span class="rvts11">Country</span><span class="rvts6"> as a two-letter ISO code, such as US, GB or SE. The country's full name is shown next to the code.</span></p>
+<p class="rvps2"><span class="rvts6">The function you picked is shown with its description. Enter the </span><span class="rvts11">Year</span><span class="rvts6"> (1753 to 2500) and the </span><span class="rvts11">Country</span><span class="rvts6"> as a two-letter ISO code, such as US, GB or SE. Next to the code the view tells you whether the library has a holiday package for that country - without one, the function still gives the date, but there is no holiday name.</span></p>
 <p class="rvps2"><span class="rvts6">Some holidays need the country because they fall on different dates in different countries; Thanksgiving, for example, is a Thursday in November in the US and a Monday in October in Canada.</span></p>
 <p class="rvps2"><span class="rvts11">3. The answer</span></p>
 <ul style="text-indent: 0px; padding: 0; margin: 0 0 0 48px; list-style-position: outside; list-style-type: disc;">
@@ -198,11 +203,12 @@
  <li class="rvps4 noindent"><span class="rvts6">The holiday's name in that country's language package, and whether it is an official holiday.</span></li>
  <li class="rvps4 noindent"><span class="rvts6">The ISO week number, the number of days in the month, and the date in your computer's date format.</span></li>
  <li class="rvps4 noindent"><span class="rvts11">The call</span><span class="rvts6">: the line of DataFlex code that gives this answer, ready to copy into your own program.</span></li>
- <li class="rvps4 noindent"><span class="rvts6">The same function for the years around the one you entered, so you can see how the date moves.</span></li>
+ <li class="rvps4 noindent"><span class="rvts6">The same function for the two years before and after, so you can see how the date moves. Each year is a link: </span><span class="rvts11">click a year to go to it</span><span class="rvts6">, and the whole answer follows.</span></li>
 </ul>
 <p class="rvps2"><span class="rvts6">Dates are shown the way your computer's settings write them.</span></p>
 <p class="rvps2"><span class="rvts11">Is this date a holiday?</span></p>
-<p class="rvps2"><span class="rvts6">The last part goes the other way: enter a </span><span class="rvts11">Date</span><span class="rvts6"> and a </span><span class="rvts11">Country</span><span class="rvts6">, and </span><span class="rvts11">IsDateAHoliday</span><span class="rvts6"> tells you the holiday on that date and the function that finds it.</span></p>
+<p class="rvps2"><span class="rvts6">The last part goes the other way: enter a </span><span class="rvts11">Date</span><span class="rvts6"> and a </span><span class="rvts11">Country</span><span class="rvts6">, and </span><span class="rvts11">IsDateAHoliday</span><span class="rvts6"> tells you the holiday on that date and the function that finds it. The date starts at today, and the answer is shown at once.</span></p>
+<p class="rvps2"><span class="rvts6">Both country fields start with your computer's country. When you change one of them and the other is empty, the other takes the same country.</span></p>
 
             </div>
             

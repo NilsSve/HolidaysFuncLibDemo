@@ -191,11 +191,26 @@
 <p class="rvps6"><span class="rvts16">Get HolidayName of ghoCalendarHolidays dDate "US" (&amp;bOfficial) to sName</span></p>
 <p class="rvps2"><span class="rvts6">The third parameter is passed ByRef. It is set to True when the day is an official holiday - a day off by law - and False when it is a special day that is not a day off, such as Mother's Day or Christmas Eve in many countries.</span></p>
 <p class="rvps2"><span class="rvts6">Holiday names exist for the countries that have a country package: today US, GB, NL, NO, ES and SE. See </span><a class="rvts12" href="Addingacountry.html">Adding a country</a><span class="rvts6"> to add another.</span></p>
+<p class="rvps2"><span class="rvts11">HolidayDetails - everything about the day</span></p>
+<p class="rvps2"><span class="rvts11">HolidayDetails</span><span class="rvts6"> returns the whole day as one </span><span class="rvts11">tHoliday</span><span class="rvts6"> struct:</span></p>
+<p class="rvps6"><span class="rvts16">tHoliday Holiday</span></p>
+<p class="rvps6"><span class="rvts16">Get HolidayDetails of ghoCalendarHolidays dDate "GB" to Holiday</span></p>
+<ul style="text-indent: 0px; padding: 0; margin: 0 0 0 48px; list-style-position: outside; list-style-type: disc;">
+ <li class="rvps4 noindent"><span class="rvts11">sHolidayName</span><span class="rvts6"> - the name in the country's language; empty when nothing falls on the date.</span></li>
+ <li class="rvps4 noindent"><span class="rvts11">bNationalHoliday</span><span class="rvts6"> - True for an official holiday, a day off by law.</span></li>
+ <li class="rvps4 noindent"><span class="rvts11">sFunction</span><span class="rvts6"> - the library function that gives the day, such as EasterDay or "AshWednesday - 1 day"; empty for a day on a fixed date in the country's package, such as 8 March.</span></li>
+ <li class="rvps4 noindent"><span class="rvts11">sISO_Short</span><span class="rvts6"> and </span><span class="rvts11">dDate</span><span class="rvts6"> - the country and the date you asked about.</span></li>
+ <li class="rvps4 noindent"><span class="rvts11">iRegions</span><span class="rvts6"> - in the UK only: the regions where the day is a bank holiday, as the CI_UKRegion... bits (8 is the whole UK). 0 for other countries.</span></li>
+</ul>
+<p class="rvps2"><span class="rvts6">When more about a day is needed later, it is added to the struct, and calls that already use HolidayDetails keep working.</span></p>
 <p class="rvps2"><span class="rvts11">IsDateAHoliday</span></p>
-<p class="rvps2"><span class="rvts11">IsDateAHoliday</span><span class="rvts6"> answers the question for any date and country, and also tells you which holiday function gave the answer:</span></p>
+<p class="rvps2"><span class="rvts11">IsDateAHoliday</span><span class="rvts6"> asks the same question with ByRef parameters, and returns True when the country's package names the date:</span></p>
 <p class="rvps6"><span class="rvts16">Boolean bFound bIsHoliday</span></p>
 <p class="rvps6"><span class="rvts16">String sName sFunction</span></p>
 <p class="rvps6"><span class="rvts16">Get IsDateAHoliday of ghoCalendarHolidays dDate "SE" (&amp;bIsHoliday) (&amp;sName) (&amp;sFunction) to bFound</span></p>
+<p class="rvps2"><span class="rvts6">The country decides. IsDateAHoliday returns False when the country has no package, or when its package does not name the date - even when one of the library's functions falls on it: Thanksgiving is a US holiday, so for Sweden on Thanksgiving Day the answer is False.</span></p>
+<p class="rvps2"><span class="rvts11">The country code</span></p>
+<p class="rvps2"><span class="rvts6">Every holiday function can be given the country code. A function whose date does not depend on the country simply ignores it, so you can always pass it and every call can look the same.</span></p>
 
             </div>
             
