@@ -14,7 +14,7 @@ Use cFTWebHtmlBox.pkg
 Use RgbColor.pkg               // GetSysColor - a system colour's real value
 Use FTThemeColors.pkg          // FTColorHex
 
-/* An HTML box on a native view - the flag (cFlagHtmlBox), a note. ShowHtml shows a piece of HTML on the colour of
+/* An HTML box on a native view - a picture (cRDCImageHtmlBox), a note. ShowHtml shows a piece of HTML on the colour of
    the native window the host sits in (Nils 2026-11-23). A view sends it once the view has its colours - from its
    End_Construct_Object after DemoDarkView, or later. */
 Class cViewHtmlBox is a cFTWebHtmlBox

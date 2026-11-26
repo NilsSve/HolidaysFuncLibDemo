@@ -2,7 +2,7 @@
 
 The `oCalendarHolidays.pkg` contains essential functions for managing holiday dates. For detailed information on how this function library operates, please refer to the documentation located at the top of `cCalendarHolidays.pkg`.
 
-To see the 'Holiday Functions Library' in action, run the sample program `HolidaysFuncLibTest`. In the 'Dates Functions Test' tab, you will find a grid displaying built-in 'Holidays and Other Important Dates.' Enter a year in the lower section and click the 'Call Function' button to find out the date of a holiday or special day. You can also enter an ISO-2 character country code in the 'Enter Value 2:' field to view the name of the holiday or special day at the bottom of the screen. Please note that a limited number of 'National Holiday' packages are currently available, which are listed in the grid in the lower-left corner.
+To see the 'Holiday Functions Library' in action, run the sample program `HolidaysFuncLibTest`. The 'Dates Functions Test' tab works in three steps. Pick one of the library's date functions from the list on the left - type in the search box above it to find one by name or description, and rest the mouse on a row to read what the function does. Then set the year and a two-letter ISO country code, and the answer shows at once: the date, the holiday's name in that country's language package, the week number, and the call to write in your own code. A strip below shows the same function for the two years before and after - click a year to go to it. At the bottom, 'Is this date a holiday?' asks the other way round: a date and a country give the holiday and the function that finds it. Only a limited number of national holiday packages are available; the country field says whether the country you chose has one.
 
 If your country is not included in the grid, creating a new one is quite simple! Just refer to the examples in `CountryPackages.pkg` for guidance on how to do this.
 
@@ -18,7 +18,7 @@ In addition to the `oCalendarHolidays` package, there are specific 'National Hol
 
 You can find a collection of country-specific libraries in `CountryPackages.pkg`. Use these files as templates to develop your own holiday packages for specific countries.
 
-The workspace also includes a database and a view displaying facts about nations around the world, which is independent of the calendar holiday packages mentioned above.
+The workspace also includes a database and a view displaying facts about nations around the world, which is independent of the calendar holiday packages mentioned above. The 'Nations Data' tab shows each nation's flag - sharp SVG drawings from the [flag-icons](https://github.com/lipis/flag-icons) set (MIT), or the older PNG and GIF pictures - and converts an amount of its currency to another one, and back, at today's rates from [ExchangeRate-API](https://www.exchangerate-api.com)'s free open access (`cCurrencyRates.pkg`: no key needed, one call per run). In the lookup lists (the '...' buttons, or F4), a click on a column header sorts by that column, and typing opens a search on it - "SE" and Enter go to Sweden.
 
 ![The Year Overview of the United States in 2026, in the dark theme, with Independence Day clicked](Bitmaps/HolidaysFuncLibTest.png)
 

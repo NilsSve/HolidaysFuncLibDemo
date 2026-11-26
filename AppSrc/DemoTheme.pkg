@@ -155,6 +155,17 @@ Procedure DemoDarkDisabled for DfBaseForm
     End
 End_Procedure
 
+/* A COMBO BOX KEEPS WINDOWS' LIGHT COLOURS (Nils 2026-11-26, the Nations view's currency list). Its drop-down list is a
+   window of its own that Windows paints: on the theme's dark ground it kept the system's black text for every item
+   but the selected one - hardly readable. DataFlex has no colour for the list - the runtime answers Windows'
+   WM_CTLCOLORLISTBOX itself - and Windows' own dark combo style ("DarkMode_CFD", tried) leaves the list's text black
+   too. So a combo is light in the dark theme, field and list: a little out of place, but every item readable. The
+   choice RDCFlexTron's cFTComboForm made for Program Setup. Sent after FTColorPanel has coloured it, so this wins. */
+Procedure DemoDarkDisabled for DFBaseComboBox
+    Set Color     to clWindow
+    Set TextColor to clWindowText
+End_Procedure
+
 Procedure DemoDarkDisabled for DfBaseTextEdit
     If (Enabled_State(Self) = False) Begin
         Set Enabled_State   to True
@@ -173,3 +184,4 @@ Procedure DemoDarkView Global Handle hoView
         Broadcast Recursive Send DemoDarkDisabled of hoView
     End
 End_Procedure
+

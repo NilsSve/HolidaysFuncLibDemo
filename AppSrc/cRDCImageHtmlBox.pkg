@@ -1,51 +1,54 @@
 ﻿//****************************************************************************
 // $Module type: Class Package
-// $Module name: cFlagHtmlBox.pkg
+// $Module name: cRDCImageHtmlBox.pkg
 // $Author     : Nils Svedmyr, RDC Tools International
 // Created     : 2026-11-23
 //
-// Description : A nation's flag, shown as HTML in a FlexTron box - in place of the Graphics Library's
-//               cDbImageContainer, which the demo used until then (Is$GraphicsLibrary, off by default).
+// Description : A picture - .svg, .png, .gif or .jpg - shown as HTML in a FlexTron box, on the view's colour. The
+//               demo shows the nations' flags with it, in place of the Graphics Library's cDbImageContainer
+//               (Is$GraphicsLibrary, off by default). Named cFlagHtmlBox until 2026-11-26.
 //
 // This code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
 // without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 //****************************************************************************
-Use cViewHtmlBox.pkg             // the view's colour around the flag
+Use cViewHtmlBox.pkg             // the view's colour around the picture
 Use FTMarkupBuilders.pkg       // FTHtmlEscape
 Use cCharTranslate.pkg         // Base64EncodeToStr
 Use seq_chnl.pkg
 
-/* THE FLAG. The Nations table names each nation's flag file in Nations.Flag ("Sweden.gif"), and the files are in
-   folders of their own under the workspace's Bitmaps folder - FlagsPNG and FlagsGIF (psFlagFolders). The
-   box shows the file as an <img> whose address is the file itself, base64 encoded (a data: address),
-   so the files stay where they are - nothing is copied under AppHtml, which is all a FlexTron page can reach by a
-   path. The way RDCFlexTron's About dialog shows its picture. A view sends ShowFlag whenever its record
-   changes: from the Refresh of a data entry object on the Nations table, which runs on every find, clear and relate. */
+/* THE PICTURE. A file on the workspace's bitmap path, or in its picture folders (psImageFolders), shown as an <img>
+   whose address is the file itself, base64 encoded (a data: address) - so the files stay where they are: nothing is
+   copied under AppHtml, which is all a FlexTron page can reach by a path. The way RDCFlexTron's About dialog shows
+   its picture. An .svg is a drawing, sharp at any size.
+   THE DEMO'S FLAGS: the Nations table names each nation's flag file in Nations.Flag ("Sweden.gif"); the files are in
+   Bitmaps\FlagsSVG, FlagsPNG and FlagsGIF. A view sends ShowImage (or ShowCountryFlag) whenever its record changes:
+   from the Refresh of a data entry object on the Nations table, which runs on every find, clear and relate. */
 { OverrideProperty=psHtml InitialValue="<div class='ftph-cards'><b>Flag</b></div>" }
-Class cFlagHtmlBox is a cViewHtmlBox
+Class cRDCImageHtmlBox is a cViewHtmlBox
 
     Procedure Construct_Object
         Forward Send Construct_Object
         Set psHtml to "<div class='ftph-cards'><b>Flag</b></div>"
 
-        // The flag's size in pixels; a flag keeps its shape inside it (ShowFlag).
+        // The picture's size in pixels; a picture keeps its shape inside it (ShowImage).
         Property Integer piHeight 72
         Property Integer piWidth 90
 
-        // THE FLAG FOLDERS: sub folders of the bitmap path's folders, separated by ";", searched in this order after
+        // THE PICTURE FOLDERS: sub folders of the bitmap path's folders, separated by ";", searched in this order after
         // the folders themselves. Not on the bitmap path itself (Nils 2026-11-25): the workspace's .sws holds ONE
         // bitmap folder - df-cli installs the libraries' icons into it, and with several it installs them into a
-        // folder named after the whole list - and every other image the program looks up would search the flags too.
-        // FlagsSVG holds the flag-icons set (MIT, LICENSE-flag-icons.txt), named by the ISO code: se.svg.
-        Property String psFlagFolders "FlagsSVG;FlagsPNG;FlagsGIF"
+        // folder named after the whole list - and every other image the program looks up would search these too.
+        // The default is the demo's flags: FlagsSVG holds the flag-icons set (MIT, LICENSE-flag-icons.txt), named by
+        // the ISO code: se.svg.
+        Property String psImageFolders "FlagsSVG;FlagsPNG;FlagsGIF"
 
-        // The file and size shown, so that the same flag is not read and sent again on every refresh.
+        // The file and size shown, so that the same picture is not read and sent again on every refresh.
         { Visibility=Private }
-        Property String private.psFlagFile "-"
+        Property String private.psImageKey "-"
     End_Procedure
 
-    // The full path of a flag file, or "": in each folder of the workspace's bitmap path, then in its flag folders
-    // (psFlagFolders) - Bitmaps\Sweden.png, then Bitmaps\FlagsPNG\Sweden.png, then Bitmaps\FlagsGIF\Sweden.png.
+    // The full path of a picture file, or "": in each folder of the workspace's bitmap path, then in its picture folders
+    // (psImageFolders) - Bitmaps\Sweden.png, then Bitmaps\FlagsPNG\Sweden.png, then Bitmaps\FlagsGIF\Sweden.png.
     Function BitmapFile String sFile Returns String
         String[] asFolders asSubs
         String sFolder sPath
@@ -57,7 +60,7 @@ Class cFlagHtmlBox is a cViewHtmlBox
         Move (StrSplitToArray(psBitmapPath(phoWorkspace(ghoApplication)), ";")) to asFolders
         // "" first: the folder itself
         Move "" to asSubs[0]
-        Move (AppendArray(asSubs, StrSplitToArray(psFlagFolders(Self), ";"))) to asSubs
+        Move (AppendArray(asSubs, StrSplitToArray(psImageFolders(Self), ";"))) to asSubs
         For iFolder from 0 to (SizeOfArray(asFolders) - 1)
             Move (Trim(asFolders[iFolder])) to sFolder
             If (sFolder <> "") Begin
@@ -107,10 +110,10 @@ Class cFlagHtmlBox is a cViewHtmlBox
         Function_Return ("data:" + sMime + ";base64," + sData)
     End_Function
 
-    // Show a nation's flag: sFile as Nations.Flag names it, sName for its tooltip. No file, or none found: an empty
-    // frame. The flag, and the empty frame, are piWidth x piHeight pixels (narrower when the box is): set them in
-    // the object, or later - the next flag shown takes the new size.
-    Procedure ShowFlag String sFile String sName
+    // Show a picture: sFile, a file name ("Sweden.gif", "se.svg"), sName for its tooltip. No file, or none found: an
+    // empty frame. The picture, and the empty frame, are piWidth x piHeight pixels (narrower when the box is): set
+    // them in the object, or later - the next picture shown takes the new size.
+    Procedure ShowImage String sFile String sName
         String sPath sUrl sHtml sSize sKey
         Integer iWidth iHeight
 
@@ -118,12 +121,12 @@ Class cFlagHtmlBox is a cViewHtmlBox
         Get piHeight to iHeight
         Move ("width:min(100%," + String(iWidth) + "px);height:" + String(iHeight) + "px;") to sSize
 
-        // the same flag at the same size is not read and sent again
+        // the same picture at the same size is not read and sent again
         Move (Trim(sFile)) to sFile
         Move (sFile + "|" + String(iWidth) + "x" + String(iHeight)) to sKey
-        If (sKey = private.psFlagFile(Self)) ;
+        If (sKey = private.psImageKey(Self)) ;
             Procedure_Return
-        Set private.psFlagFile to sKey
+        Set private.psImageKey to sKey
 
         Get BitmapFile sFile to sPath
         If (sPath <> "") ;
@@ -133,7 +136,7 @@ Class cFlagHtmlBox is a cViewHtmlBox
             Append sHtml '<img src="' sUrl '" alt="' (FTHtmlEscape(sName)) '" title="' (FTHtmlEscape(sName)) ;
                 '" style="' sSize 'object-fit:contain;border:1px solid var(--dfr-line-card,#3a3936);border-radius:3px">'
         Else ;
-            Append sHtml '<div style="' sSize 'box-sizing:border-box;border:1px dashed var(--dfr-line-card,#3a3936);border-radius:3px" title="No flag"></div>'
+            Append sHtml '<div style="' sSize 'box-sizing:border-box;border:1px dashed var(--dfr-line-card,#3a3936);border-radius:3px" title="No picture"></div>'
         Send ShowHtml (sHtml + "</div>")
     End_Procedure
 
@@ -147,7 +150,7 @@ Class cFlagHtmlBox is a cViewHtmlBox
             If (BitmapFile(Self, sSvg) <> "") ;
                 Move sSvg to sFile
         End
-        Send ShowFlag sFile sName
+        Send ShowImage sFile sName
     End_Procedure
 
 End_Class

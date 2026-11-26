@@ -30,6 +30,8 @@ Class cCurrencyRates is a cJsonHttpTransfer
         // The service and the path of the rates against psBase.
         Property String psHost "open.er-api.com"
         Property String psBase "USD"
+        // How long to wait for the service to answer a connection, in milliseconds (LimitConnectWait).
+        Property Integer piConnectTimeout 5000
         // Why the last call gave no rates, for the user; "" when it did.
         Property String psError ""
         // The day the rates are from, as the service writes it: "Wed, 25 Nov 2026 00:02:31 +0000".
@@ -41,6 +43,21 @@ Class cCurrencyRates is a cJsonHttpTransfer
         Property String[] private.pasCodes
         { Visibility=Private }
         Property Number[] private.panRates
+    End_Procedure
+
+    // How long to wait for the service to answer a connection, in milliseconds. WinInet's own wait is about 21 s when
+    // the network is there but the address does not answer (measured 2026-11-26) - the view would freeze that long.
+    // With no network at all, or no such name, the call fails at once either way.
+    Procedure LimitConnectWait
+        Handle hRoot
+        DWord dwMs
+        Integer iVoid
+        Get RootHandle to hRoot
+        If (hRoot = 0) ;
+            Procedure_Return
+        Get piConnectTimeout to dwMs
+        // INTERNET_OPTION_CONNECT_TIMEOUT = 2
+        Move (WinAPI_InternetSetOption(hRoot, 2, AddressOf(dwMs), SizeOfType(DWord))) to iVoid
     End_Procedure
 
     // Fetch the rates now: True when the service returned them successfully.
@@ -55,6 +72,7 @@ Class cCurrencyRates is a cJsonHttpTransfer
 
         Set private.pbFetched to True
         Set psError to ""
+        Send LimitConnectWait
         Get HttpGetJson (psHost(Self)) ("/v6/latest/" + psBase(Self)) (&bOk) to hoJson
         If ((bOk = False) or (hoJson = 0)) Begin
             Set psError to ("No answer from" * psHost(Self) + ".")
@@ -108,6 +126,16 @@ Class cCurrencyRates is a cJsonHttpTransfer
         If (iPos = -1) ;
             Function_Return 0
         Function_Return anRates[iPos]
+    End_Function
+
+    // The currency codes the service has rates for, sorted ("AED" ... "ZWL"); empty when it gave none.
+    Function CurrencyCodes Returns String[]
+        String[] asCodes
+        Boolean bOk
+        If (private.pbFetched(Self) = False) ;
+            Get FetchRates to bOk
+        Get private.pasCodes to asCodes
+        Function_Return (SortArray(asCodes))
     End_Function
 
     // How much one sFrom is in sTo ("SEK", "EUR"), or 0 when either is not known - psError says why, if the service

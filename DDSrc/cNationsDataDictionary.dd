@@ -30,7 +30,6 @@ Class cNationsDataDictionary is a DataDictionary
         Set Field_Option Field Nations.ISO_Short DD_CAPSLOCK to True
         Set Field_Option Field Nations.ISO_Short DD_AUTOFIND to True
         Set Field_Prompt_Object Field Nations.ISO_Short to Nations_sl
-        Set Field_Entry_msg Field Nations.ISO_Short to Default_ISO_Short
         Set Status_Help Field Nations.ISO_Short to "The ISO (International Organization for Standardization) 2-character country code"
 
         Set Field_Prompt_Object Field Nations.Official_Short to Nations_sl
@@ -109,22 +108,11 @@ Class cNationsDataDictionary is a DataDictionary
         Send Find EQ 1
     End_Procedure
 
-    // Display the record for the users country code as the default:
-    Procedure Default_ISO_Short Integer iField String sISO_Long
-        Integer iChanged
-
-        Get Field_Changed_State iField to iChanged
-        If (iChanged = 0 and sISO_Long = "") Begin
-            Get WindowsLocaleValue of ghoCalendarHolidays LOCALE_SABBREVCTRYNAME 3 to sISO_Long
-            Move sISO_Long to Nations.ISO_Long
-            Find EQ Nations.ISO_Long
-            // If not found, clear and display official short as the default value.
-            If (Found = False) Begin
-                Send Request_Clear
-                Set Field_Default_Value iField to sISO_Long
-            End
-        End
-    End_Procedure
+    // No entry message on Nations.ISO_Short any more (2026-11-26). Default_ISO_Short found this computer's country
+    // RAW whenever the empty field was entered - the DD was not told, so nothing showed, but the buffer held another
+    // record than the DD's - and, when the country was missing, cleared the whole record and put the three-letter
+    // code into the two-letter field. The views find this computer's country at startup instead (FindByISO_Short),
+    // and Clear/Add leaves the field empty for a new nation.
 
 End_Class
 

@@ -454,8 +454,6 @@ Object oDateFunctionsTest is a cRDCDbView
             Set Location to 40 110
             Set Enabled_State to False
             Set peAnchors to anTopLeftRight
-            Set Label to " -- "
-            Set Label_Justification_Mode to JMode_Right
         End_Object
 
         Object oYear_sf is a cRDCSpinForm

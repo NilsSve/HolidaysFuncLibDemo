@@ -24,7 +24,7 @@ Use cRDCForm.pkg
 Use cRDCButton.pkg
 // The nation's flag as HTML (RDCFlexTron) - until 2026-11-23 a Graphics Library image, under Is$GraphicsLibrary.
 Use cFTGridHost.pkg                 // the host - Used before the web controls
-Use cFlagHtmlBox.pkg                // cFlagHtmlBox: the flag
+Use cRDCImageHtmlBox.pkg            // cRDCImageHtmlBox: the flag
 Use cViewHtmlBox.pkg                // the note under the flag
 
 // The flag is drawn again whenever the record changes (the ISO code form's Refresh), below the objects it reaches.
@@ -367,7 +367,7 @@ Object oHolidays is a cRDCDbView
             Set psColumnWidths to "0/1fr"
             Set psRowHeights to "0/1fr"
 
-            Object oFlag_box is a cFlagHtmlBox
+            Object oFlag_box is a cRDCImageHtmlBox
                 Set piRowIndex to 0
                 Set piColumnSpan to 1
                 Set pbFillHeight to True

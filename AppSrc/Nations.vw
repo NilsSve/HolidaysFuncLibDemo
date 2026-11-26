@@ -10,7 +10,7 @@ Use DemoTheme.pkg                   // the theme: DemoDarkView
 Use cFTRadioGroup.pkg               // cFTGroupCaption: a group box's caption as a TextBox (RDCFlexTron)
 // The nation's flag as HTML (RDCFlexTron) - until 2026-11-23 a Graphics Library image, under Is$GraphicsLibrary.
 Use cFTGridHost.pkg                 // the host - Used before the web controls
-Use cFlagHtmlBox.pkg                // cFlagHtmlBox: the flag
+Use cRDCImageHtmlBox.pkg            // cRDCImageHtmlBox: the flag
 
 // The flag is drawn again whenever the record changes (the ISO code form's Refresh), below the objects it reaches.
 Register_Procedure ShowNationFlag
@@ -65,7 +65,7 @@ Object oNations is a cRDCDbView
 
         // The caption, readable in both themes: a group box draws its own in the Windows colours.
         Object oNation_grp_cap is a cFTGroupCaption
-            Set Label to "National Characterestics"
+            Set Label to "National Characteristics"
         End_Object
 
         Object oNationsISO_Short is a cRDCDbForm
@@ -197,13 +197,8 @@ Object oNations is a cRDCDbView
             Set Size to 13 144
             Set Label to "Currency Text"
             Set peAnchors to anTopLeftRight
-
-            Procedure Exiting Handle hoDestination Returns Integer
-                Integer iRetVal
-                Forward Get msg_Exiting hoDestination to iRetVal
-                Send Request_Save
-                Procedure_Return iRetVal
-            End_Procedure
+            // No save when the field is left (2026-11-26): it saved whatever the view held whenever the focus went
+            // elsewhere - another view too - and so wrote an emptied continent unseen. Save (Ctrl+S) saves.
         End_Object
 
         Object oContinen_Name is a cRDCDbForm
@@ -230,7 +225,7 @@ Object oNations is a cRDCDbView
         // THE EXCHANGE RATE: an amount of the nation's currency in another one, at today's rate from open.er-api.com.
         // The rates are fetched once, then every nation and currency is worked out from them (cCurrencyRates.pkg).
         Object oRates_grp is a cRDCDbGroup
-            Set Size to 78 270
+            Set Size to 90 270
             Set Location to 134 230
             Set peAnchors to anTopRight
 
@@ -246,7 +241,7 @@ Object oNations is a cRDCDbView
                 Set Label_Col_Offset to 2
                 Set Form_Datatype to 2
                 Set Value to 100
-                Set psToolTip to "How much of the nation's currency to convert."
+                Set psToolTip to "The amount to convert - from the nation's currency, and back from the other one."
 
                 Procedure OnChange
                     Send ShowRate
@@ -260,15 +255,37 @@ Object oNations is a cRDCDbView
                 Set FontWeight to fw_Bold
             End_Object
 
-            Object oTo_fm is a cRDCForm
-                Set Size to 13 30
+            // The other currency: picked from the service's own list, or typed.
+            Object oTo_cf is a cRDCComboForm
+                Set Size to 13 45
                 Set Location to 14 165
                 Set Label to "in"
                 Set Label_Justification_Mode to JMode_Right
                 Set Label_Col_Offset to 2
                 Set Capslock_State to True
+                Set psToolTip to "The other currency: pick it from the list, or write its three-letter code (EUR, USD, GBP)."
+                // Set here, before OnChange exists: ShowRate is defined at the end of the view.
                 Set Value to "EUR"
-                Set psToolTip to "The currency to convert to: its three-letter code, for example EUR, USD or GBP."
+
+                // The currencies open.er-api.com has rates for - a few common ones when it does not answer.
+                Procedure Combo_Fill_List
+                    String[] asCodes
+                    Integer i
+                    Get CurrencyCodes of oCurrencyRates to asCodes
+                    If (SizeOfArray(asCodes) = 0) Begin
+                        Move "EUR" to asCodes[0]
+                        Move "USD" to asCodes[1]
+                        Move "GBP" to asCodes[2]
+                        Move "SEK" to asCodes[3]
+                        Move "NOK" to asCodes[4]
+                        Move "DKK" to asCodes[5]
+                        Move "JPY" to asCodes[6]
+                        Move "CHF" to asCodes[7]
+                    End
+                    For i from 0 to (SizeOfArray(asCodes) - 1)
+                        Send Combo_Add_Item asCodes[i]
+                    Loop
+                End_Procedure
 
                 Procedure OnChange
                     Send ShowRate
@@ -282,16 +299,24 @@ Object oNations is a cRDCDbView
                 Set FontWeight to fw_Bold
             End_Object
 
+            // The other way round: the same amount of the other currency in the nation's.
+            Object oBack_tb is a TextBox
+                Set Auto_Size_State to False
+                Set Size to 10 240
+                Set Location to 44 8
+                Set FontWeight to fw_Bold
+            End_Object
+
             Object oRate_tb is a TextBox
                 Set Auto_Size_State to False
                 Set Size to 10 240
-                Set Location to 46 8
+                Set Location to 58 8
             End_Object
 
             // The service's terms ask for this credit where its rates are shown.
             Object oCredit_lnk is a cLinkLabel
                 Set Size to 8 120
-                Set Location to 61 8
+                Set Location to 73 8
                 Set pbAutoSizeHeight to False
                 Set Label to '<a href="https://www.exchangerate-api.com">Rates By Exchange Rate API</a>'
                 Set psToolTip to "The exchange rates come from ExchangeRate-API's free open access (open.er-api.com), updated once a day."
@@ -308,7 +333,7 @@ Object oNations is a cRDCDbView
             Set psColumnWidths to "0/1fr"
             Set psRowHeights to "0/1fr"
 
-            Object oFlag_box is a cFlagHtmlBox
+            Object oFlag_box is a cRDCImageHtmlBox
                 Set piRowIndex to 0
                 Set piColumnSpan to 1
                 Set pbFillHeight to True
@@ -358,7 +383,7 @@ Object oNations is a cRDCDbView
         If (sFileType = ".svg") ;
             Send ShowCountryFlag of oFlag_box (Trim(Nations.ISO_Short)) sFlag (Trim(Nations.Official_Short))
         Else ;
-            Send ShowFlag of oFlag_box sFlag (Trim(Nations.Official_Short))
+            Send ShowImage of oFlag_box sFlag (Trim(Nations.Official_Short))
     End_Procedure
 
     // The amount in the nation's currency (Nations.ISO_Currency) shown in the other one, and the rate it is from.
@@ -369,10 +394,11 @@ Object oNations is a cRDCDbView
 
         Move (oRates_grp(oNation_grp(Self))) to hoGrp
         Move (Uppercase(Trim(Nations.ISO_Currency))) to sFrom
-        Get Value of (oTo_fm(hoGrp)) to sTo
+        Get Value of (oTo_cf(hoGrp)) to sTo
         Move (Uppercase(Trim(sTo))) to sTo
         Get Value of (oAmount_fm(hoGrp)) to nAmount
         Set Label of (oFrom_tb(hoGrp)) to sFrom
+        Set Label of (oBack_tb(hoGrp)) to ""
         Set Label of (oRate_tb(hoGrp)) to ""
         If (sFrom = "") Begin
             Set Label of (oResult_tb(hoGrp)) to "This nation has no currency code."
@@ -391,7 +417,9 @@ Object oNations is a cRDCDbView
             Procedure_Return
         End
         Set Label of (oResult_tb(hoGrp)) to (FormatNumber(nAmount, 2) * sFrom * "=" * FormatNumber(nAmount * nRate, 2) * sTo)
-        Set Label of (oRate_tb(hoGrp)) to ("1" * sFrom * "=" * FormatNumber(nRate, 4) * sTo + ", the rate of" * RatesDay(oCurrencyRates))
+        Set Label of (oBack_tb(hoGrp))   to (FormatNumber(nAmount, 2) * sTo * "=" * FormatNumber(nAmount / nRate, 2) * sFrom)
+        Set Label of (oRate_tb(hoGrp))   to ("1" * sFrom * "=" * FormatNumber(nRate, 4) * sTo + ", 1" * sTo * "=" * ;
+            FormatNumber((1 / nRate), 4) * sFrom + " - the rates of" * RatesDay(oCurrencyRates))
     End_Procedure
 
 End_Object
