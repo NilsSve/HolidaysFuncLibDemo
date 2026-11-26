@@ -7,6 +7,7 @@ Use cRDCForm.pkg
 Use cRDCSpinForm.pkg
 Use cRDCCJGridPromptList.pkg
 Use cRDCHeaderGroup.pkg
+Use cLinkLabel.pkg                  // the year strip: each year a link
 
 // Object with all Holiday date functions
 Use oCalendarHolidays.pkg
@@ -237,8 +238,22 @@ Object oDateFunctionsTest is a cRDCDbView
             Else Begin
                 Move (sStrip + ": -") to sStrip
             End
-            Send SetYearStrip (i + 2) sStrip (i = 0)
+            Send SetYearStrip (i + 2) sStrip (iYear + i) (i = 0)
         Loop
+    End_Procedure
+
+    // The two country fields - step 2's and the holiday question's - start with this computer's country. When one is
+    // changed and the other is empty, the other takes the same country.
+    Procedure CopyCountry Handle hoFrom Handle hoTo
+        String sISO_Short
+        If (pbReady(Self) = False) ;
+            Procedure_Return
+        Get Value of hoTo to sISO_Short
+        If (Trim(sISO_Short) <> "") ;
+            Procedure_Return
+        Get Value of hoFrom to sISO_Short
+        If (Trim(sISO_Short) <> "") ;
+            Set Value of hoTo to (Uppercase(Trim(sISO_Short)))
     End_Procedure
 
     Procedure ClearAnswer
@@ -254,12 +269,13 @@ Object oDateFunctionsTest is a cRDCDbView
         Set Value of (oDateFormat_fm(hoAns))  to ""
         Set Value of (oCall_fm(hoAns))        to ""
         For i from 0 to 4
-            Send SetYearStrip i "" False
+            Send SetYearStrip i "" 0 False
         Loop
     End_Procedure
 
-    // One box of the year strip; the year asked for in bold.
-    Procedure SetYearStrip Integer iBox String sText Boolean bThisYear
+    // One box of the year strip: a link that makes iYear the year asked for - the year asked for itself in bold,
+    // and not a link.
+    Procedure SetYearStrip Integer iBox String sText Integer iYear Boolean bThisYear
         Handle ho hoAns
         Move (oAnswer_grp(Self)) to hoAns
         Case Begin
@@ -278,8 +294,19 @@ Object oDateFunctionsTest is a cRDCDbView
             Case Else
                 Move (oYear5_tb(hoAns)) to ho
         Case End
+        Set piYear of ho to iYear
+        If ((sText <> "") and (bThisYear = False)) ;
+            Move ("<a>" + sText + "</a>") to sText
         Set Label of ho to sText
         Set FontWeight of ho to (If(bThisYear, fw_Bold, fw_Normal))
+    End_Procedure
+
+    // A click on a year of the strip: that year is the one asked for, and the answer follows.
+    Procedure GoToYear Integer iYear
+        If (iYear < 1753 or iYear > 2500) ;
+            Procedure_Return
+        Set Value of (oYear_sf(oInput_grp(Self))) to iYear
+        Send ShowAnswer
     End_Procedure
 
     // ---- 1. The function list, with a search box ----
@@ -318,16 +345,39 @@ Object oDateFunctionsTest is a cRDCDbView
             Set pbShadeSortColumn to False
             Set pbShowFooter to True
             Set piLayoutBuild to 3
+            Set piTooltipMaxWidth to 400
             Set peAnchors to anAll
+
+            // The description of the function on a row, for its tooltip.
+            Function FunctionHelp Integer iRow Returns String
+                tHolidayFunc HolidayFunc
+                String sName
+                Boolean bFound
+                Get RowValue of (oFunction_col(Self)) iRow to sName
+                Get FunctionByName sName (&HolidayFunc) to bFound
+                If (bFound = False) ;
+                    Function_Return ""
+                Function_Return (sName + ": " + Trim(HolidayFunc.sHelp))
+            End_Function
 
             Object oFunction_col is a cCJGridColumn
                 Set piWidth to 120
                 Set psCaption to "Function"
+
+                // The function's description, over its row.
+                Function OnGetTooltip Integer iRow String sValue String sText Returns String
+                    Function_Return (FunctionHelp(Self, iRow))
+                End_Function
             End_Object
 
             Object oAsks_col is a cCJGridColumn
                 Set piWidth to 70
                 Set psCaption to "Asks for"
+
+                // The function's description, over its row.
+                Function OnGetTooltip Integer iRow String sValue String sText Returns String
+                    Function_Return (FunctionHelp(Self, iRow))
+                End_Function
             End_Object
 
             // The functions whose name or description holds the search text, in the library's order.
@@ -346,8 +396,7 @@ Object oDateFunctionsTest is a cRDCDbView
                 Move (SizeOfArray(HolidayFuncArray) - 1) to iLast
                 For iCount from 0 to iLast
                     If (sSearch = "" or Lowercase(HolidayFuncArray[iCount].sName) contains sSearch or Lowercase(HolidayFuncArray[iCount].sHelp) contains sSearch) Begin
-                        Move HolidayFuncArray[iCount].sName to TheData[iRow].sValue[iFunction_col]  
-//                        Set psToolTip of TheData[iRow].sValue[iFunction_col] to HolidayFuncArray[iCount].sHelp
+                        Move HolidayFuncArray[iCount].sName to TheData[iRow].sValue[iFunction_col]
                         Move (If(SizeOfArray(HolidayFuncArray[iCount].HolidayFuncVarArray) > 1, "year, country", "year")) to TheData[iRow].sValue[iAsks_col]
                         Increment iRow
                     End
@@ -458,6 +507,7 @@ Object oDateFunctionsTest is a cRDCDbView
             End_Procedure
 
             Procedure OnChange
+                Send CopyCountry Self (oReverseCountry_fm(oReverse_grp(Self)))
                 Send ShowAnswer
             End_Procedure
         End_Object
@@ -470,9 +520,10 @@ Object oDateFunctionsTest is a cRDCDbView
 
         Object oCountryUse_tb is a TextBox
             Set Auto_Size_State to False
-            Set Size to 13 136
-            Set Location to 71 289
+            Set Size to 28 136
+            Set Location to 74 289
             Set peAnchors to anTopLeftRight
+            Set Justification_Mode to JMode_Left
         End_Object
 
     End_Object
@@ -497,7 +548,7 @@ Object oDateFunctionsTest is a cRDCDbView
         Object oOfficial_tb is a TextBox
             Set Auto_Size_State to False
             Set Size to 10 109
-            Set Location to 32 235
+            Set Location to 32 205
             Set Justification_Mode to JMode_Right
             Set FontWeight to fw_Bold
         End_Object
@@ -546,39 +597,64 @@ Object oDateFunctionsTest is a cRDCDbView
         End_Object
 
         Object oAround_tb is a TextBox
-            Set Size to 10 118
+            Set Size to 10 220
             Set Location to 97 8
-            Set Label to "The same function, around that year:"
+            Set Label to "The same function, around that year (click a year to go there):"
         End_Object
 
-        Object oYear1_tb is a TextBox
-            Set Auto_Size_State to False
+        Object oYear1_tb is a cLinkLabel
+            Property Integer piYear 0
+            // a fixed size: an empty year would size it to nothing
+            Set pbAutoSizeHeight to False
             Set Size to 10 80
             Set Location to 111 8
+            Procedure OnClick Integer iItem String sID String sUrl
+                Send GoToYear (piYear(Self))
+            End_Procedure
         End_Object
 
-        Object oYear2_tb is a TextBox
-            Set Auto_Size_State to False
+        Object oYear2_tb is a cLinkLabel
+            Property Integer piYear 0
+            // a fixed size: an empty year would size it to nothing
+            Set pbAutoSizeHeight to False
             Set Size to 10 80
             Set Location to 111 92
+            Procedure OnClick Integer iItem String sID String sUrl
+                Send GoToYear (piYear(Self))
+            End_Procedure
         End_Object
 
-        Object oYear3_tb is a TextBox
-            Set Auto_Size_State to False
+        Object oYear3_tb is a cLinkLabel
+            Property Integer piYear 0
+            // a fixed size: an empty year would size it to nothing
+            Set pbAutoSizeHeight to False
             Set Size to 10 80
             Set Location to 111 176
+            Procedure OnClick Integer iItem String sID String sUrl
+                Send GoToYear (piYear(Self))
+            End_Procedure
         End_Object
 
-        Object oYear4_tb is a TextBox
-            Set Auto_Size_State to False
+        Object oYear4_tb is a cLinkLabel
+            Property Integer piYear 0
+            // a fixed size: an empty year would size it to nothing
+            Set pbAutoSizeHeight to False
             Set Size to 10 80
             Set Location to 111 260
+            Procedure OnClick Integer iItem String sID String sUrl
+                Send GoToYear (piYear(Self))
+            End_Procedure
         End_Object
 
-        Object oYear5_tb is a TextBox
-            Set Auto_Size_State to False
+        Object oYear5_tb is a cLinkLabel
+            Property Integer piYear 0
+            // a fixed size: an empty year would size it to nothing
+            Set pbAutoSizeHeight to False
             Set Size to 10 80
             Set Location to 111 344
+            Procedure OnClick Integer iItem String sID String sUrl
+                Send GoToYear (piYear(Self))
+            End_Procedure
         End_Object
 
     End_Object
@@ -599,7 +675,8 @@ Object oDateFunctionsTest is a cRDCDbView
             Set Label_Justification_Mode to JMode_Right
             Set Label_Col_Offset to 2
             Set psToolTip to "A date, written the way your computer writes dates."
-
+            Set Form_Datatype to Mask_Date_Window
+            Set Value to (Date(CurrentDateTime()))
             Procedure OnChange
                 Send ShowReverse
             End_Procedure
@@ -630,10 +707,13 @@ Object oDateFunctionsTest is a cRDCDbView
                 Set Value to sISO_Short
             End_Procedure
 
-            Procedure OnChange  
-                If (Active_State(Self)) Begin
-                    Send ShowReverse
-                End
+            // Not while the view is built: the default country above changes the value before ShowReverse, further
+            // down, exists - "Invalid message MSG_SHOWREVERSE".
+            Procedure OnChange
+                If (pbReady(Self) = False) ;
+                    Procedure_Return
+                Send CopyCountry Self (oCountry_fm(oInput_grp(Self)))
+                Send ShowReverse
             End_Procedure
         End_Object
 
@@ -692,6 +772,7 @@ Object oDateFunctionsTest is a cRDCDbView
         Forward Send End_Construct_Object
         Set pbReady to True
         Send DemoDarkView Self
+        Send ShowReverse of oReverse_grp
     End_Procedure
 
 End_Object

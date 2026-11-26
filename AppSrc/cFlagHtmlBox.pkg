@@ -28,6 +28,7 @@ Class cFlagHtmlBox is a cViewHtmlBox
         Forward Send Construct_Object
         Set psHtml to "<div class='ftph-cards'><b>Flag</b></div>"
 
+        // The flag's size in pixels; a flag keeps its shape inside it (ShowFlag).
         Property Integer piHeight 72
         Property Integer piWidth 90
 
@@ -38,7 +39,7 @@ Class cFlagHtmlBox is a cViewHtmlBox
         // FlagsSVG holds the flag-icons set (MIT, LICENSE-flag-icons.txt), named by the ISO code: se.svg.
         Property String psFlagFolders "FlagsSVG;FlagsPNG;FlagsGIF"
 
-        // The file shown, so that the same flag is not read and sent again on every refresh.
+        // The file and size shown, so that the same flag is not read and sent again on every refresh.
         { Visibility=Private }
         Property String private.psFlagFile "-"
     End_Procedure
@@ -107,30 +108,32 @@ Class cFlagHtmlBox is a cViewHtmlBox
     End_Function
 
     // Show a nation's flag: sFile as Nations.Flag names it, sName for its tooltip. No file, or none found: an empty
-    // frame.
-    // ToDo: There needs to be a way to set the size of the flag!
+    // frame. The flag, and the empty frame, are piWidth x piHeight pixels (narrower when the box is): set them in
+    // the object, or later - the next flag shown takes the new size.
     Procedure ShowFlag String sFile String sName
-        String sPath sUrl sHtml
+        String sPath sUrl sHtml sSize sKey
         Integer iWidth iHeight
-
-        Move (Trim(sFile)) to sFile
-        If (sFile = private.psFlagFile(Self)) ;
-            Procedure_Return
-        Set private.psFlagFile to sFile
 
         Get piWidth to iWidth
         Get piHeight to iHeight
+        Move ("width:min(100%," + String(iWidth) + "px);height:" + String(iHeight) + "px;") to sSize
+
+        // the same flag at the same size is not read and sent again
+        Move (Trim(sFile)) to sFile
+        Move (sFile + "|" + String(iWidth) + "x" + String(iHeight)) to sKey
+        If (sKey = private.psFlagFile(Self)) ;
+            Procedure_Return
+        Set private.psFlagFile to sKey
 
         Get BitmapFile sFile to sPath
         If (sPath <> "") ;
             Get ImageDataUrl sPath to sUrl
-        Move '<div style="display:flex;align-items:center;justify-content:center;height:100%;min-height:60px">' to sHtml
+        Move ('<div style="display:flex;align-items:center;justify-content:center;height:100%;min-height:' + String(iHeight) + 'px">') to sHtml
         If (sUrl <> "") ;
             Append sHtml '<img src="' sUrl '" alt="' (FTHtmlEscape(sName)) '" title="' (FTHtmlEscape(sName)) ;
-                '" style="width:min(100%,' (String(iWidth)) 'px);height:' (String(iHeight)) ;
-                'px;object-fit:contain;border:1px solid var(--dfr-line-card,#3a3936);border-radius:3px">'
+                '" style="' sSize 'object-fit:contain;border:1px solid var(--dfr-line-card,#3a3936);border-radius:3px">'
         Else ;
-            Append sHtml '<div style="width:72px;height:48px;border:1px dashed var(--dfr-line-card,#3a3936);border-radius:3px" title="No flag"></div>'
+            Append sHtml '<div style="' sSize 'box-sizing:border-box;border:1px dashed var(--dfr-line-card,#3a3936);border-radius:3px" title="No flag"></div>'
         Send ShowHtml (sHtml + "</div>")
     End_Procedure
 

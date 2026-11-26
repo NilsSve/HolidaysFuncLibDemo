@@ -569,7 +569,7 @@ Object oWorkingDays is a cRDCView
             Set Label_Col_Offset to 2
             Set Form_Datatype to Mask_Date_Window
             Procedure OnChange
-                String sDate 
+                String sDate
                 Boolean bValid
                 Get Value to sDate
                 Get IsValidDateString of ghoCalendarHolidays sDate to bValid
@@ -610,7 +610,7 @@ Object oWorkingDays is a cRDCView
             Set Label_Col_Offset to 2
             Set Form_Datatype to Mask_Date_Window
             Procedure OnChange
-                String sDate 
+                String sDate
                 Boolean bValid
                 Get Value to sDate
                 Get IsValidDateString of ghoCalendarHolidays sDate to bValid
@@ -666,7 +666,7 @@ Object oWorkingDays is a cRDCView
             Set Label_Col_Offset to 2
             Set Form_Datatype to Mask_Date_Window
             Procedure OnChange
-                String sDate 
+                String sDate
                 Boolean bValid
                 Get Value to sDate
                 Get IsValidDateString of ghoCalendarHolidays sDate to bValid
@@ -684,7 +684,7 @@ Object oWorkingDays is a cRDCView
             Set Label_Col_Offset to 2
             Set Form_Datatype to Mask_Date_Window
             Procedure OnChange
-                String sDate 
+                String sDate
                 Boolean bValid
                 Get Value to sDate
                 Get IsValidDateString of ghoCalendarHolidays sDate to bValid
@@ -757,11 +757,12 @@ Object oWorkingDays is a cRDCView
         Date[] adNone
         Forward Send End_Construct_Object
         Set padClosedDays of ghoCalendarHolidays to adNone
-        Set Value of oDate1_fm  to (DateSetDate(ghoCalendarHolidays, 2026, 12, 28))
-        Set Value of oDate2_fm  to (DateSetDate(ghoCalendarHolidays, 2026, 12, 24))
-        Set Value of oDays2_sf  to 1
-        Set Value of oFrom3_fm  to (DateSetDate(ghoCalendarHolidays, 2026, 12, 21))
-        Set Value of oTo3_fm    to (DateSetDate(ghoCalendarHolidays, 2027, 1, 1))
+        Set Value of oDate1_fm      to (DateSetDate(ghoCalendarHolidays, 2026, 12, 28))
+        Set Value of oDate2_fm      to (DateSetDate(ghoCalendarHolidays, 2026, 12, 24))
+        Set Value of oDays2_sf      to 1
+        Set Value of oClosedDate_fm to (Date(CurrentDateTime()))
+        Set Value of oFrom3_fm      to (Date(CurrentDateTime()))
+        Set Value of oTo3_fm        to (DateSetDate(ghoCalendarHolidays, 2027, 1, 1))
         Set pbReady to True
         Send ApplySettings
         Send DemoDarkView Self

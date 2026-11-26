@@ -17,7 +17,7 @@ Object Holidays_sl is a cRDCDbModalPanel
     Set Size to 204 377
     Set Label to "Holidays Lookup List"
     Set Border_Style to Border_Thick
-    Set Minimize_Icon to False 
+    Set Minimize_Icon to False
     Set Icon to "NationalHolidays.ico"
 
     Object oNations_DD is a cNationsDataDictionary
@@ -34,7 +34,7 @@ Object Holidays_sl is a cRDCDbModalPanel
         Set Size to 175 367
         Set Location to 5 5
         Set Ordering to 1
-        Set pbAutoServer to True 
+        Set pbAutoServer to True
         Set pbHeaderPrompts to False
 
         Object oHolidays_Dateno is a cRDCDbCJGridColumn
@@ -63,7 +63,7 @@ Object Holidays_sl is a cRDCDbModalPanel
             Procedure OnSetCalculatedValue String ByRef sValue
                 Move (DateGetISOWeek(Holidays.DateNo)) to sValue
             End_Procedure
-        
+
         End_Object
 
         Object oDateDayName is a cRDCDbCJGridColumn
@@ -72,8 +72,8 @@ Object Holidays_sl is a cRDCDbModalPanel
 
             Procedure OnSetCalculatedValue String ByRef sValue
                 Move (DateGetDayName(Holidays.DateNo)) to sValue
-            End_Procedure 
-            
+            End_Procedure
+
         End_Object
 
         Object oDateDayNumber is a cRDCDbCJGridColumn
@@ -84,10 +84,10 @@ Object Holidays_sl is a cRDCDbModalPanel
                 DateTime dtVar
                 Move Holidays.DateNo to dtVar
                 Move (DateGetDayOfYear(dtVar)) to sValue
-            End_Procedure 
-            
+            End_Procedure
+
         End_Object
-        
+
     End_Object
 
     Object oOk_bn is a Button

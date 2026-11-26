@@ -176,7 +176,7 @@ Object oYearOverview is a cRDCView
     Function LegendHtml Returns String
         String sHtml sTip sToday
         Date dToday
-        
+
         Sysdate dToday
         Move (FTIsoDate(dToday)) to sToday
 
@@ -361,7 +361,7 @@ Object oYearOverview is a cRDCView
                 Send OnHtmlClick of (oTop_page(oYear_host(oYearOverview))) sId sParam
             End_Procedure
         End_Object
-        
+
     End_Object
 
     // The bar with the year's sums (row 0).

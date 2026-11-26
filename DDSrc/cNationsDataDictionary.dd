@@ -73,6 +73,42 @@ Class cNationsDataDictionary is a DataDictionary
 
     End_Procedure
 
+    // NO NATION WITHOUT ITS CONTINENT (2026-11-26). A save writes Nations.Continent_ID from the continent the
+    // view holds - and when that is empty, 0, silently: Sweden lost "Europe" that way. The Nations view saves
+    // whenever Currency Text is left, so an emptied continent went straight to the table. Now the save stops
+    // and says so. With no continent DDO in the structure (the lookup lists), the record itself is asked.
+    Function Validate_Save Returns Integer
+        Integer iRetVal
+        Handle hoContinen
+        Boolean bHasContinent
+        Forward Get Validate_Save to iRetVal
+        If (iRetVal <> 0) ;
+            Function_Return iRetVal
+        Get Which_Data_Set Continen.File_Number to hoContinen
+        If (hoContinen <> 0) ;
+            Get HasRecord of hoContinen to bHasContinent
+        Else ;
+            Move (Nations.Continent_ID <> 0) to bHasContinent
+        If (bHasContinent = False) Begin
+            Send UserError ("Choose the continent for" * (If(Trim(Nations.Official_Short) = "", "this nation", Trim(Nations.Official_Short))) + ;
+                " - a nation is not saved without it.") "Nations"
+            Function_Return 1
+        End
+        Function_Return 0
+    End_Function
+
+    // THE NATION BY ITS ISO SHORT CODE ("SE"), found through this DD so that its continent comes with it. The views
+    // found the country raw and handed it over with Request_Assign: that left the continent DDO empty - Sweden showed
+    // no continent at startup, and a save then wrote Continent_ID 0 (2026-11-26). Index 1 is Nations.ISO_Short.
+    Procedure FindByISO_Short String sISO_Short
+        Move (Uppercase(Trim(sISO_Short))) to sISO_Short
+        If (sISO_Short = "") ;
+            Procedure_Return
+        Send Clear
+        Move sISO_Short to Nations.ISO_Short
+        Send Find EQ 1
+    End_Procedure
+
     // Display the record for the users country code as the default:
     Procedure Default_ISO_Short Integer iField String sISO_Long
         Integer iChanged

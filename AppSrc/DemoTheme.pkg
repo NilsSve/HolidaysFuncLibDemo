@@ -124,13 +124,18 @@ Procedure DemoDarkGrid Global Handle hoGrid
     Set peVisualTheme                    of hoGrid to (FTCJGridTheme())
     Set peBorderStyle                    of hoGrid to xtpBorderNone
     Set pbUseAlternateRowBackgroundColor of hoGrid to False
-    Set piSelectedRowBackColor           of hoGrid to clDefault
-    Set piSelectedRowForeColor           of hoGrid to clDefault
-    Set piHighlightBackColor             of hoGrid to clDefault
     Set piCaptionBackColor               of hoGrid to clDefault
     Set piCaptionForeColor               of hoGrid to clDefault
-    Set piFocusCellBackColor             of hoGrid to clDefault
-    Set piFocusCellForeColor             of hoGrid to (FTThemeInk())
+    // THE SELECTED ROW, WHOLE (Nils 2026-11-26): its own colours, and the focused cell takes them too (clNone). With
+    // clDefault CodeJock's dark theme painted the row blue but the focused cell in its own dark colour, so only the
+    // other cells of the row were marked. The focus rectangle still shows which cell has the focus. The blue is the
+    // one CodeJock's dark theme gives the other grids (RGB 1,82,119), so every grid of the demo marks a row alike.
+    Set piHighlightBackColor             of hoGrid to (RGB(1, 82, 119))
+    Set piHighlightForeColor             of hoGrid to clWhite
+    Set piSelectedRowBackColor           of hoGrid to (RGB(1, 82, 119))
+    Set piSelectedRowForeColor           of hoGrid to clWhite
+    Set piFocusCellBackColor             of hoGrid to clNone
+    Set piFocusCellForeColor             of hoGrid to clNone
 End_Procedure
 
 /* A DISABLED FIELD keeps Windows' own colours: Windows paints a disabled edit's ground itself, light, while the text

@@ -44,49 +44,49 @@ Object oHolidays is a cRDCDbView
     Set Icon to "NationalHolidays.ico"
     Set Border_Style to Border_Thick
     Set Maximize_Icon to True
-    Set pbAutoActivate to True   
+    Set pbAutoActivate to True
     Set Auto_Clear_Deo_State to False
-    
+
     { Visibility = Private }
     Property String private_psISO_Short
-    
+
     Procedure Set psISO_Short String sISO_Short
         Set private_psISO_Short to sISO_Short
         Set Value of oNations_ISO_Short to sISO_Short
     End_Procedure
-    
+
     { MethodType = Property }
     Function psISO_Short Returns String
         Function_Return (private_psISO_Short(Self))
     End_Function
-    
+
     Property String[] pasISO_Short
-    
+
     // Constraint function for oNations_DD
     Function IsCountry String sISO_Short Returns Boolean
         String[] asISO_Short
         Get pasISO_Short to asISO_Short
         Function_Return (SearchArray(sISO_Short, asISO_Short) <> -1)
     End_Function
-        
+
     Object oContinen_DD is a cContinenDataDictionary
     End_Object
 
     Object oNations_DD is a cNationsDataDictionary
         Set DDO_Server to oContinen_DD
-        
+
         // If the country changes we need to update the calendar display to show the holidays for the new country.
         Procedure Request_Find Integer eFindMode Integer iFile Integer iIndex
             Forward Send Request_Find eFindMode iFile iIndex
             If (iFile = Nations.File_Number) Begin
                 Send broadcast_OnNationChange
             End
-        End_Procedure 
-        
+        End_Procedure
+
         Procedure OnConstrain
             Constrain Nations as (IsCountry(Self, Nations.ISO_Short))
         End_Procedure
-        
+
         // Fill the pasISO_Short string array with ISO_Short values,
         // for all registered language packages.
         Procedure End_Construct_Object
@@ -94,7 +94,7 @@ Object oHolidays is a cRDCDbView
             String[] asISO_Short
             Handle ho
             Integer iSize iCount
-            
+
             Forward Send End_Construct_Object
             Get phoNationalHolidaysArray of ghoCalendarHolidays to hoNationalHolidaysArray
             Move (SizeOfArray(hoNationalHolidaysArray)) to iSize
@@ -105,7 +105,7 @@ Object oHolidays is a cRDCDbView
             Loop
             Set pasISO_Short to asISO_Short
         End_Procedure
-        
+
     End_Object
 
     Object oHolidays_DD is a cHolidaysDataDictionary
@@ -252,7 +252,7 @@ Object oHolidays is a cRDCDbView
             Set Location to 13 322
             Set Label to "Test Holiday Lookup List"
             Set peAnchors to anTopRight
-        
+
             Procedure OnClick
                 String sISO_Short
                 tHoliday[] SelectedHolidays
@@ -260,7 +260,7 @@ Object oHolidays is a cRDCDbView
                 Get PopupHolidayLookup sISO_Short to SelectedHolidays
                 Send Info_Box ("You selected:" * String(SizeOfArray(SelectedHolidays)) * "holidays from the popup.")
             End_Procedure
-        
+
         End_Object
 
         Object oNations_Official_Long is a cRDCDbForm
@@ -286,7 +286,7 @@ Object oHolidays is a cRDCDbView
             Set piLayoutBuild to 4
             Set pbAutoSave to False
             Set pbEditOnTyping to False
-            Set pbReadOnly to True 
+            Set pbReadOnly to True
 
             Object oHolidays_Dateno is a cRDCDbCJGridColumn
                 Entry_Item Holidays.DateNo
@@ -336,7 +336,7 @@ Object oHolidays is a cRDCDbView
                     Forward Send OnSetCalculatedValue (&sValue)
                 End_Procedure
             End_Object
-            
+
             Procedure InitFromTodaysDate
                 Date dToday
                 String sID
@@ -348,16 +348,6 @@ Object oHolidays is a cRDCDbView
                 Find EQ Holidays.DateNo
                 Send RefreshDataFromExternal 5
             End_Procedure
-
-//            Procedure InitBirthDate Date dBirthDayThisYear
-//                String sID
-//                Get Field_Current_Value of oNations_DD Field Nations.ISO_Short to sID
-//                Clear Holidays
-//                Move sID to Holidays.ISO_Short
-//                Move dBirthDayThisYear to Holidays.DateNo
-//                Find EQ Holidays.DateNo
-//                Send RefreshDataFromExternal 5
-//            End_Procedure
 
             Procedure End_Construct_Object
                 Forward Send End_Construct_Object
@@ -383,6 +373,7 @@ Object oHolidays is a cRDCDbView
                 Set pbFillHeight to True
             End_Object
         End_Object
+
         // THE NOTE: the date records are not needed to use the library - this view is one more example of it.
         Object oNote_host is a cFTGridHost
             Set Size to 82 92
@@ -504,32 +495,24 @@ Object oHolidays is a cRDCDbView
                 Delegate Set psISO_Short to sVal         // Panel property. Used by InitFromTodaysDate and DoProcess.
             End_Procedure
 
+            // This computer's country, when it has a holiday package: chosen in the list, and found through the DD
+            // (with its continent) when the view has no nation yet.
             Procedure OnStartup
-                Integer iRecnum iRetval
-                String sOfficial_Short sISO_Short sISO_Long
-
-                Move Nations.Recnum to iRecnum
-                Get WindowsLocaleValue of ghoCalendarHolidays LOCALE_SABBREVCTRYNAME 3 to sISO_Long
-                // Change global record buffer and DDO to auto-find a country based on the current machine.
-                Clear Nations
-                Move sISO_Long to Nations.ISO_Long
-                Find EQ Nations.ISO_Long
-                If (Found) Begin
-                    Move (Trim(Nations.ISO_Short))      to sISO_Short
-                    Move (Trim(Nations.Official_Short)) to sOfficial_Short
-                    Get Combo_Item_Matching (sISO_Short * "-" * sOfficial_Short) to iRetval
-                    If (iRetval <> -1) Begin
-                        Set Default_Combo_Item to iRetval
-                        Delegate Set psISO_Short to sISO_Short  // Panel property. Used by InitFromTodaysDate and DoProcess.
-                        Send Request_Assign of oNations_DD
-                    End
-                End
-
-                // Reset record-buffer
-                If (iRecnum > 0) Begin
-                    Clear Nations
-                    Move iRecnum to Nations.Recnum
-                    Find EQ Nations by 0
+                Integer iItem
+                String sISO_Short sOfficial_Short
+                Get WindowsLocaleISO_Short of ghoCalendarHolidays to sISO_Short
+                Move (Uppercase(Trim(sISO_Short))) to sISO_Short
+                If (sISO_Short = "") ;
+                    Procedure_Return
+                If (HasRecord(oNations_DD(Self)) = False) ;
+                    Send FindByISO_Short of oNations_DD sISO_Short
+                If (Trim(Nations.ISO_Short) <> sISO_Short) ;
+                    Procedure_Return
+                Move (Trim(Nations.Official_Short)) to sOfficial_Short
+                Get Combo_Item_Matching (sISO_Short * "-" * sOfficial_Short) to iItem
+                If (iItem <> -1) Begin
+                    Set Default_Combo_Item to iItem
+                    Delegate Set psISO_Short to sISO_Short  // Panel property. Used by InitFromTodaysDate and DoProcess.
                 End
             End_Procedure
 
@@ -586,23 +569,23 @@ Object oHolidays is a cRDCDbView
                         Move sISO_Short  to Holidays.ISO_Short
                         Move (dStartDate + 1) to Holidays.DateNo
                         Find Eq Holidays.DateNo
-    
+
                         Get HolidayName of ghoCalendarHolidays Holidays.DateNo sISO_Short (&bNationalHoliday) to sHolidayName
-    
+
                         Move sHolidayName     to Holidays.HolidayName
                         Move bNationalHoliday to Holidays.IsNatHoliday
                         SaveRecord Holidays
-    
+
                         Move Holidays.DateNo to dDate
                         Send Update_StatusPanel of ghoStatusPanel ("Date created:" * String(Holidays.DateNo) * sHolidayName)
                         Increment dStartDate
-    
+
                         Get Check_StatusPanel of ghoStatusPanel to iRetval
                         If (iRetval <> 0) Begin
                             Get YesNo_Box "Do you want to stop the generation of records?" to iRetval
                             Move (iRetval = MBR_Yes) to iRetval
                         End
-    
+
                     Until (dDate = dEndDate or iRetval <> 0)
                 Unlock
 
@@ -621,13 +604,13 @@ Object oHolidays is a cRDCDbView
             Set Label to "Generate Date Records"
             Set psToolTip to "Select a country from the 'For Country' combo-box to the left. Only those countries can be used to create/update holiday records. If your country is not in the list You will need to create a similar package for your country."
             Set peAnchors to anNone
-    
+
             // Generates Holiday records for the given date interval and selected country.
             Procedure OnClick
                 Integer iRetval
                 Date dStart dEnd
                 String sISO_Short
-    
+
                 Get Value of oStartDate_fm to dStart
                 Get Value of oEndDate_fm   to dEnd
                 Get psISO_Short to sISO_Short          // Panel property.
@@ -635,15 +618,13 @@ Object oHolidays is a cRDCDbView
                 If (iRetval = MBR_No) Begin
                     Procedure_Return
                 End
-    
+
                 Send DoProcess to oCreateDates_bp
-                Move sISO_Short to Nations.ISO_Short
-                Find Eq Nations.ISO_Short
-                Send Request_Assign of oNations_DD Nations.File_Number
+                Send FindByISO_Short of oNations_DD sISO_Short
                 Send InitFromTodaysDate of oHolidaysDetails_grd
                 Send Info_Box "The generation/update of date records is complete."
             End_Procedure
-    
+
         End_Object
 
         Object oZeroFile_bnt is a cRDCButton
@@ -652,7 +633,7 @@ Object oHolidays is a cRDCDbView
             Set Label to "Delete All Date Records"
             Set psToolTip to "Delete all records from the Holidays table (zerofile)"
             Set peAnchors to anNone
-    
+
             // Removes all Holiday records (for all countries)
             Procedure OnClick
                 Integer iRetval
@@ -660,15 +641,15 @@ Object oHolidays is a cRDCDbView
                 If (iRetval = MBR_No) Begin
                     Procedure_Return
                 End
-    
+
                 Send Request_Clear_All of oNations_DD
                 Open Holidays Mode DF_EXCLUSIVE
                 ZeroFile Holidays
                 Open Holidays Mode DF_SHARE
                 Send Info_Box "Ready. All Holidays table records removed."
-    
+
             End_Procedure
-    
+
         End_Object
 
     End_Object
@@ -689,7 +670,6 @@ Object oHolidays is a cRDCDbView
     // The SVG flag by the ISO code - the picture Nations.Flag names when there is none.
     Procedure ShowNationFlag
         Send ShowCountryFlag of oFlag_box (Trim(Nations.ISO_Short)) (Trim(Nations.Flag)) (Trim(Nations.Official_Short))
-//        Send ShowFlag of (oFlag_box(oFlag_host(oDateMaintenance_grp(Self)))) (Trim(Nations.Flag)) (Trim(Nations.Official_Short))
     End_Procedure
 
 End_Object

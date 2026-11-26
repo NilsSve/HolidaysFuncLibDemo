@@ -1,0 +1,133 @@
+﻿//****************************************************************************
+// $Module type: Class Package
+// $Module name: cCurrencyRates.pkg
+// $Author     : Nils Svedmyr, RDC Tools International
+// Created     : 2026-11-26
+//
+// Description : Today's exchange rates from open.er-api.com - ExchangeRate-API's open access: free, no key, about
+//               160 currencies, updated once a day. In place of cWSCurrencyConvertor.pkg, a web service that stopped
+//               answering. The service's terms ask for a credit where the rates are shown: "Rates By Exchange Rate
+//               API", linked to https://www.exchangerate-api.com (the Nations view has it).
+//
+// This code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+//****************************************************************************
+Use cJsonHttpTransfer.pkg
+
+/* ONE CALL PER PROGRAM RUN. The rates of every currency against the US dollar are fetched the first time a rate is
+   asked for, and kept: any pair is worked out from them (SEK -> EUR = rate of EUR / rate of SEK), so browsing nations
+   does not call the service again. A failed call is not repeated on every record either - only after ForgetRates.
+   The service's rules for its free access (exchangerate-api.com/docs/free): the rates change once a day, so a call a
+   day is all a program needs; a call an hour is never limited; far more than that answers HTTP 429 - no rates - for
+   20 minutes. One call per run stays well inside that. */
+Class cCurrencyRates is a cJsonHttpTransfer
+
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set piRemotePort to rpHttpSSL
+        Set peTransferFlags to ifSecure
+
+        // The service and the path of the rates against psBase.
+        Property String psHost "open.er-api.com"
+        Property String psBase "USD"
+        // Why the last call gave no rates, for the user; "" when it did.
+        Property String psError ""
+        // The day the rates are from, as the service writes it: "Wed, 25 Nov 2026 00:02:31 +0000".
+        Property String psRatesDate ""
+
+        { Visibility=Private }
+        Property Boolean private.pbFetched False
+        { Visibility=Private }
+        Property String[] private.pasCodes
+        { Visibility=Private }
+        Property Number[] private.panRates
+    End_Procedure
+
+    // Fetch the rates now: True when the service returned them successfully.
+    Function FetchRates Returns Boolean
+        Handle hoJson hoRates
+        Boolean bOk
+        String sResult sCode
+        String[] asCodes
+        Number[] anRates
+        Number nRate
+        Integer i iCount
+
+        Set private.pbFetched to True
+        Set psError to ""
+        Get HttpGetJson (psHost(Self)) ("/v6/latest/" + psBase(Self)) (&bOk) to hoJson
+        If ((bOk = False) or (hoJson = 0)) Begin
+            Set psError to ("No answer from" * psHost(Self) + ".")
+            If (hoJson <> 0) ;
+                Send Destroy of hoJson
+            Function_Return False
+        End
+        Get MemberValue of hoJson "result" to sResult
+        If ((sResult <> "success") or (HasMember(hoJson, "rates") = False)) Begin
+            Set psError to (psHost(Self) * "gave no rates (" + sResult + ").")
+            Send Destroy of hoJson
+            Function_Return False
+        End
+        Set psRatesDate to (MemberValue(hoJson, "time_last_update_utc"))
+        Get Member of hoJson "rates" to hoRates
+        Get MemberCount of hoRates to iCount
+        For i from 0 to (iCount - 1)
+            Get MemberNameByIndex of hoRates i to sCode
+            Get MemberValue of hoRates sCode to nRate
+            Move (Uppercase(sCode)) to asCodes[i]
+            Move nRate to anRates[i]
+        Loop
+        Send Destroy of hoRates
+        Send Destroy of hoJson
+        Set private.pasCodes to asCodes
+        Set private.panRates to anRates
+        Function_Return (iCount > 0)
+    End_Function
+
+    // Forget the rates and the error: the next question fetches them again.
+    Procedure ForgetRates
+        String[] asCodes
+        Number[] anRates
+        Set private.pbFetched to False
+        Set private.pasCodes to asCodes
+        Set private.panRates to anRates
+        Set psError to ""
+    End_Procedure
+
+    // The rate of a currency against psBase, or 0 when there is none.
+    Function BaseRate String sCode Returns Number
+        String[] asCodes
+        Number[] anRates
+        Integer iPos
+        Boolean bOk
+        If (private.pbFetched(Self) = False) ;
+            Get FetchRates to bOk
+        Get private.pasCodes to asCodes
+        Get private.panRates to anRates
+        Move (SearchArray(Uppercase(Trim(sCode)), asCodes)) to iPos
+        If (iPos = -1) ;
+            Function_Return 0
+        Function_Return anRates[iPos]
+    End_Function
+
+    // How much one sFrom is in sTo ("SEK", "EUR"), or 0 when either is not known - psError says why, if the service
+    // gave no rates at all.
+    Function Rate String sFrom String sTo Returns Number
+        Number nFrom nTo
+        Get BaseRate sFrom to nFrom
+        Get BaseRate sTo to nTo
+        If ((nFrom = 0) or (nTo = 0)) ;
+            Function_Return 0
+        Function_Return (nTo / nFrom)
+    End_Function
+
+    // The day of the rates, short: "25 Nov 2026".
+    Function RatesDay Returns String
+        String sDate
+        Get psRatesDate to sDate
+        If (Pos(",", sDate) > 0) ;
+            Move (Trim(Mid(sDate, Length(sDate), Pos(",", sDate) + 1))) to sDate
+        Function_Return (Trim(Left(sDate, 11)))
+    End_Function
+
+End_Class

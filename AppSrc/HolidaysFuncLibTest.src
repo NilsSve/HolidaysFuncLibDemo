@@ -50,7 +50,7 @@ Object oMain is a Panel
     Set Size to 356 589
     Set Locate_Mode to Center_On_Screen
     Set Icon to "NationalHolidays.ico"
-    
+
     Property Handle phoViewMenu 0
 
     // In the dark theme the title bar is dark too - once the window exists.
@@ -76,7 +76,7 @@ Object oMain is a Panel
                 Set ComColor      of hoTabPaintManager to xtpTabColorVisualStudio2012Dark
             End
         End_Procedure
-        
+
         Object oMenuBar is a cCJMenuBar
 
             Object oFileMenu is a cCJMenuItem
@@ -148,7 +148,7 @@ Object oMain is a Panel
 
                     Procedure OnExecute Variant vCommandBarControl
                         Handle hoClient
-                        Get Client_Id to hoClient  
+                        Get Client_Id to hoClient
                         Send Activate_oDateFunctionsTest of hoClient
                     End_Procedure
                 End_Object
@@ -267,8 +267,8 @@ Object oMain is a Panel
                 Set psToolTip to "Help"
 
                 Object oAboutMenuItem is a cCJAboutMenuItem
-                End_Object 
-                
+                End_Object
+
                 Object oKoFi_MenuItem is a cCJMenuItem
                     Set psToolTip to "Coffee time!"
                     Set psDescription to "Bye me a coffee, to support me"
@@ -277,7 +277,7 @@ Object oMain is a Panel
                         Runprogram Shell Background "https://ko-fi.com/nilss"
                     End_Procedure
                 End_Object
-    
+
                 Object oSuggestion_MenuItem is a cCJMenuItem
                     Set psTooltip to "Suggest"
                     Set psDescription to "Suggest a feature, or report a bug..."
@@ -292,10 +292,10 @@ Object oMain is a Panel
                     Set psImage to "Nations.ico"
 
                     Procedure OnExecute Variant vCommandBarControl
-                        Runprogram Shell Background "https://www.iso.org/obp/ui/#search/code/"    
+                        Runprogram Shell Background "https://www.iso.org/obp/ui/#search/code/"
                     End_Procedure
-                End_Object 
-                
+                End_Object
+
                 Object oHelpMenuItem is a cCJHelpMenuItem
                     Procedure OnExecute Variant vCommandBarControl
                         Runprogram Shell Background "https://nilssve.github.io/HolidaysFuncLibDemo/"
@@ -447,10 +447,10 @@ Object oMain is a Panel
                 Set psImage to "Nations.ico"
 
                 Procedure OnExecute Variant vCommandBarControl
-                    Runprogram Shell Background "https://www.iso.org/obp/ui/#search/code/"    
+                    Runprogram Shell Background "https://www.iso.org/obp/ui/#search/code/"
                 End_Procedure
-            End_Object 
-                
+            End_Object
+
             // THE THEME: a drop-down of the three choices, the one in use ticked. A new choice is saved and the demo
             // restarts in it (DemoSwitchTheme).
 
@@ -568,7 +568,7 @@ Object oMain is a Panel
 
         Use Nations.vw
         Use Holidays.vw
-        Use DataFunctionsTest.vw        
+        Use DataFunctionsTest.vw
         Use WorkingDays.vw
         Use YearOverview.vw
         Procedure Activate_About
