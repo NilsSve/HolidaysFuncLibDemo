@@ -192,6 +192,7 @@
  <li class="rvps4 noindent"><span class="rvts6">Copy a country package that is close to yours, such as </span><span class="rvts11">NorwegianHolidays.pkg</span><span class="rvts6"> from the library, into your own workspace's AppSrc folder, and give the copy your country's name.</span></li>
  <li class="rvps4 noindent"><span class="rvts6">Set </span><span class="rvts11">psISO_Short</span><span class="rvts6"> to your country's two-letter code, and </span><span class="rvts11">psLocaleName</span><span class="rvts6"> to the Windows name of its language, such as "de-DE": the month and day names in that language come from it.</span></li>
  <li class="rvps4 noindent"><span class="rvts6">Change the list of days. </span><span class="rvts11">AddDay</span><span class="rvts6"> adds a day that one of the library's date functions gives; </span><span class="rvts11">AddFixedDay</span><span class="rvts6"> a day on the same month and day every year. The last argument is True for an official holiday - a day off by law - and False for a special day that is not.</span></li>
+ <li class="rvps4 noindent"><span class="rvts6">Set the calendar's words in your language - see </span><span class="rvts11">The calendar's words</span><span class="rvts6"> below.</span></li>
  <li class="rvps4 noindent"><span class="rvts6">Use your package in your program, after the library: Use GermanHolidays.pkg after Use oCalendarHolidays.pkg. The object registers itself with the library as it is created.</span></li>
 </ol>
 <p class="rvps6"><span class="rvts16">Use cNationalHolidays.pkg</span></p>
@@ -199,6 +200,8 @@
 <p class="rvps6"><span class="rvts16">Object oGermanHolidays is a cNationalHolidays</span></p>
 <p class="rvps6"><span class="rvts16">&nbsp; &nbsp; Set psISO_Short to "DE"</span></p>
 <p class="rvps6"><span class="rvts16">&nbsp; &nbsp; Set psLocaleName to "de-DE"</span></p>
+<p class="rvps6"><span class="rvts16">&nbsp; &nbsp; Set psTextWeek to "KW"</span></p>
+<p class="rvps6"><span class="rvts16">&nbsp; &nbsp; Set psTextWorkingDaysNote to "%1 Arbeitstage"</span></p>
 <p class="rvps6"><span class="rvts16"><br/></span></p>
 <p class="rvps6"><span class="rvts16">&nbsp; &nbsp; Send AddDay "NewYearsDay" "Neujahr" True</span></p>
 <p class="rvps6"><span class="rvts16">&nbsp; &nbsp; Send AddDay "GoodFriday" "Karfreitag" True</span></p>
@@ -216,6 +219,134 @@
  <li class="rvps4 noindent"><span class="rvts11">SetDayAlsoOn</span><span class="rvts6"> sFunction - the day counts only when the date is also that function's date: the UK's "Christmas Day (UK)" is Christmas Day when the Christmas Day bank holiday falls on it.</span></li>
 </ul>
 <p class="rvps2"><span class="rvts6">See </span><span class="rvts11">SwedishHolidays.pkg</span><span class="rvts6">, </span><span class="rvts11">AmericanHolidays.pkg</span><span class="rvts6"> and </span><span class="rvts11">BrittishHolidays.pkg</span><span class="rvts6"> in the library for each of them in use. A misspelt function name is reported when the program starts.</span></p>
+<p class="rvps2"><span class="rvts11">The calendar's words</span></p>
+<p class="rvps2"><span class="rvts6">A calendar of the country - the library's </span><a class="rvts12" href="AmonthcalendarforFlexTronprogram.html">month calendar</a><span class="rvts6">, the demo's Year Overview - shows ten words besides the names. Set them in the package, in your language; a word you leave out is English:</span></p>
+<div class="rvps2">
+<table style="border-color: #000000; border-style: solid; border-width: 2px; background-color: #ffffff; border-collapse: collapse;">
+ <tr style="vertical-align: top;">
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts11">Property</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts11">English</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts11">Swedish</span></p>
+  </td>
+ </tr>
+ <tr style="vertical-align: top;">
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">psTextWeek</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">Wk</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">V</span></p>
+  </td>
+ </tr>
+ <tr style="vertical-align: top;">
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">psTextWorkingDaysNote</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">%1 working days</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">%1 arbetsdagar</span></p>
+  </td>
+ </tr>
+ <tr style="vertical-align: top;">
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">psTextHoliday</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">Holiday, day off</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">Helgdag, ledig</span></p>
+  </td>
+ </tr>
+ <tr style="vertical-align: top;">
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">psTextHolidayWeekend</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">Holiday on a weekend</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">Helgdag på helgen</span></p>
+  </td>
+ </tr>
+ <tr style="vertical-align: top;">
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">psTextSpecial</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">Special day, worked</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">Särskild dag, arbetsdag</span></p>
+  </td>
+ </tr>
+ <tr style="vertical-align: top;">
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">psTextSpecialWeekend</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">Special day, weekend</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">Särskild dag, helg</span></p>
+  </td>
+ </tr>
+ <tr style="vertical-align: top;">
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">psTextWeekend</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">Off every week</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">Ledig varje vecka</span></p>
+  </td>
+ </tr>
+ <tr style="vertical-align: top;">
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">psTextClosed</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">Closed</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">Stängt</span></p>
+  </td>
+ </tr>
+ <tr style="vertical-align: top;">
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">psTextClosedDay</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">Closure day</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">Stängd dag</span></p>
+  </td>
+ </tr>
+ <tr style="vertical-align: top;">
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">psTextWorkingDay</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">Working day</span></p>
+  </td>
+  <td style="border-width : 1px; border-color: #000000; border-style: solid; padding: 4px; width: 150px;">
+   <p class="rvps2"><span class="rvts6">Arbetsdag</span></p>
+  </td>
+ </tr>
+</table>
+</div>
+<p class="rvps2"><span class="rvts6">In psTextWorkingDaysNote, "%1" is the number of working days. </span><span class="rvts11">CountryWords</span><span class="rvts6"> gives a program all ten for a country at once.</span></p>
 <p class="rvps2"><span class="rvts6">The library's own country packages are Used in </span><span class="rvts11">CountryPackages.pkg</span><span class="rvts6">. Do not add yours there: in DataFlex 26 the library is an installed package, which is read-only. Edit CountryPackages.pkg only when you add the country to the library itself - see </span><span class="rvts11">Share it</span><span class="rvts6"> below.</span></p>
 <p class="rvps2"><span class="rvts11">Working days</span></p>
 <p class="rvps2"><span class="rvts6">The working-day functions ask the country package which days are official days off: by default, the days listed as official. When a country's days off differ by region, as in the UK, the package can give region bits instead of True or False (</span><span class="rvts11">Set pbRegionBits to True</span><span class="rvts6">) and override the </span><span class="rvts11">IsOfficialDayOff</span><span class="rvts6"> function; see </span><span class="rvts11">BrittishHolidays.pkg</span><span class="rvts6"> for an example.</span></p>

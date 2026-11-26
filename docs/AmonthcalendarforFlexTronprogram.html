@@ -185,13 +185,13 @@
 
             <div class="main-content">
                 
-<p class="rvps2"><span class="rvts11">cHolidayMonthCalendar</span><span class="rvts6"> draws one month of a country's calendar in a DataFlex 26 FlexTron program, with every day marked from this library: official holidays, special days, the weekend and closure days. The month and day names come in the country's language. Twelve of them make the demo's </span><a class="rvts12" href="YearOverview.html">Year Overview</a><span class="rvts6"> view.</span></p>
+<p class="rvps2"><span class="rvts11">cHolidayMonthCalendar</span><span class="rvts6"> draws one month of a country's calendar in a DataFlex 26 FlexTron program, with every day marked from this library: official holidays, special days, the weekend and closure days. The month and day names, and the calendar's words, come in the country's language. Twelve of them make the demo's </span><a class="rvts12" href="YearOverview.html">Year Overview</a><span class="rvts6"> view.</span></p>
 <p class="rvps2"><span class="rvts6">It is built on the </span><span class="rvts11">cFTMonthCalendar</span><span class="rvts6"> class of the RDCFlexTron library (https://github.com/NilsSve/Library-RDCFlexTron), version 0.9.40 or later.</span></p>
 <p class="rvps2"><span class="rvts11">An optional part of the library</span></p>
 <p class="rvps2"><span class="rvts6">None of the library's own packages Use cHolidayMonthCalendar, and the library does not install RDCFlexTron. A program that only wants holiday dates gets nothing more. To use the calendar:</span></p>
 <ol style="text-indent: 0px; padding: 0; margin: 0 0 0 48px; list-style-position: outside;">
  <li class="rvps4 noindent"><span class="rvts6">Add RDCFlexTron to your workspace, as you added this library - see </span><a class="rvts12" href="Addingthelibrarytoaworkspace.html">Adding the library to a workspace</a><span class="rvts6">.</span></li>
- <li class="rvps4 noindent"><span class="rvts6">Use the package where the calendar is: </span><span class="rvts15">Use cHolidayMonthCalendar.pkg</span></li>
+ <li class="rvps4 noindent"><span class="rvts6">Use the package where the calendar is: Use cHolidayMonthCalendar.pkg</span></li>
  <li class="rvps4 noindent"><span class="rvts6">Put the calendar in a FlexTron host, such as RDCFlexTron's cFTGridHost.</span></li>
 </ol>
 <p class="rvps6"><span class="rvts16">Object oJuly is a cHolidayMonthCalendar</span></p>
@@ -308,10 +308,12 @@
  </tr>
 </table>
 </div>
-<p class="rvps2"><span class="rvts11">Clicks and words</span></p>
+<p class="rvps2"><span class="rvts11">The words, in the country's language</span></p>
+<p class="rvps2"><span class="rvts6">The calendar's words come from the country's package, like the holiday names: the heading of the week numbers, the note of the month's working days, and what a day is - for Sweden "V", "20 arbetsdagar" and "Helgdag, ledig". </span><span class="rvts11">CountryWords</span><span class="rvts6"> returns them as one </span><span class="rvts11">tCountryWords</span><span class="rvts6"> struct; a package that sets none, or a country without a package, gets English ("Wk", "%1 working days", "Holiday, day off").</span></p>
+<p class="rvps2"><span class="rvts6">The calendar's own properties - psTextWeek, psTextWorkingDaysNote ("%1" is the number of working days), psTextHoliday, psTextHolidayWeekend, psTextSpecial, psTextSpecialWeekend, psTextWeekend, psTextClosed, psTextClosedDay and psTextWorkingDay - are empty, which means "the country's word". Set one, and the calendar uses your word instead, whatever the country.</span></p>
+<p class="rvps2"><span class="rvts11">Clicks</span></p>
 <ul style="text-indent: 0px; padding: 0; margin: 0 0 0 48px; list-style-position: outside; list-style-type: disc;">
  <li class="rvps4 noindent"><span class="rvts6">A click on a day marks it - in every calendar on the page - and reaches the calendar's </span><span class="rvts11">OnDayClick</span><span class="rvts6"> event with the date. Set </span><span class="rvts11">pbDayClick</span><span class="rvts6"> to False when only the page should answer the click, as the </span><a class="rvts12" href="YearOverview.html">Year Overview</a><span class="rvts6"> view does.</span></li>
- <li class="rvps4 noindent"><span class="rvts6">The words of the tooltips are properties, English unless you set your own: psTextHoliday, psTextSpecial, psTextWeekend, psTextClosed and more, and psTextWorkingDaysNote ("%1 working days") for the heading.</span></li>
  <li class="rvps4 noindent"><span class="rvts6">In the Studio's Designer the calendar shows a month's shape.</span></li>
 </ul>
 
