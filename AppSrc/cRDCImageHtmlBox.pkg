@@ -6,12 +6,12 @@
 //
 // Description : A picture - .svg, .png, .gif or .jpg - shown as HTML in a FlexTron box, on the view's colour. The
 //               demo shows the nations' flags with it, in place of the Graphics Library's cDbImageContainer
-//               (Is$GraphicsLibrary, off by default). Named cFlagHtmlBox until 2026-11-26.
+//               (Is$GraphicsLibrary, off by default).
 //
 // This code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
 // without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 //****************************************************************************
-Use cViewHtmlBox.pkg             // the view's colour around the picture
+Use cViewHtmlBox.pkg           // the view's colour around the picture
 Use FTMarkupBuilders.pkg       // FTHtmlEscape
 Use cCharTranslate.pkg         // Base64EncodeToStr
 Use seq_chnl.pkg

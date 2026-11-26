@@ -19,8 +19,8 @@
 			<libraryID>DataFlex-dev/Web UI FlexTron</libraryID>
 		</library>
 		<library>
-			<libraryPath>DfPkg\NilsSve_RDC_Holidays_Functions_Library-1.0.8\RDC-Holidays-Functions-Library.sws</libraryPath>
-			<libraryTimeStamp>2026-11-26T12:01:08</libraryTimeStamp>
+			<libraryPath>DfPkg\NilsSve_RDC_Holidays_Functions_Library-1.0.9\RDC-Holidays-Functions-Library.sws</libraryPath>
+			<libraryTimeStamp>2026-11-26T14:45:41</libraryTimeStamp>
 			<libraryID>github.com/NilsSve/Library-HolidaysFuncLib.git/RDC-Holidays-Functions-Library</libraryID>
 		</library>
 	</libraries>

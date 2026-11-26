@@ -752,16 +752,25 @@ Object oDateFunctionsTest is a cRDCDbView
             Move sDate to dDate
             Get Value of oReverseCountry_fm to sISO_Short
             Move (Uppercase(Trim(sISO_Short))) to sISO_Short
+            // The country's package decides (HolidaysFuncLib 1.0.9): a day it does not name is no holiday there, whichever
+            // of the library's functions falls on it.
             Get IsDateAHoliday of ghoCalendarHolidays dDate sISO_Short (&bIsHoliday) (&sHolidayName) (&sFunctionName) to bFound
-            If (bFound = False or sHolidayName = "") Begin
-                Set Label of oReverseAnswer_tb to (LongDateText(Self, dDate) + ": no holiday in the" * sISO_Short * "language package")
-                If (bFound = True) Begin
-                    Set Label of oReverseFunction_tb to ("Found by the function" * sFunctionName + ", but the package returns no name.")
+            If (bFound = False) Begin
+                If (IsCountry(Self, sISO_Short)) Begin
+                    Set Label of oReverseAnswer_tb to (LongDateText(Self, dDate) + ": no holiday or special day in the" * sISO_Short * "package")
+                End
+                Else Begin
+                    Set Label of oReverseAnswer_tb to (LongDateText(Self, dDate) + ": the library has no holiday package for" * If(sISO_Short = "", "an empty country code", sISO_Short))
                 End
                 Procedure_Return
             End
-            Set Label of oReverseAnswer_tb   to (LongDateText(Self, dDate) + ":" * sHolidayName * (If(bIsHoliday, "- official holiday", "- not an official holiday")))
-            Set Label of oReverseFunction_tb to ("Found by the function" * sFunctionName + ".")
+            Set Label of oReverseAnswer_tb to (LongDateText(Self, dDate) + ":" * sHolidayName * (If(bIsHoliday, "- official holiday", "- not an official holiday")))
+            If (sFunctionName = "") Begin
+                Set Label of oReverseFunction_tb to ("A day on a fixed date in the" * sISO_Short * "package - no library function gives it.")
+            End
+            Else Begin
+                Set Label of oReverseFunction_tb to ("Found by the function" * sFunctionName + ".")
+            End
         End_Procedure
 
     End_Object
