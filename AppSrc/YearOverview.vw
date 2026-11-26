@@ -71,7 +71,8 @@ Object oYearOverview is a cRDCView
         Function_Return (DateGetYear(dToday))
     End_Function
 
-    // The first time: this year, and the computer's own country when the library has a package for it - else GB.
+    // The first time: this year, and the computer's own country when the library has a package for it - else the
+    // first country package that registered itself (the program decides which packages there are).
     Procedure InitState
         String[] asCountries
         String sISO_Short
@@ -80,8 +81,8 @@ Object oYearOverview is a cRDCView
         If (psCountry(Self) = "") Begin
             Get Countries to asCountries
             Get WindowsLocaleISO_Short of ghoCalendarHolidays to sISO_Short
-            If (SearchArray(sISO_Short, asCountries) = -1) ;
-                Move "GB" to sISO_Short
+            If ((SearchArray(sISO_Short, asCountries) = -1) and (SizeOfArray(asCountries) > 0)) ;
+                Move asCountries[0] to sISO_Short
             Set psCountry to sISO_Short
         End
     End_Procedure
